@@ -27,11 +27,21 @@
             canvArena.focus();
 
             ogPlayer1 = new Nibbler();
+            ogPlayer2 = new Nibbler();
+
+            // Override Player Two Input Keys
+            ogPlayer2.KeyLeft = 65; // "A"
+            ogPlayer2.KeyUp = 87; // "W"
+            ogPlayer2.KeyRight = 68; // "D"
+            ogPlayer2.KeyDown = 83; // "S"
+            ogPlayer2.Color = "yellow";
 
             SetPelletPostion();
             SetPlayerSpawnPoint(ogPlayer1);
+            SetPlayerSpawnPoint(ogPlayer2);
             resizeCanvas();
             DrawPlayer(ogPlayer1);
+            DrawPlayer(ogPlayer2);
 
             window.addEventListener('resize', resizeCanvas, false);
             document.addEventListener("keydown", keyPush);
@@ -66,6 +76,13 @@
 
             this.igaTrail = [];
             this.igTail = igMinimumTailLength;
+
+            this.KeyLeft = 37; // Left Arrow
+            this.KeyUp = 38; // Up Arrow
+            this.KeyRight = 39; // Right Arrow
+            this.KeyDown = 40; // Down Arrow
+
+            this.Color = "lime";
         }
         Nibbler.prototype.UpdateTail = function () {
             this.igaTrail.push({ x: this.igPlayerPositionX, y: this.igPlayerPositionY });
@@ -80,12 +97,15 @@
             }
 
             HandlePlayer(ogPlayer1);
+            HandlePlayer(ogPlayer2);
 
             DrawGrid();
 
             DrawPlayer(ogPlayer1);
+            DrawPlayer(ogPlayer2);
 
             ogPlayer1.UpdateTail();
+            ogPlayer2.UpdateTail();
         }
 
         function HandlePlayer(oPlayer) {
@@ -114,125 +134,70 @@
                 SetPelletPostion();
             }
         }
-        function DrawPlayer(oPlayer) {
-            ctxArena.fillStyle = "lime";
 
-            if (oPlayer.igaTrail.length == 0) {
-                ctxArena.fillRect(oPlayer.igPlayerPositionX * giGridSize, oPlayer.igPlayerPositionY * giGridSize, giGridSize - 2, giGridSize - 2);
-            }
-            else {
-                for (var iLoop = 0; iLoop < oPlayer.igaTrail.length; iLoop++) {
-                    ctxArena.fillRect(oPlayer.igaTrail[iLoop].x * giGridSize, oPlayer.igaTrail[iLoop].y * giGridSize, giGridSize - 2, giGridSize - 2);
+        function keyPush(oEvent) {
 
-                    // Check to see if the player encountered their tale
-                    if (oPlayer.igaTrail[iLoop].x == oPlayer.igPlayerPositionX && oPlayer.igaTrail[iLoop].y == oPlayer.igPlayerPositionY) {
-                        oPlayer.igTail = igMinimumTailLength;
-                    }
-                }
-            }
+            return CheckForSpecialKeys(oEvent) ? true :
+               CheckForKeyEvents(oEvent, ogPlayer1) ? true :
+                  CheckForKeyEvents(oEvent, ogPlayer2);
+            
         }
-        function drawPellet() {
+        function CheckForSpecialKeys(oEvent) {
 
-            // Draw the pellet
-            ctxArena.lineWidth = 2;
-            ctxArena.strokeStyle = "grey";
-            ctxArena.fillStyle = "red";
-            ctxArena.beginPath();
-            ctxArena.arc(igPelletPositionX * giGridSize + (giGridSize / 2), igPelletPositionY * giGridSize + (giGridSize / 2), giGridSize / 2.8, 0, 2 * Math.PI);
-            ctxArena.fill();
-            ctxArena.stroke();
-        }
-        function keyPush(evt) {
-            if (gbGamePaused) {
-                window.gbGamePaused = false;
-                Sounds.Crawlig.play();
-                Sounds.Crawlig.loop = true;
+            switch (oEvent.keyCode) {
+             case 32: // Space
+             case 80: // "P"
+                // Pause/unPause
+                 window.gbGamePaused = !gbGamePaused;
+                 if (gbGamePaused) {
+                     Sounds.Crawlig.pause();
+                     Sounds.Pause.play();
+                     drawBegin();
+                 }
+                 else {
+                     Sounds.Crawlig.play();
+                     Sounds.Crawlig.loop = true;
+                 }
+                 break;
+            default:
+                return false;
             }
 
-            switch (evt.keyCode) {
-                case 37:
-                    ogPlayer1.igPlayerDirectionX = -1;
-                    ogPlayer1.igPlayerDirectionY = 0;
+            return true;
+        }
+        function CheckForKeyEvents(oEvent, oPlayer) {
+            
+            switch (oEvent.keyCode) {
+                case oPlayer.KeyLeft:
+                    oPlayer.igPlayerDirectionX = -1;
+                    oPlayer.igPlayerDirectionY = 0;
                     break;
-                case 38:
-                    ogPlayer1.igPlayerDirectionX = 0;
-                    ogPlayer1.igPlayerDirectionY = -1;
+                case oPlayer.KeyUp:
+                    oPlayer.igPlayerDirectionX = 0;
+                    oPlayer.igPlayerDirectionY = -1;
                     break;
-                case 39:
-                    ogPlayer1.igPlayerDirectionX = 1;
-                    ogPlayer1.igPlayerDirectionY = 0;
+                case oPlayer.KeyRight:
+                    oPlayer.igPlayerDirectionX = 1;
+                    oPlayer.igPlayerDirectionY = 0;
                     break;
-                case 40:
-                    ogPlayer1.igPlayerDirectionX = 0;
-                    ogPlayer1.igPlayerDirectionY = 1;
+                case oPlayer.KeyDown:
+                    oPlayer.igPlayerDirectionX = 0;
+                    oPlayer.igPlayerDirectionY = 1;
                     break;
                 default:
-                    ogPlayer1.igPlayerDirectionX = 0;
-                    ogPlayer1.igPlayerDirectionY = 0;
-                    window.gbGamePaused = true;
-                    Sounds.Crawlig.pause();
-                    Sounds.Pause.play();
-                    drawBegin();
-                    break;
+                    return false;
             }
+
+            return true;
         }
-        function SetPelletPostion() {
-            igPelletPositionX = Math.floor(Math.random() * (igArenaSquaresX - 2)) + 1;
-            igPelletPositionY = Math.floor(Math.random() * (igArenaSquaresY - 2)) + 1;
-
-            if (igPelletPositionX == ogPlayer1.igPlayerPositionX && igPelletPositionY == ogPlayer1.igPlayerPositionY) {
-                SetPlayerSpawnPoint(ogPlayer1);
-            }
-        }
-        function SetPlayerSpawnPoint(oPlayer) {
-            oPlayer.igPlayerPositionX = Math.floor(Math.random() * (igArenaSquaresX - 2)) + 1;
-            oPlayer.igPlayerPositionY = Math.floor(Math.random() * (igArenaSquaresY - 2)) + 1;
-
-            if (igPelletPositionX == oPlayer.igPlayerPositionX && igPelletPositionY == oPlayer.igPlayerPositionY) {
-                SetPelletPostion();
-            }
-        }
-        // Display custom canvas.
-        function DrawGrid() {
-            ctxArena.fillStyle = "black";
-            ctxArena.fillRect(0, 0, window.innerWidth, window.innerHeight);
-
-            ctxArena.strokeStyle = 'orange';
-            ctxArena.lineWidth = giGridSize / 2;
-            ctxArena.strokeRect(0, 0, window.innerWidth, window.innerHeight);
-
-            drawPellet();
-
-            if (gbGamePaused) {
-                drawBegin();
-            }
-        }
-
-        // Runs each time the DOM window resize event fires.
-        // Resets the canvas dimensions to match window,
-        // then draws the new borders accordingly.
-        function resizeCanvas() {
-            canvArena.width = window.innerWidth;
-            canvArena.height = window.innerHeight;
-
-            window.igArenaSquaresX = Math.floor(window.innerWidth / giGridSize);
-            window.igArenaSquaresY = Math.floor(window.innerHeight / giGridSize);
-
-            DrawGrid();
-        }
-
-        function drawBegin() {
-            ctxArena.font = giGridSize + "px Comic Sans MS";
-            ctxArena.fillStyle = "blue";
-            ctxArena.textAlign = "center";
-            ctxArena.fillText("Click to Begin", window.innerWidth / 2, window.innerHeight / 2);
-        }
-
         function clickEvent(event) {
+
             if (gbGamePaused) {
                 window.gbGamePaused = false;
                 Sounds.Crawlig.play();
                 Sounds.Crawlig.loop = true;
+
+                return;
             }
 
             var iXOffset = Math.abs(ogPlayer1.igPlayerPositionX * giGridSize - event.pageX);
@@ -255,6 +220,88 @@
                 ogPlayer1.igPlayerDirectionX = 0;
             }
         }
+
+        function SetPelletPostion() {
+            igPelletPositionX = Math.floor(Math.random() * (igArenaSquaresX - 2)) + 1;
+            igPelletPositionY = Math.floor(Math.random() * (igArenaSquaresY - 2)) + 1;
+
+            if (igPelletPositionX === ogPlayer1.igPlayerPositionX && igPelletPositionY === ogPlayer1.igPlayerPositionY) {
+                SetPlayerSpawnPoint(ogPlayer1);
+            }
+            if (igPelletPositionX === ogPlayer2.igPlayerPositionX && igPelletPositionY === ogPlayer2.igPlayerPositionY) {
+                SetPlayerSpawnPoint(ogPlayer2);
+            }
+        }
+        function SetPlayerSpawnPoint(oPlayer) {
+            oPlayer.igPlayerPositionX = Math.floor(Math.random() * (igArenaSquaresX - 2)) + 1;
+            oPlayer.igPlayerPositionY = Math.floor(Math.random() * (igArenaSquaresY - 2)) + 1;
+
+            if (igPelletPositionX === oPlayer.igPlayerPositionX && igPelletPositionY === oPlayer.igPlayerPositionY) {
+                SetPelletPostion();
+            }
+        }
+
+        function resizeCanvas() {
+            // Runs each time the DOM window resize event fires.
+            // Resets the canvas dimensions to match window,
+            // then draws the new borders accordingly.
+            canvArena.width = window.innerWidth;
+            canvArena.height = window.innerHeight;
+
+            window.igArenaSquaresX = Math.floor(window.innerWidth / giGridSize);
+            window.igArenaSquaresY = Math.floor(window.innerHeight / giGridSize);
+
+            DrawGrid();
+        }
+        function DrawGrid() {
+            ctxArena.fillStyle = "black";
+            ctxArena.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+            ctxArena.strokeStyle = 'orange';
+            ctxArena.lineWidth = giGridSize / 2;
+            ctxArena.strokeRect(0, 0, window.innerWidth, window.innerHeight);
+
+            drawPellet();
+
+            if (gbGamePaused) {
+                drawBegin();
+            }
+        }
+        function DrawPlayer(oPlayer) {
+            ctxArena.fillStyle = oPlayer.Color;
+
+            if (oPlayer.igaTrail.length === 0) {
+                ctxArena.fillRect(oPlayer.igPlayerPositionX * giGridSize, oPlayer.igPlayerPositionY * giGridSize, giGridSize - 2, giGridSize - 2);
+            }
+            else {
+                for (var iLoop = 0; iLoop < oPlayer.igaTrail.length; iLoop++) {
+                    ctxArena.fillRect(oPlayer.igaTrail[iLoop].x * giGridSize, oPlayer.igaTrail[iLoop].y * giGridSize, giGridSize - 2, giGridSize - 2);
+
+                    // Check to see if the player encountered their tale
+                    if (oPlayer.igaTrail[iLoop].x === oPlayer.igPlayerPositionX && oPlayer.igaTrail[iLoop].y === oPlayer.igPlayerPositionY) {
+                        oPlayer.igTail = igMinimumTailLength;
+                    }
+                }
+            }
+        }
+        function drawPellet() {
+
+            // Draw the pellet
+            ctxArena.lineWidth = 2;
+            ctxArena.strokeStyle = "grey";
+            ctxArena.fillStyle = "red";
+            ctxArena.beginPath();
+            ctxArena.arc(igPelletPositionX * giGridSize + (giGridSize / 2), igPelletPositionY * giGridSize + (giGridSize / 2), giGridSize / 2.8, 0, 2 * Math.PI);
+            ctxArena.fill();
+            ctxArena.stroke();
+        }
+        function drawBegin() {
+            ctxArena.font = giGridSize + "px Comic Sans MS";
+            ctxArena.fillStyle = "blue";
+            ctxArena.textAlign = "center";
+            ctxArena.fillText("Click to Begin", window.innerWidth / 2, window.innerHeight / 2);
+        }
+
     </script>
 </BODY>
 </HTML>

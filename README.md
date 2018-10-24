@@ -4,11 +4,17 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
-* Add multi-player support
+* Standardize function names
+* Make the Pellet into a class
+* Each pellet needs their own sound so they can play at the same time
+* Move Players into their own array for true multi-player support
+* Add an initialization method for players 2-N
+* Change pellet spawn so it doesn't move the Nibblers during game play
 * Menu with Legend
 * Add some type of scoring
 * Add a countdown timer
 * Add power ups from pellets
+    * Random direction change
     * Multiple spawns
 	* Ability to pause movement
 	* Increase speed
@@ -20,6 +26,7 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 		* Loose Point
 	* Erase ability - Need to better define this
 	* Jump ability
+	* Teleportation (Random/Directional?)
 * Game Options
     * Timer
 	* no-wrap
@@ -36,12 +43,15 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 * Make sure spawn points are not the same
 * Created a class for the player in preparation for multi-player
-* Add explosion to grab pellet
+* Added explosion to grab pellet
 * Added crawling noise
 * Added pause sound
 * Sorted and enhanced Todo list
 * Added Attributions
 
+* Added multi-player support, currently hard coded for two players
+* Added space bar and "P" key for pause
+* Tightened up bite sound
 
 ### Creative Commons License Attribution 3.0 
 
