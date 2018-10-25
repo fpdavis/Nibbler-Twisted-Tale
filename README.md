@@ -4,15 +4,11 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
-* Standardize function names
-* Make the Pellet into a class
-* Each pellet needs their own sound so they can play at the same time
-* Move Players into their own array for true multi-player support
-* Add an initialization method for players 2-N
-* Change pellet spawn so it doesn't move the Nibblers during game play
-* Menu with Legend
+* Create an array for the Pellets so we can add more!
+* Initializations are a bit clunky and should be improved
 * Add some type of scoring
 * Add a countdown timer
+* Menu with Legend
 * Add power ups from pellets
     * Random direction change
     * Multiple spawns
@@ -33,6 +29,7 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 	* Diagonal Movement
 	* Maze
 * Enhance description
+* Improved graphics
 * Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler
 * Joystick support
 * Center the playfield - it is pretty good but could be better
@@ -52,6 +49,14 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Added multi-player support, currently hard coded for two players
 * Added space bar and "P" key for pause
 * Tightened up bite sound
+
+* Standardized function and variable names
+* Made the Pellet into a class
+* Each pellet has their own sound so they can play at the same time
+* Moved Players into their own array for true multi-player support
+* Added an initialization method for players 2-N
+* Changed pellet spawn so it doesn't move the Nibblers during game play
+* Added native support for up to four players, more are possible by assigning keys through a menu
 
 ### Creative Commons License Attribution 3.0 
 
