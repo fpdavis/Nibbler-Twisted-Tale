@@ -4,11 +4,9 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
-* Create an array for the Pellets so we can add more!
-* Initializations are a bit clunky and should be improved
-* Add some type of scoring
-* Add a countdown timer
 * Menu with Legend
+* Initializations are a bit clunky and should be improved
+* Need a logging/debug framework of some sort?
 * Add power ups from pellets
     * Random direction change
     * Multiple spawns
@@ -28,6 +26,8 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 	* no-wrap
 	* Diagonal Movement
 	* Maze
+	* Waves
+	* Enemies
 * Enhance description
 * Improved graphics
 * Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler
@@ -57,6 +57,14 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Added an initialization method for players 2-N
 * Changed pellet spawn so it doesn't move the Nibblers during game play
 * Added native support for up to four players, more are possible by assigning keys through a menu
+
+* Converted vars to lets
+* Created an array for the Pellets so we can add more!
+* Added rudimentary scoring
+* Added a countdown timer
+* Added a scoreboard
+* More efficient game pause
+* Cleaned up some for loops with foreach
 
 ### Creative Commons License Attribution 3.0 
 

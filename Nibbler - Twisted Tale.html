@@ -1,23 +1,60 @@
 <HTML>
 <HEAD>
     <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <script src="UUID V1.js"></script>
+
     <TITLE>Nibbler - Twisted Tale</TITLE>
 
     <STYLE>
         html, body {
             width: 100%;
             height: 100%;
-            margin: 0px;
+            margin: 0;
             border: 0;
             overflow: hidden; /*  Disable scrollbars */
             display: block;
+            background-color: #000;
         }
+
+        .wrapper {
+            display: grid;
+            border: 1px solid #000;
+            grid-gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+        }
+
+        .box {
+            background-color: #000;
+            color: #fff;
+            padding: 10px;
+            font-size: 150%;
+        }
+
+        .blink_me {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {  
+            50% { opacity: 0; }
+        }
+        
     </STYLE>
 
 </HEAD>
 
 <BODY>
-
+    <div id="Scoreboard">
+        <div class="wrapper">
+            <div id="divPlayer" class="box">Player 1</div>
+            <div id="divScore" class="box">000</div>
+            <div id="divLives" class="box">Lives</div>
+        </div>
+        <div class="wrapper">
+            <div id="divHighScorePlayer" class="box">HIGHSCORE (Player 1)</div>
+            <div id="divHighScore" class="box">000</div>
+            <div id="divTime" class="box blink_me">TIME 120</div>
+        </div>
+    </div>
     <canvas id="canArena"></canvas>
 
     <script>
@@ -26,33 +63,43 @@
             ctxArena = canvArena.getContext("2d");
             canvArena.focus();
 
-			ogPlayer = new Array(4);
-         
-		    InitializePlayers(ogPlayer);
-			
-			ogPellet = new Pellet();
-		 	ogPellet.SetPosition();
-			
+            ogPlayer = new Array(4);
+            InitializePlayers(ogPlayer);
+
+            ogPellet = new Array(ogPlayer.length + 1);
+            InitializePellets(ogPellet);
+
             ResizeEvent();
-			
-			for (var iLoop = ogPlayer.length; iLoop--; ) // Reverse loop for the win
-			{
-				DrawPlayer(ogPlayer[iLoop]);
-            }
+
+            ogPlayer.forEach(DrawPlayer);
 
             window.addEventListener('resize', ResizeEvent, false);
             document.addEventListener("keydown", KeydownEvent);
             document.addEventListener("click", ClickEvent);
-            setInterval(GameLoop, 66);
+            
+            giTimeRemaining = 60000 * .5; // 60,000 ms per minute
+           }
 
-        }
+        const oDivPlayer = document.getElementById('divPlayer');
+        const oDivScore = document.getElementById('divScore');
+        const oDivLives = document.getElementById('divLives');
+        const oDivHighScorePlayer = document.getElementById('divHighScorePlayer');
+        const oDivHighScore = document.getElementById('divHighScore');
+        const oDivTime = document.getElementById('divTime');
 
-        giGridSize = 40;
-        giMinimumTailLength = 3;
-        gbGamePaused = true; 
+        var giGridSize = 40;
+        var giGridHeight = window.innerHeight - document.getElementById('Scoreboard').offsetHeight;
+        var giMinimumTailLength = 3;
+        var gbGamePaused = true;
+        var ogPlayer;
+        var ogPellet;
+        var ogCountDownTime;
+        var ogCountdownTimer;
+        var giTimeRemaining;
+        var ogGameLoop;
 
         giArenaSquaresX = Math.floor(window.innerWidth / giGridSize);
-        giArenaSquaresY = Math.floor(window.innerHeight / giGridSize);
+        giArenaSquaresY = Math.floor(giGridHeight / giGridSize);
 
         // Define Sounds
         var Sounds = {
@@ -60,9 +107,12 @@
             Pause: new Audio('Sounds/Splat And Squirt-SoundBible.com-2136633229.mp3'),
             Crawlig: new Audio('Sounds/termites_and_ants-mike-koenig.mp3')
         }
-        
+
         function Nibbler() {
-			this.Name = "Player ";
+            this.Name = "Player ";
+            this.Lives = 3;
+            this.Score = 0;
+
             this.PositionX = 0;
             this.PositionY = 0;
 
@@ -79,111 +129,129 @@
 
             this.fillStyle = "lime";
         }
+
         Nibbler.prototype.UpdateTail = function () {
             this.Trail.push({ x: this.PositionX, y: this.PositionY });
 
             while (this.Trail.length > this.TailLength) {
                 this.Trail.shift();
             }
-        }        
+        }
         Nibbler.prototype.SetSpawnPoint = function () {
             this.PositionX = Math.floor(Math.random() * (giArenaSquaresX - 2)) + 1;
             this.PositionY = Math.floor(Math.random() * (giArenaSquaresY - 2)) + 1;
 
-			// Don't spawn on top of another player
-			for (var iLoop = ogPlayer.length; iLoop--; ) // Reverse loop for the win
-			{
-				if (ogPlayer[iLoop] != null && this.Name != ogPlayer[iLoop].Name 
-					&& this.PositionX === ogPlayer[iLoop].PositionX 
-					&& this.PositionY === ogPlayer[iLoop].PositionY) {
-						this.SetSpawnPoint();
-				}
-			}
+            // Don't spawn on top of another player
+            for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
+            {
+                if (ogPlayer[iLoop] != null &&
+                    this.Name !== ogPlayer[iLoop].Name &&
+                    this.PositionX === ogPlayer[iLoop].PositionX &&
+                    this.PositionY === ogPlayer[iLoop].PositionY) {
+                    this.SetSpawnPoint();
+                }
+            }
         }
-		
-		function Pellet() {
-			this.PositionX = 0;
-			this.PositionY = 0;
-			
-			this.Sound = new Audio(Sounds.Bite.src);
-			this.strokeStyle = "grey";
-			this.fillStyle = "Red";
-		}
-        Pellet.prototype.SetPosition = function () {
+        Nibbler.UpdateTail = function (oNibbler) { oNibbler.UpdateTail(); }
+
+        function Pellet() {
+            this.Name = uuidv1();
+            this.Points = 10;
+            this.TailAdjustment = 1;
+
+            this.PositionX = 0;
+            this.PositionY = 0;
+
+            this.Sound = new Audio(Sounds.Bite.src);
+            this.strokeStyle = "grey";
+            this.fillStyle = "Red";
+        }
+        Pellet.prototype.SetSpawnPoint = function () {
             this.PositionX = Math.floor(Math.random() * (giArenaSquaresX - 2)) + 1;
             this.PositionY = Math.floor(Math.random() * (giArenaSquaresY - 2)) + 1;
 
-			for (var iLoop = ogPlayer.length; iLoop--; ) // Reverse loop for the win
-			{
-				if (this.PositionX === ogPlayer[iLoop].PositionX && this.PositionY === ogPlayer[iLoop].PositionY) 
-				{
-					this.SetPosition();
-				}
-			}
-        }
-        Pellet.prototype.Eatten = function (oPlayer) {
-				this.Sound.play();
-                this.SetPosition();
-				oPlayer.TailLength++;
-        }
-	
-	function InitializePlayers(ogPlayer)
-	{						
-		for (var iLoop = ogPlayer.length; iLoop--; ) // Reverse loop for the win
-			{
-				ogPlayer[iLoop] = new Nibbler();
-				ogPlayer[iLoop].Name += iLoop;
-				ogPlayer[iLoop].SetSpawnPoint();
-			}
-			
-			if (ogPlayer.length > 1)
-			{
-				// Override Player Two Input Keys
-				ogPlayer[1].KeyLeft = 65; // "A"
-				ogPlayer[1].KeyUp = 87; // "W"
-				ogPlayer[1].KeyRight = 68; // "D"
-				ogPlayer[1].KeyDown = 83; // "S"
-				ogPlayer[1].fillStyle = "yellow";
-			}
-			
-			if (ogPlayer.length > 2)
-			{
-				// Override Player Two Input Keys
-				ogPlayer[2].KeyLeft = 74; // "A"
-				ogPlayer[2].KeyUp = 73; // "W"
-				ogPlayer[2].KeyRight = 76; // "D"
-				ogPlayer[2].KeyDown = 75; // "S"
-				ogPlayer[2].fillStyle = "BlueViolet ";
-			}
-			
-			if (ogPlayer.length > 3)
-			{
-				// Override Player Two Input Keys
-				ogPlayer[3].KeyLeft = 100; // "A"
-				ogPlayer[3].KeyUp = 104; // "W"
-				ogPlayer[3].KeyRight = 102; // "D"
-				ogPlayer[3].KeyDown = 101; // "S"
-				ogPlayer[3].fillStyle = "HotPink ";
-			}
-	}
-	
-		function GameLoop() {
-            if (gbGamePaused) {
-                return;
+            // Don't spawn on top a player
+            for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
+            {
+                if (this.PositionX === ogPlayer[iLoop].PositionX && this.PositionY === ogPlayer[iLoop].PositionY) {
+                    this.SetSpawnPoint();
+                }
             }
 
-			for (var iLoop = ogPlayer.length; iLoop--; ) // Reverse loop for the win
-			{
-				HandlePlayer(ogPlayer[iLoop]);
+            // Don't spawn on top of another pellet
+            for (let iLoop = ogPellet.length; iLoop--;) // Reverse loop for the win
+            {
+                if (ogPellet[iLoop] != null &&
+                    this.Name !== ogPellet[iLoop].Name &&
+                    this.PositionX === ogPellet[iLoop].PositionX &&
+                    this.PositionY === ogPellet[iLoop].PositionY) {
+                    this.SetSpawnPoint();
+                }
+            }
+
+        }
+        Pellet.prototype.Eatten = function (oPlayer) {
+            this.Sound.play();
+            this.SetSpawnPoint();
+            oPlayer.TailLength += this.TailAdjustment;
+            oPlayer.Score += this.Points;
+        }
+
+        function InitializePlayers(ogPlayer) {
+            for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
+            {
+                ogPlayer[iLoop] = new Nibbler();
+                ogPlayer[iLoop].Name += (iLoop + 1);
+                ogPlayer[iLoop].SetSpawnPoint();
+            }
+
+            if (ogPlayer.length > 1) {
+                // Override Player Two Input Keys
+                ogPlayer[1].KeyLeft = 65; // "A"
+                ogPlayer[1].KeyUp = 87; // "W"
+                ogPlayer[1].KeyRight = 68; // "D"
+                ogPlayer[1].KeyDown = 83; // "S"
+                ogPlayer[1].fillStyle = "yellow";
+            }
+
+            if (ogPlayer.length > 2) {
+                // Override Player Two Input Keys
+                ogPlayer[2].KeyLeft = 74; // "A"
+                ogPlayer[2].KeyUp = 73; // "W"
+                ogPlayer[2].KeyRight = 76; // "D"
+                ogPlayer[2].KeyDown = 75; // "S"
+                ogPlayer[2].fillStyle = "BlueViolet ";
+            }
+
+            if (ogPlayer.length > 3) {
+                // Override Player Two Input Keys
+                ogPlayer[3].KeyLeft = 100; // "A"
+                ogPlayer[3].KeyUp = 104; // "W"
+                ogPlayer[3].KeyRight = 102; // "D"
+                ogPlayer[3].KeyDown = 101; // "S"
+                ogPlayer[3].fillStyle = "HotPink ";
+            }
+        }
+
+        function InitializePellets(ogPellet) {
+
+            for (let iLoop = ogPellet.length; iLoop--;) {
+                ogPellet[iLoop] = new Pellet();
+                ogPellet[iLoop].SetSpawnPoint();
+            }
+        }
+
+        function GameLoop() {
+
+            for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
+            {
+                HandlePlayer(ogPlayer[iLoop]);
             }
 
             DrawGrid();
 
-			for (var iLoop = ogPlayer.length; iLoop--; ) // Reverse loop for the win
-			{
-				DrawPlayer(ogPlayer[iLoop]);
-				ogPlayer[iLoop].UpdateTail();
-			}
+            ogPlayer.forEach(DrawPlayer);
+            ogPlayer.forEach(Nibbler.UpdateTail);
         }
 
         function HandlePlayer(oPlayer) {
@@ -206,56 +274,49 @@
             }
 
             // Check to see if the pellet was eaten
-            if (ogPellet.PositionX === oPlayer.PositionX && ogPellet.PositionY === oPlayer.PositionY) {
-                ogPellet.Eatten(oPlayer);
-				delete ogPellet;
-				ogPellet = new Pellet();
-				ogPellet.SetPosition();
+            for (let iLoop = ogPellet.length; iLoop--;) {
+                if (ogPellet[iLoop].PositionX === oPlayer.PositionX && ogPellet[iLoop].PositionY === oPlayer.PositionY) {
+                    ogPellet[iLoop].Eatten(oPlayer);
+                    delete ogPellet[iLoop];
+                    window.ogPellet[iLoop] = new Pellet();
+                    ogPellet[iLoop].SetSpawnPoint();
+
+                    UpdateScoreboard(oPlayer);
+                }
             }
         }
 
         function KeydownEvent(oEvent) {
 
-			if (CheckForSpecialKeys(oEvent))
-			{
-				return;
-			}
-			else
-			{
-				for (var iLoop = ogPlayer.length; iLoop--; ) // Reverse loop for the win
-				{
-					if (CheckForKeyEvents(oEvent, ogPlayer[iLoop]))
-					{
-						break;
-					}				
-				}   
-			}			
+            if (CheckForSpecialKeys(oEvent)) {
+                return;
+            } else {
+                for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
+                {
+                    if (CheckForKeyEvents(oEvent, ogPlayer[iLoop])) {
+                        break;
+                    }
+                }
+            }
         }
+
         function CheckForSpecialKeys(oEvent) {
 
             switch (oEvent.keyCode) {
-             case 32: // Space
-             case 80: // "P"
-                // Pause/unPause
-                 window.gbGamePaused = !gbGamePaused;
-                 if (gbGamePaused) {
-                     Sounds.Crawlig.pause();
-                     Sounds.Pause.play();
-                     DrawBegin();
-                 }
-                 else {
-                     Sounds.Crawlig.play();
-                     Sounds.Crawlig.loop = true;
-                 }
-                 break;
-            default:
-                return false;
+                case 32: // Space
+                case 80: // "P"
+                    // Pause/unPause
+                    TogglePause();
+                    break;
+                default:
+                    return false;
             }
 
             return true;
         }
+
         function CheckForKeyEvents(oEvent, oPlayer) {
-            
+
             switch (oEvent.keyCode) {
                 case oPlayer.KeyLeft:
                     oPlayer.DirectionX = -1;
@@ -279,72 +340,97 @@
 
             return true;
         }
+
         function ClickEvent(event) {
 
             if (gbGamePaused) {
-                window.gbGamePaused = false;
-                Sounds.Crawlig.play();
-                Sounds.Crawlig.loop = true;
-
+                TogglePause();
                 return;
             }
 
-            var iXOffset = Math.abs(ogPlayer[0].PositionX * giGridSize - event.pageX);
-            var iYOffset = Math.abs(ogPlayer[0].PositionY * giGridSize - event.pageY);
+            let iXOffset = Math.abs(ogPlayer[0].PositionX * giGridSize - event.pageX);
+            let iYOffset = Math.abs(ogPlayer[0].PositionY * giGridSize - event.pageY);
 
             if (iXOffset >= iYOffset && ogPlayer[0].PositionX * giGridSize < event.pageX) {
                 ogPlayer[0].DirectionX = 1;
                 ogPlayer[0].DirectionY = 0;
-            }
-            else if (iXOffset >= iYOffset) {
+            } else if (iXOffset >= iYOffset) {
                 ogPlayer[0].DirectionX = -1;
                 ogPlayer[0].DirectionY = 0;
-            }
-            else if (iXOffset < iYOffset && ogPlayer[0].PositionY * giGridSize < event.pageY) {
+            } else if (iXOffset < iYOffset && ogPlayer[0].PositionY * giGridSize < event.pageY) {
                 ogPlayer[0].DirectionY = 1;
                 ogPlayer[0].DirectionX = 0;
-            }
-            else if (iXOffset < iYOffset) {
+            } else if (iXOffset < iYOffset) {
                 ogPlayer[0].DirectionY = -1;
                 ogPlayer[0].DirectionX = 0;
             }
         }
 
+        function TogglePause() {
+            // Pause/unPause
+            window.gbGamePaused = !gbGamePaused;
+
+            if (gbGamePaused) {
+                clearInterval(ogGameLoop);
+                clearInterval(ogCountdownTimer);
+                Sounds.Crawlig.pause();
+                Sounds.Pause.play();
+                DrawBegin();
+                addClass(oDivTime, "blink_me");
+            } else {
+                Sounds.Crawlig.play();
+                Sounds.Crawlig.loop = true;
+                ogGameLoop = setInterval(GameLoop, 66);
+
+                ogCountDownTime = new Date().setTime(new Date().getTime() + giTimeRemaining);
+                ogCountdownTimer = setInterval(CountdownTimer, 500);
+                removeClass(oDivTime, "blink_me");
+            }
+        }
         function ResizeEvent() {
             // Runs each time the DOM window resize event fires.
             // Resets the canvas dimensions to match window,
             // then draws the new borders accordingly.
+            giGridHeight = window.innerHeight - document.getElementById('Scoreboard').offsetHeight;
+
             canvArena.width = window.innerWidth;
-            canvArena.height = window.innerHeight;
+            canvArena.height = giGridHeight;
 
             window.giArenaSquaresX = Math.floor(window.innerWidth / giGridSize);
-            window.giArenaSquaresY = Math.floor(window.innerHeight / giGridSize);
+            window.giArenaSquaresY = Math.floor(giGridHeight / giGridSize);
 
             DrawGrid();
         }
+
         function DrawGrid() {
             ctxArena.fillStyle = "black";
-            ctxArena.fillRect(0, 0, window.innerWidth, window.innerHeight);
+            ctxArena.fillRect(0, 0, window.innerWidth, giGridHeight);
 
             ctxArena.strokeStyle = 'orange';
             ctxArena.lineWidth = giGridSize / 2;
-            ctxArena.strokeRect(0, 0, window.innerWidth, window.innerHeight);
+            ctxArena.strokeRect(0, 0, window.innerWidth, giGridHeight);
 
-            DrawPellet();
+            ogPellet.forEach(DrawPellet);
 
             if (gbGamePaused) {
                 DrawBegin();
             }
         }
+
         function DrawPlayer(oPlayer) {
             ctxArena.fillStyle = oPlayer.fillStyle;
 
             if (oPlayer.Trail.length === 0) {
-                ctxArena.fillRect(oPlayer.PositionX * giGridSize, oPlayer.PositionY * giGridSize, giGridSize - 2, giGridSize - 2);
-            }
-            else {
-                for (var iLoop = 0; iLoop < oPlayer.Trail.length; iLoop++) {
-                    ctxArena.fillRect(oPlayer.Trail[iLoop].x * giGridSize, oPlayer.Trail[iLoop].y * giGridSize, giGridSize - 2, giGridSize - 2);
+                ctxArena.fillRect(oPlayer.PositionX * giGridSize,
+                    oPlayer.PositionY * giGridSize,
+                    giGridSize - 2,
+                    giGridSize - 2);
+            } else {
+                for (let iLoop = 0; iLoop < oPlayer.Trail.length; iLoop++) {
+                    ctxArena.fillRect(oPlayer.Trail[iLoop].x * giGridSize,
+                        oPlayer.Trail[iLoop].y * giGridSize,
+                        giGridSize - 2,
+                        giGridSize - 2);
 
                     // Check to see if the player encountered their tale
                     if (oPlayer.Trail[iLoop].x === oPlayer.PositionX && oPlayer.Trail[iLoop].y === oPlayer.PositionY) {
@@ -353,22 +439,78 @@
                 }
             }
         }
-        function DrawPellet() {
+
+        function DrawPellet(oPellet) {
 
             // Draw the pellet
             ctxArena.lineWidth = 2;
-            ctxArena.strokeStyle = ogPellet.strokeStyle;
-            ctxArena.fillStyle = ogPellet.fillStyle;
+            ctxArena.strokeStyle = oPellet.strokeStyle;
+            ctxArena.fillStyle = oPellet.fillStyle;
             ctxArena.beginPath();
-            ctxArena.arc(ogPellet.PositionX * giGridSize + (giGridSize / 2), ogPellet.PositionY * giGridSize + (giGridSize / 2), giGridSize / 2.8, 0, 2 * Math.PI);
+            ctxArena.arc(oPellet.PositionX * giGridSize + (giGridSize / 2),
+                oPellet.PositionY * giGridSize + (giGridSize / 2),
+                giGridSize / 2.8,
+                0,
+                2 * Math.PI);
             ctxArena.fill();
             ctxArena.stroke();
         }
+
         function DrawBegin() {
             ctxArena.font = giGridSize + "px Comic Sans MS";
             ctxArena.fillStyle = "blue";
             ctxArena.textAlign = "center";
-            ctxArena.fillText("Click to Begin", window.innerWidth / 2, window.innerHeight / 2);
+            ctxArena.fillText("Click to Begin", window.innerWidth / 2, giGridHeight / 2);
+        }
+
+        function UpdateScoreboard(oPlayer) {
+            oDivPlayer.innerText = oPlayer.Name;
+            oDivScore.innerText = oPlayer.Score;
+            oDivLives.innerText = "Lives " + oPlayer.Lives;
+
+            for (let iLoop = ogPlayer.length; iLoop--;) {
+                if (ogPlayer[iLoop].Score > oDivHighScore.innerText) {
+                    oDivHighScorePlayer.innerText = `HIGHSCORE (${oPlayer.Name})`;
+                    oDivHighScore.innerText = oPlayer.Score;
+                }
+        }
+        }
+
+        function CountdownTimer() {
+
+            // Find the time remaining between now and the count down date
+            giTimeRemaining = ogCountDownTime - new Date().getTime();
+            let iSeconds = Math.floor(giTimeRemaining / 1000);
+
+            oDivTime.innerHTML = `TIME ${iSeconds}`;
+
+            if (iSeconds === 10) {
+                addClass(oDivTime, "blink_me");
+            }
+            console.log(giTimeRemaining);
+
+            // If the count down is finished, write some text 
+            if (giTimeRemaining < 0) {
+                clearInterval(ogCountdownTimer);
+                oDivTime.innerHTML = "TIME EXPIRED";
+                addClass(oDivTime, "blink_me");
+                TogglePause();
+            }
+        }
+
+        function hasClass(ele,cls) {
+            return !!ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
+        }
+
+        function addClass(ele,cls) {
+            if (!hasClass(ele,cls)) ele.className += ` ${cls}`;
+        }
+
+        function removeClass(ele,cls) {
+            if (hasClass(ele,cls)) {
+                var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
+                ele.className=ele.className.replace(reg,' ');
+            }
         }
 
     </script>
