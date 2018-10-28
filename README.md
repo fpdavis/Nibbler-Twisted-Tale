@@ -4,9 +4,14 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
-* Menu with Legend
-* Initializations are a bit clunky and should be improved
-* Need a logging/debug framework of some sort?
+* Add player color picker
+* Game Options
+    * Add Computer players
+	* Diagonal Movement
+	* Maze
+	* Waves
+	* Enemies
+	* Need a logging/debug framework of some sort?
 * Add power ups from pellets
     * Random direction change
     * Multiple spawns
@@ -21,13 +26,9 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 	* Erase ability - Need to better define this
 	* Jump ability
 	* Teleportation (Random/Directional?)
-* Game Options
-    * Timer
-	* no-wrap
-	* Diagonal Movement
-	* Maze
-	* Waves
-	* Enemies
+* Improve Menu layout
+* Improve Pause/Menu User Process/Optioning
+* Initializations are a bit clunky and should be improved
 * Enhance description
 * Improved graphics
 * Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler
@@ -66,6 +67,13 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * More efficient game pause
 * Cleaned up some for loops with foreach
 
+* Added a modal window with some fading/blurring and some inputs
+* Wired up existing menu options
+* Re-order Todo list
+* Timer is working but must trigger next wave
+* Added no-wrap game option support
+* Added deadly walls and reduced player lives
+	
 ### Creative Commons License Attribution 3.0 
 
 File: Splat And Squirt-SoundBible.com-2136633229.mp3

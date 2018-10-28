@@ -1,7 +1,6 @@
 <HTML>
 <HEAD>
     <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-    <script src="UUID V1.js"></script>
 
     <TITLE>Nibbler - Twisted Tale</TITLE>
 
@@ -14,6 +13,7 @@
             overflow: hidden; /*  Disable scrollbars */
             display: block;
             background-color: #000;
+            cursor: crosshair;
         }
 
         .wrapper {
@@ -43,52 +43,239 @@
 </HEAD>
 
 <BODY>
-    <div id="Scoreboard">
-        <div class="wrapper">
-            <div id="divPlayer" class="box">Player 1</div>
-            <div id="divScore" class="box">000</div>
-            <div id="divLives" class="box">Lives</div>
-        </div>
-        <div class="wrapper">
-            <div id="divHighScorePlayer" class="box">HIGHSCORE (Player 1)</div>
-            <div id="divHighScore" class="box">000</div>
-            <div id="divTime" class="box blink_me">TIME 120</div>
-        </div>
+<div id="divScoreboard">
+    <div class="wrapper">
+        <div id="divPlayer" class="box">Player 1</div>
+        <div id="divScore" class="box">000</div>
+        <div id="divLives" class="box">Lives</div>
     </div>
-    <canvas id="canArena"></canvas>
+    <div class="wrapper">
+        <div id="divHighScorePlayer" class="box">HIGHSCORE (Player 1)</div>
+        <div id="divHighScore" class="box">000</div>
+        <div id="divTime" class="box blink_me">TIME ---</div>
+    </div>
+</div>
+
+
+<canvas id="canArena"></canvas>
+
+<style>
+        svg {
+            width: 560px;
+            position: relative;
+            height: 380px;
+            margin: 0 auto;
+            display: block;
+        }
+
+            svg line {
+                stroke-width: 2px;
+                stroke: rgba(2,162,239,1);
+            }
+
+            svg #svg_2 {
+                stroke-dasharray: 1680;
+                stroke-dashoffset: 1680;
+            }
+
+            svg #svg_4 {
+                stroke-dasharray: 1680;
+                stroke-dashoffset: -380;
+            }
+
+            svg #svg_3 {
+                stroke-dasharray: 1680;
+                stroke-dashoffset: -580;
+            }
+
+            svg #svg_5 {
+                stroke-dasharray: 1680;
+                stroke-dashoffset: -380;
+            }
+
+        @keyframes anim-dash {
+            90% {
+                stroke: rgba(2,162,239,1);
+            }
+
+            100% {
+                stroke: #ffffff;
+                stroke-dashoffset: 0;
+                opacity: 1;
+            }
+        }
+
+        .overlay {
+            background: rgba(0,0,0,.5);
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            z-index: -999;
+        }
+
+        .modal {
+            position: absolute;
+            width: 560px;
+            height: 380px;
+            top: 50%;
+            left: 70%;
+            transform: translate(-100%,-40%);
+        }
+
+    .modal-inner {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 554px;
+        height: 374px;
+        color: #ffffff;
+        background-color: rgba(60, 60, 60, 0.4);
+        opacity: 0;
+    }
+
+        .modal-start {
+            float: right;
+            z-index: +2;
+            color: #424242;
+            margin: 5px 5px 0 0;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            line-height: 20px;
+        }
+
+    .modal-inner h3 {
+        display: block;
+        text-align: center;
+        font-size: 22px;
+        padding: 10px 10px 10px 10px;
+    }
+
+        .modal-blur {
+            -webkit-filter: blur(2px);
+            -moz-filter: blur(2px);
+            -o-filter: blur(2px);
+            -ms-filter: blur(2px);
+            filter: blur(2px);
+        }
+
+        .showGameMenu .modal, .showGameMenu {
+            animation: display .6s forwards;
+            z-index: auto;
+        }
+
+            .showGameMenu .modal svg line {
+                animation: anim-dash .6s forwards;
+                animation-delay: .6s;
+            }
+
+            .showGameMenu .modal .modal-inner {
+                animation: display .6s forwards;
+                animation-delay: 1s;
+            }
+
+        @keyframes display {
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+
+        <div class="overlay" id="divGameMenu">
+            <div class="modal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 560 380" preserveAspectRatio="true">
+                    <line id="svg_3" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="558" y2="2.0" />
+                    <line id="svg_4" fill="none" stroke="#000000" stroke-width="2" x1="558" y1="378" x2="558" y2="2.0" />
+                    <line id="svg_2" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="378" x2="558" y2="378" />
+                    <line id="svg_5" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="2.0" y2="378" />
+                </svg>
+                <div class="modal-inner">
+                    <h3>Game Options</h3>
+                    Player 1: <select id="selectPlayer1"><option selected>Human</option><option>Computer</option></select>
+                    Name: <input id="txtPlayer1Name" type="text" value="Player 1" maxlength="10" size="10" />
+                    
+                    <br />Player 2: <select id="selectPlayer2"><option>Human</option><option>Computer</option><option selected>None</optionselected></select>
+                    Name: <input id="txtPlayer2Name" type="text" value="Player 2" maxlength="10" size="10" />
+                    
+                    <br />Player 3: <select id="selectPlayer3"><option>Human</option><option>Computer</option><option selected>None</option></select>
+                    Name: <input id="txtPlayer3Name" type="text" value="Player 3" maxlength="10" size="10" />
+                    
+                    <br />Player 4: <select id="selectPlayer4"><option>Human</option><option>Computer</option><option selected>None</option></select>
+                    Name: <input id="txtPlayer4Name" type="text" value="Player 4" maxlength="10" size="10" />
+
+                    <br />Timer: <select id="selectTime">
+                        <option value="true" selected>On</option>
+                        <option value="false">Off</option>
+                    </select> Time:
+                    <input type="number" id="numberTime" min="30" max="480" value="120" step="10" />
+
+                    <br />Lives:
+                    <input type="range" id="rangeLives" min="1" max="10" value="3" oninput="this.nextElementSibling.value=this.value" />
+                    <input type="number" id="numberLives" min="1" max="10" value="3" oninput="this.previousElementSibling.value=this.value" />
+
+                    <br />Wall Wrap: <select id="selectWallWrap"><option>On</option><option selected>Off</option></select>
+                    <br />Deadly Walls: <select id="selectDeadlyWalls"><option>On</option><option selected>Off</option></select>
+                    <br />Deadly Tails: <select id="selectDeadlyTails"><option>On</option><option selected>Off</option></select>
+                    <br />Diagonal Movement: <select id="selectDiagonalMovement"><option>On</option><option selected>Off</option></select>
+                    <br />Maze: <select id="selectMaze"><option>On</option><option selected>Off</option></select>
+                    <br />Enemies: <select id="selectEnemies"><option>On</option><option selected>Off</option></select>
+                    <br />Dificulty: <select id="selectDificulty"><option>Easy</option><option selected>Medium</option><option>Hard</option></select>
+                                     <input type="button" id="btnStart" Value="Start" class="modal-start" onclick="StartGame();" />
+                    <br />Speed: <select id="selectSpeed"><option>Slow</option><option selected>Normal</option><option>Fast</option></select>
+
+                    </div>
+            </div>
+        </div>
+
 
     <script>
         window.onload = function () {
-            canvArena = document.getElementById("canArena");
-            ctxArena = canvArena.getContext("2d");
-            canvArena.focus();
-
-            ogPlayer = new Array(4);
-            InitializePlayers(ogPlayer);
-
-            ogPellet = new Array(ogPlayer.length + 1);
-            InitializePellets(ogPellet);
-
-            ResizeEvent();
-
-            ogPlayer.forEach(DrawPlayer);
-
+            
             window.addEventListener('resize', ResizeEvent, false);
             document.addEventListener("keydown", KeydownEvent);
             document.addEventListener("click", ClickEvent);
             
-            giTimeRemaining = 60000 * .5; // 60,000 ms per minute
-           }
+            addClass(oDivGameMenu, "showGameMenu");
+            addClass(oDivScoreboard, "modal-blur");
+            addClass(canvArena, "modal-blur");
+        }
 
+        const canvArena = document.getElementById("canArena");
+        const ctxArena = canvArena.getContext("2d");
         const oDivPlayer = document.getElementById('divPlayer');
         const oDivScore = document.getElementById('divScore');
         const oDivLives = document.getElementById('divLives');
         const oDivHighScorePlayer = document.getElementById('divHighScorePlayer');
         const oDivHighScore = document.getElementById('divHighScore');
         const oDivTime = document.getElementById('divTime');
+        const oDivGameMenu = document.getElementById('divGameMenu');
+        const oDivScoreboard = document.getElementById('divScoreboard');
 
-        var giGridSize = 40;
-        var giGridHeight = window.innerHeight - document.getElementById('Scoreboard').offsetHeight;
+        const oSelectPlayer1 = document.getElementById('selectPlayer1');
+        const oSelectPlayer2 = document.getElementById('selectPlayer2');
+        const oSelectPlayer3 = document.getElementById('selectPlayer3');
+        const oSelectPlayer4 = document.getElementById('selectPlayer4');
+
+        const oNumberLives = document.getElementById('numberLives');
+        const oSelectTime = document.getElementById('selectTime');
+        const oNumberTime = document.getElementById('numberTime');
+        const oSelectWallWrap = document.getElementById('selectWallWrap');
+        const oSelectDeadlyWalls = document.getElementById('selectDeadlyWalls');
+        const oSelectDeadlyTails = document.getElementById('selectDeadlyTails');
+        const oSelectDiagonalMovement = document.getElementById('selectDiagonalMovement');
+        const oSelectMaze = document.getElementById('selectMaze');
+        const oSelectEnemies = document.getElementById('selectEnemies');
+        const oSelectDificulty = document.getElementById('selectDificulty');
+        const oSelectSpeed = document.getElementById('selectSpeed');
+        const oBtnStart = document.getElementById('btnStart');
+
+        var giGameLoopSpeed;
+        var giGridSize;
+        var giGridHeight = window.innerHeight - oDivScoreboard.offsetHeight;
         var giMinimumTailLength = 3;
         var gbGamePaused = true;
         var ogPlayer;
@@ -97,9 +284,13 @@
         var ogCountdownTimer;
         var giTimeRemaining;
         var ogGameLoop;
+        var gbWallWrap;
+        var gbDeadlyWalls;
+        var gbDeadlyWallsDeadlyTails;
+        var gbDiagonalMovement;
 
-        giArenaSquaresX = Math.floor(window.innerWidth / giGridSize);
-        giArenaSquaresY = Math.floor(giGridHeight / giGridSize);
+        var giArenaSquaresX;
+        var giArenaSquaresY;
 
         // Define Sounds
         var Sounds = {
@@ -112,6 +303,7 @@
             this.Name = "Player ";
             this.Lives = 3;
             this.Score = 0;
+            this.Dead = false;
 
             this.PositionX = 0;
             this.PositionY = 0;
@@ -145,7 +337,7 @@
             for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
             {
                 if (ogPlayer[iLoop] != null &&
-                    this.Name !== ogPlayer[iLoop].Name &&
+                    this !== ogPlayer[iLoop] &&
                     this.PositionX === ogPlayer[iLoop].PositionX &&
                     this.PositionY === ogPlayer[iLoop].PositionY) {
                     this.SetSpawnPoint();
@@ -155,7 +347,7 @@
         Nibbler.UpdateTail = function (oNibbler) { oNibbler.UpdateTail(); }
 
         function Pellet() {
-            this.Name = uuidv1();
+            this.Name = "Pellet";
             this.Points = 10;
             this.TailAdjustment = 1;
 
@@ -182,7 +374,7 @@
             for (let iLoop = ogPellet.length; iLoop--;) // Reverse loop for the win
             {
                 if (ogPellet[iLoop] != null &&
-                    this.Name !== ogPellet[iLoop].Name &&
+                    this !== ogPellet[iLoop] &&
                     this.PositionX === ogPellet[iLoop].PositionX &&
                     this.PositionY === ogPellet[iLoop].PositionY) {
                     this.SetSpawnPoint();
@@ -197,6 +389,69 @@
             oPlayer.Score += this.Points;
         }
 
+        function StartGame() {
+            
+            switch (oSelectDificulty.value) {
+            case "Easy":
+                giGridSize = 60;
+                break;
+            case "Hard":
+                giGridSize = 30;
+                break;
+            default:
+                giGridSize = 40;
+            }
+            
+            giArenaSquaresX = Math.floor(window.innerWidth / giGridSize);
+            giArenaSquaresY = Math.floor(giGridHeight / giGridSize);
+
+            let iNumberOfPlayers = 1;
+            
+            if (oSelectPlayer2.value !== "None") iNumberOfPlayers++;
+            if (oSelectPlayer3.value !== "None") iNumberOfPlayers++;
+            if (oSelectPlayer4.value !== "None") iNumberOfPlayers++;
+
+            ogPlayer = new Array(iNumberOfPlayers);
+            InitializePlayers(ogPlayer);
+            ogPlayer.map(function(oPlayer) { oPlayer.Lives = oNumberLives.value; });
+            ogPellet = new Array(ogPlayer.length + 1);
+            InitializePellets(ogPellet);
+
+            ResizeEvent();
+
+            ogPlayer.forEach(DrawPlayer);
+            
+            giTimeRemaining = 1000 * oNumberTime.value; // 1,000 ms per second
+
+            switch (oSelectSpeed.value) {
+                case "Slow":
+                    giGameLoopSpeed = 120;
+                    break;
+                case "Fast":
+                    giGameLoopSpeed = 40;
+                    break;
+                default:
+                    giGameLoopSpeed = 66;
+            }
+
+            gbWallWrap = (oSelectWallWrap.value == "On") ? true : false;
+            gbDeadlyWalls = (oSelectDeadlyWalls.value == "On") ? true : false;
+            gbDeadlyWallsDeadlyTails = (oSelectDeadlyTails.value == "On") ? true : false;
+            gbDiagonalMovement = (oSelectDiagonalMovement.value == "On") ? true : false;
+
+            // Todo:
+            //selectWallWrap
+            //selectDeadlyWalls
+            //selectDeadlyTails
+            //selectDiagonalMovement
+            //selectMaze
+            //selectEnemies
+            
+            TogglePause();
+            UpdateScoreboard(ogPlayer[0]);
+
+            oBtnStart.disabled = true;
+        }
         function InitializePlayers(ogPlayer) {
             for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
             {
@@ -232,7 +487,6 @@
                 ogPlayer[3].fillStyle = "HotPink ";
             }
         }
-
         function InitializePellets(ogPellet) {
 
             for (let iLoop = ogPellet.length; iLoop--;) {
@@ -256,21 +510,66 @@
 
         function HandlePlayer(oPlayer) {
 
-            if (oPlayer.DirectionX === 0 && oPlayer.DirectionY === 0) {
+            if (oPlayer.Dead || (oPlayer.DirectionX === 0 && oPlayer.DirectionY === 0)) {
                 return;
             }
 
             oPlayer.PositionX += oPlayer.DirectionX;
             oPlayer.PositionY += oPlayer.DirectionY;
 
-            if (oPlayer.PositionX < 1) {
-                oPlayer.PositionX = giArenaSquaresX - 1;
-            } else if (oPlayer.PositionX >= giArenaSquaresX) {
-                oPlayer.PositionX = 1;
-            } else if (oPlayer.PositionY < 1) {
-                oPlayer.PositionY = giArenaSquaresY - 1;
-            } else if (oPlayer.PositionY > giArenaSquaresY - 1) {
-                oPlayer.PositionY = 1;
+            if (gbWallWrap) {
+                if (oPlayer.PositionX < 1) {
+                    oPlayer.PositionX = giArenaSquaresX - 1;
+                } else if (oPlayer.PositionX >= giArenaSquaresX) {
+                    oPlayer.PositionX = 1;
+                } else if (oPlayer.PositionY < 1) {
+                    oPlayer.PositionY = giArenaSquaresY - 1;
+                } else if (oPlayer.PositionY > giArenaSquaresY - 1) {
+                    oPlayer.PositionY = 1;
+                }
+            } else {
+                let bHitWall = false;
+
+                if (oPlayer.PositionX < 1) {
+                    oPlayer.PositionX = 1;
+                    oPlayer.DirectionX = 0;
+                    oPlayer.DirectionY = Math.random() < 0.5 ? -1 : 1;
+                    bHitWall = true;
+                } else if (oPlayer.PositionX >= giArenaSquaresX) {
+                    oPlayer.PositionX = giArenaSquaresX - 1;
+                    oPlayer.DirectionX = 0;
+                    oPlayer.DirectionY = Math.random() < 0.5 ? -1 : 1;
+                    bHitWall = true;
+                } else if (oPlayer.PositionY < 1) {
+                    oPlayer.PositionY = 1;
+                    oPlayer.DirectionY = 0;
+                    oPlayer.DirectionX = Math.random() < 0.5 ? -1 : 1;
+                    bHitWall = true;
+                } else if (oPlayer.PositionY > giArenaSquaresY - 1) {
+                    oPlayer.PositionY = giArenaSquaresY - 1;
+                    oPlayer.DirectionY = 0;
+                    oPlayer.DirectionX = Math.random() < 0.5 ? -1 : 1;
+                    bHitWall = true;
+                }
+
+                if (bHitWall && gbDeadlyWalls) {
+                    NibblerDied(oPlayer);
+                    return;
+                }
+            }
+            function NibblerDied (oPlayer) {
+                oPlayer.Dead = true;
+                oPlayer.DirectionX = 0;
+                oPlayer.DirectionY = 0;
+                oPlayer.TailLength = giMinimumTailLength;
+
+                if (--oPlayer.Lives > 0) {
+                    oPlayer.SetSpawnPoint();
+                    setTimeout(function () { oPlayer.Dead = false;}, 2000, oPlayer);
+                }
+
+                UpdateScoreboard(oPlayer);
+
             }
 
             // Check to see if the pellet was eaten
@@ -291,10 +590,12 @@
             if (CheckForSpecialKeys(oEvent)) {
                 return;
             } else {
-                for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
-                {
-                    if (CheckForKeyEvents(oEvent, ogPlayer[iLoop])) {
-                        break;
+                if (!gbGamePaused && ogPlayer) {
+                    for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
+                    {
+                        if (CheckForKeyEvents(oEvent, ogPlayer[iLoop])) {
+                            break;
+                        }
                     }
                 }
             }
@@ -305,9 +606,9 @@
             switch (oEvent.keyCode) {
                 case 32: // Space
                 case 80: // "P"
-                    // Pause/unPause
+                case 27: // "M"
+                case 77: // Escape
                     TogglePause();
-                    break;
                 default:
                     return false;
             }
@@ -344,7 +645,6 @@
         function ClickEvent(event) {
 
             if (gbGamePaused) {
-                TogglePause();
                 return;
             }
 
@@ -367,31 +667,41 @@
         }
 
         function TogglePause() {
+
+            if (gbGamePaused && !ogPlayer) return;
+
             // Pause/unPause
-            window.gbGamePaused = !gbGamePaused;
+            oDivGameMenu.classList.toggle("showGameMenu");
+            oDivScoreboard.classList.toggle("modal-blur");
+            canvArena.classList.toggle("modal-blur");
+
+            gbGamePaused = !gbGamePaused;
 
             if (gbGamePaused) {
                 clearInterval(ogGameLoop);
                 clearInterval(ogCountdownTimer);
                 Sounds.Crawlig.pause();
                 Sounds.Pause.play();
-                DrawBegin();
                 addClass(oDivTime, "blink_me");
+                oBtnStart.disabled = false;
             } else {
                 Sounds.Crawlig.play();
                 Sounds.Crawlig.loop = true;
-                ogGameLoop = setInterval(GameLoop, 66);
+                ogGameLoop = setInterval(GameLoop, giGameLoopSpeed);
 
+                if (oSelectTime.value == "true") {
                 ogCountDownTime = new Date().setTime(new Date().getTime() + giTimeRemaining);
                 ogCountdownTimer = setInterval(CountdownTimer, 500);
-                removeClass(oDivTime, "blink_me");
+            }
+
+            removeClass(oDivTime, "blink_me");
             }
         }
         function ResizeEvent() {
             // Runs each time the DOM window resize event fires.
             // Resets the canvas dimensions to match window,
             // then draws the new borders accordingly.
-            giGridHeight = window.innerHeight - document.getElementById('Scoreboard').offsetHeight;
+            giGridHeight = window.innerHeight - oDivScoreboard.offsetHeight;
 
             canvArena.width = window.innerWidth;
             canvArena.height = giGridHeight;
@@ -410,10 +720,8 @@
             ctxArena.lineWidth = giGridSize / 2;
             ctxArena.strokeRect(0, 0, window.innerWidth, giGridHeight);
 
-            ogPellet.forEach(DrawPellet);
-
-            if (gbGamePaused) {
-                DrawBegin();
+            if (ogPellet) {
+                ogPellet.forEach(DrawPellet);
             }
         }
 
@@ -426,14 +734,18 @@
                     giGridSize - 2,
                     giGridSize - 2);
             } else {
-                for (let iLoop = 0; iLoop < oPlayer.Trail.length; iLoop++) {
+                let iSegmentToExclude = oPlayer.Trail.length - 1;
+                for (let iLoop = oPlayer.Trail.length; iLoop--;) {
                     ctxArena.fillRect(oPlayer.Trail[iLoop].x * giGridSize,
                         oPlayer.Trail[iLoop].y * giGridSize,
                         giGridSize - 2,
                         giGridSize - 2);
 
                     // Check to see if the player encountered their tale
-                    if (oPlayer.Trail[iLoop].x === oPlayer.PositionX && oPlayer.Trail[iLoop].y === oPlayer.PositionY) {
+                    // We exclude the segment behind the head since they couldn't run into that
+                    // easily and it makes wall calculations much easier
+                    if (iLoop !== iSegmentToExclude &&
+                        oPlayer.Trail[iLoop].x === oPlayer.PositionX && oPlayer.Trail[iLoop].y === oPlayer.PositionY) {
                         oPlayer.TailLength = giMinimumTailLength;
                     }
                 }
@@ -473,7 +785,7 @@
                     oDivHighScorePlayer.innerText = `HIGHSCORE (${oPlayer.Name})`;
                     oDivHighScore.innerText = oPlayer.Score;
                 }
-        }
+            }
         }
 
         function CountdownTimer() {
@@ -487,9 +799,8 @@
             if (iSeconds === 10) {
                 addClass(oDivTime, "blink_me");
             }
-            console.log(giTimeRemaining);
 
-            // If the count down is finished, write some text 
+            // If the count down is finished, write some text
             if (giTimeRemaining < 0) {
                 clearInterval(ogCountdownTimer);
                 oDivTime.innerHTML = "TIME EXPIRED";
@@ -498,21 +809,22 @@
             }
         }
 
-        function hasClass(ele,cls) {
-            return !!ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
+        function hasClass(ele, cls) {
+            return !!ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
         }
 
-        function addClass(ele,cls) {
-            if (!hasClass(ele,cls)) ele.className += ` ${cls}`;
+        function addClass(ele, cls) {
+            if (!hasClass(ele, cls)) ele.className += ` ${cls}`;
         }
 
-        function removeClass(ele,cls) {
-            if (hasClass(ele,cls)) {
-                var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
-                ele.className=ele.className.replace(reg,' ');
+        function removeClass(ele, cls) {
+            if (hasClass(ele, cls)) {
+                var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+                ele.className = ele.className.replace(reg, ' ');
             }
         }
 
     </script>
+
 </BODY>
 </HTML>
