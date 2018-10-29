@@ -4,15 +4,17 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
+* Need to calculate closest pellet with Wall Wrap
 * Add player color picker
+* Better AI collision detection
 * Game Options
-    * Add Computer players
 	* Diagonal Movement
 	* Maze
 	* Waves
 	* Enemies
 	* Need a logging/debug framework of some sort?
 * Add power ups from pellets
+    * Must be bitten multiple times to be eaten
     * Random direction change
     * Multiple spawns
 	* Ability to pause movement
@@ -73,6 +75,11 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Timer is working but must trigger next wave
 * Added no-wrap game option support
 * Added deadly walls and reduced player lives
+* Stopped computer loop if player is dead (Lives = 0)
+* Stopped game if all players are dead (Lives = 0)
+* Stopped AI calculations if paused
+* Began Power ups
+	
 	
 ### Creative Commons License Attribution 3.0 
 
