@@ -6,10 +6,10 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 * Need to calculate closest pellet with Wall Wrap
 * Add player color picker
-* Better AI collision detection
+* Grid creation for A* is inefficient, should be updated with tail update
 * Game Options
-	* Diagonal Movement
-	* Maze
+	* Diagonal Movement - This should be easy with the update AI
+	* Maze - Need to determine best algorithm to use
 	* Waves
 	* Enemies
 	* Need a logging/debug framework of some sort?
@@ -80,7 +80,9 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Stopped AI calculations if paused
 * Began Power ups
 	
-	
+* Better AI collision detection - Added an A* pathfinder algorithm for Nibblers to use.
+* Converted some functions to classes
+
 ### Creative Commons License Attribution 3.0 
 
 File: Splat And Squirt-SoundBible.com-2136633229.mp3
