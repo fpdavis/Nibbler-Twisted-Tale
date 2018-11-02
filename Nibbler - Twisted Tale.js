@@ -3,28 +3,46 @@ const canvArena = document.getElementById("canArena");
 const ctxArena = canvArena.getContext("2d");
 
 const oDivScoreboard = document.getElementById('divScoreboard');
-const oDivPlayer = new Array(4);
-oDivPlayer[0] = document.getElementById('divPlayer1');
-oDivPlayer[1] = document.getElementById('divPlayer2');
-oDivPlayer[2] = document.getElementById('divPlayer3');
-oDivPlayer[3] = document.getElementById('divPlayer4');
+
+const oColorPlayer = new Array(4);
+oColorPlayer[0] = document.getElementById('colorPlayer1');
+oColorPlayer[1] = document.getElementById('colorPlayer2');
+oColorPlayer[2] = document.getElementById('colorPlayer3');
+oColorPlayer[3] = document.getElementById('colorPlayer4');
+
+const oSpanPlayer = new Array(4);
+oSpanPlayer[0] = document.getElementById('spanPlayer1');
+oSpanPlayer[1] = document.getElementById('spanPlayer2');
+oSpanPlayer[2] = document.getElementById('spanPlayer3');
+oSpanPlayer[3] = document.getElementById('spanPlayer4');
+
 const oDivTime = document.getElementById('divTime');
 const oDivHighScore = document.getElementById('divHighScore');
 
 const oDivGameMenu = document.getElementById('divGameMenu');
 
-const oSelectPlayer1 = document.getElementById('selectPlayer1');
-const oSelectPlayer2 = document.getElementById('selectPlayer2');
-const oSelectPlayer3 = document.getElementById('selectPlayer3');
-const oSelectPlayer4 = document.getElementById('selectPlayer4');
+const oColorMenuPlayer = new Array(4);
+oColorMenuPlayer[0] = document.getElementById('colorMenuPlayer1');
+oColorMenuPlayer[1] = document.getElementById('colorMenuPlayer2');
+oColorMenuPlayer[2] = document.getElementById('colorMenuPlayer3');
+oColorMenuPlayer[3] = document.getElementById('colorMenuPlayer4');
 
-const oTxtPlayer1Name = document.getElementById('txtPlayer1Name');
-const oTxtPlayer2Name = document.getElementById('txtPlayer2Name');
-const oTxtPlayer3Name = document.getElementById('txtPlayer3Name');
-const oTxtPlayer4Name = document.getElementById('txtPlayer4Name');
+const oSelectPlayer = new Array(4);
+oSelectPlayer[0] = document.getElementById('selectPlayer1');
+oSelectPlayer[1] = document.getElementById('selectPlayer2');
+oSelectPlayer[2] = document.getElementById('selectPlayer3');
+oSelectPlayer[3] = document.getElementById('selectPlayer4');
+
+const oTxtPlayerName = new Array(4);
+oTxtPlayerName[0] = document.getElementById('txtPlayer1Name');
+oTxtPlayerName[1] = document.getElementById('txtPlayer2Name');
+oTxtPlayerName[2] = document.getElementById('txtPlayer3Name');
+oTxtPlayerName[3] = document.getElementById('txtPlayer4Name');
 
 const oNumberLives = document.getElementById('numberLives');
 const oSelectTime = document.getElementById('selectTime');
+const oSelectSound = document.getElementById('selectSound');
+
 const oNumberTime = document.getElementById('numberTime');
 const oSelectWallWrap = document.getElementById('selectWallWrap');
 const oSelectDeadlyWalls = document.getElementById('selectDeadlyWalls');
@@ -41,6 +59,7 @@ const iPointsLostForWallCollision = 5;
 
 var giGameLoopSpeed;
 var gaGrid = [];
+var gaMaze = [];
 var giGridSize;
 var giGridHeight = window.innerHeight - oDivScoreboard.offsetHeight;
 var giMaxDistanceToPellet;
@@ -69,10 +88,15 @@ window.onload = function () {
     addClass(oDivGameMenu, "showGameMenu");
     addClass(oDivScoreboard, "modal-blur");
     addClass(canvArena, "modal-blur");
+
+    Sounds.Crawlig.loop = true;
 }
 
 // Define Sounds
+var aSounds = [];
 var Sounds = {
+    Volume: .8,
+    NotMuted: true,
     Bite: new Audio('Sounds/Bite-SoundBible.com-2056759375.mp3'),
     Pause: new Audio('Sounds/Splat And Squirt-SoundBible.com-2136633229.mp3'),
     Crawlig: new Audio('Sounds/termites_and_ants-mike-koenig.mp3')
@@ -80,6 +104,7 @@ var Sounds = {
 
 class Nibbler {
     constructor() {
+        this.Index;
         this.Name = "Player ";
         this.Lives = 3;
         this.Score = 0;
@@ -171,7 +196,12 @@ Pellet.prototype.SetSpawnPoint = function () {
 
 }
 Pellet.prototype.Eatten = function (oPlayer) {
-    this.Sound.play();
+
+    if (Sounds.NotMuted) {
+        this.Sound.volume = Sounds.Volume;
+        this.Sound.play();
+    }
+
     this.Power(oPlayer);
 
     // Tell other players this pellet has been eaten
@@ -218,7 +248,14 @@ function StartGame() {
 
     ogPlayer.forEach(DrawPlayer);
 
-    giTimeRemaining = 1000 * oNumberTime.value; // 1,000 ms per second
+    if (oSelectTime.value == "On") {
+        giTimeRemaining = 1000 * oNumberTime.value; // 1,000 ms per second
+    }
+    else {
+        oDivTime.innerText = "";
+    }
+
+    Sounds.NotMuted = oSelectSound.value == "true";
 
     switch (oSelectSpeed.value) {
         case "Slow":
@@ -241,31 +278,44 @@ function StartGame() {
     //selectMaze
     //selectEnemies
 
-    TogglePause();
-    UpdateScoreboard(ogPlayer[0]);
+    gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
+    
+    UnPause();
+    
+    UpdateScoreboard();
 
     oBtnStart.disabled = true;
 }
 function InitializePlayers() {
 
+    for (let iLoop = 1; iLoop < 4; iLoop++)
+    {
+        oColorPlayer[iLoop].style.display = 'none';
+        oSpanPlayer[iLoop].innerText = ``;
+        removeClass(oSpanPlayer[iLoop], "blink_me");
+    }
+
     let iNumberOfPlayers = 1;
 
-    if (oSelectPlayer2.value !== "None") iNumberOfPlayers++;
-    if (oSelectPlayer3.value !== "None") iNumberOfPlayers++;
-    if (oSelectPlayer4.value !== "None") iNumberOfPlayers++;
+    if (oSelectPlayer[1].value !== "None") iNumberOfPlayers++;
+    if (oSelectPlayer[2].value !== "None") iNumberOfPlayers++;
+    if (oSelectPlayer[3].value !== "None") iNumberOfPlayers++;
 
     ogPlayer = new Array(iNumberOfPlayers);
 
     for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
     {
         ogPlayer[iLoop] = new Nibbler();
-        ogPlayer[iLoop].Name += (iLoop + 1);
+        ogPlayer[iLoop].Index = iLoop;
         ogPlayer[iLoop].SetSpawnPoint();
         ogPlayer[iLoop].Lives = oNumberLives.value;
-    }
 
-    ogPlayer[0].Name = oTxtPlayer1Name.value;
-    ogPlayer[0].Type = oSelectPlayer1.value;
+        oColorPlayer[iLoop].style.display = 'inline-block';
+        oColorPlayer[iLoop].value = oColorMenuPlayer[iLoop].value;
+        ogPlayer[iLoop].fillStyle = oColorMenuPlayer[iLoop].value;
+        ogPlayer[iLoop].Name = oTxtPlayerName[iLoop].value;
+        ogPlayer[iLoop].Type = oSelectPlayer[iLoop].value;
+    }
 
     if (ogPlayer.length > 1) {
         // Override Player Two Input Keys
@@ -273,10 +323,6 @@ function InitializePlayers() {
         ogPlayer[1].KeyUp = 87; // "W"
         ogPlayer[1].KeyRight = 68; // "D"
         ogPlayer[1].KeyDown = 83; // "S"
-        ogPlayer[1].fillStyle = "yellow";
-
-        ogPlayer[1].Name = oTxtPlayer2Name.value;
-        ogPlayer[1].Type = oSelectPlayer2.value;
     }
 
     if (ogPlayer.length > 2) {
@@ -285,9 +331,6 @@ function InitializePlayers() {
         ogPlayer[2].KeyUp = 73; // "W"
         ogPlayer[2].KeyRight = 76; // "D"
         ogPlayer[2].KeyDown = 75; // "S"
-        ogPlayer[2].fillStyle = "BlueViolet ";
-        ogPlayer[2].Name = oTxtPlayer3Name.value;
-        ogPlayer[2].Type = oSelectPlayer3.value;
     }
 
     if (ogPlayer.length > 3) {
@@ -296,9 +339,6 @@ function InitializePlayers() {
         ogPlayer[3].KeyUp = 104; // "W"
         ogPlayer[3].KeyRight = 102; // "D"
         ogPlayer[3].KeyDown = 101; // "S"
-        ogPlayer[3].fillStyle = "HotPink ";
-        ogPlayer[3].Name = oTxtPlayer4Name.value;
-        ogPlayer[3].Type = oSelectPlayer4.value;
     }
 }
 function StartComputerPlayerTimers() {
@@ -480,21 +520,24 @@ function NibblerDied(oPlayer) {
     oPlayer.TailLength = giMinimumTailLength;
 
     if (oPlayer.Lives > 0) {
-        --oPlayer.Lives;
+        if (--oPlayer.Lives == 0) addClass(oSpanPlayer[oPlayer.Index], "blink_me");
+
         oPlayer.SetSpawnPoint();
         setTimeout(function () { oPlayer.Dead = false; }, 1000, oPlayer);
     } else {
+        removeClass(oSpanPlayer[oPlayer.Index], "blink_me");
+
         let iLivesRemaining = 0;
         for (let iLoop = ogPlayer.length; iLoop--;) {
             iLivesRemaining += ogPlayer[iLoop].Lives;
         }
 
         if (iLivesRemaining <= 0) {
-            TogglePause();
+            Pause();
         }
     }
 
-    UpdateScoreboard(oPlayer);
+    UpdateScoreboard();
 
 }
 
@@ -519,13 +562,29 @@ function CheckForSpecialKeys(oEvent) {
     switch (oEvent.keyCode) {
         case 32: // Space
         case 80: // "P"
-        case 27: // "M"
-        case 77: // Escape
+        case 27: // Escape
             TogglePause();
+            break;
+        case 77: // Mute
+            oSelectSound.value = Sounds.NotMuted = !Sounds.NotMuted;
+            if (Sounds.NotMuted) Sounds.Crawlig.play();
+            else Sounds.Crawlig.pause();
+            break;
+        case 189: // -
+            Sounds.Volume = (Sounds.Volume > 0) ? Math.floor((Sounds.Volume - 0.1) * 10) / 10 : 0;
+            Sounds.Crawlig.volume = Sounds.Volume;
+            Sounds.Pause.volume = Sounds.Volume;
+            break;
+        case 187: // =
+            oSelectSound.value = Sounds.NotMuted = true;
+            Sounds.Volume = Sounds.Volume < 1 ? Math.ceil((Sounds.Volume + 0.1) * 10) / 10 : 1;
+            Sounds.Crawlig.volume = Sounds.Volume;
+            Sounds.Pause.volume = Sounds.Volume;
+            break;
         default:
             return false;
     }
-
+    ;
     return true;
 }
 
@@ -583,37 +642,52 @@ function TogglePause() {
 
     if (gbGamePaused && !ogPlayer) return;
 
-    // Pause/unPause
-    oDivGameMenu.classList.toggle("showGameMenu");
-    oDivScoreboard.classList.toggle("modal-blur");
-    canvArena.classList.toggle("modal-blur");
-
     gbGamePaused = !gbGamePaused;
 
     if (gbGamePaused) {
-        clearInterval(ogGameLoop);
-        clearInterval(ogCountdownTimer);
-        ogPlayer.forEach(function (oPlayer) { clearInterval(oPlayer.ComputerPlayerTimer) });
-
-        Sounds.Crawlig.pause();
-        Sounds.Pause.play();
-        addClass(oDivTime, "blink_me");
-        oBtnStart.disabled = false;
+        Pause();
     } else {
-        Sounds.Crawlig.play();
-        Sounds.Crawlig.loop = true;
-        ogGameLoop = setInterval(GameLoop, giGameLoopSpeed);
-
-        if (oSelectTime.value == "true") {
-            ogCountDownTime = new Date().setTime(new Date().getTime() + giTimeRemaining);
-            ogCountdownTimer = setInterval(CountdownTimer, 500);
-        }
-
-        StartComputerPlayerTimers();
-
-        removeClass(oDivTime, "blink_me");
+        UnPause();
     }
 }
+function Pause() {
+
+    gbGamePaused = true;
+
+    addClass(oDivGameMenu, "showGameMenu");
+    addClass(oDivScoreboard, "modal-blur");
+    addClass(canvArena, "modal-blur");
+    addClass(oDivTime, "blink_me");
+
+    clearInterval(ogGameLoop);
+    clearInterval(ogCountdownTimer);
+    ogPlayer.forEach(function (oPlayer) { clearInterval(oPlayer.ComputerPlayerTimer) });
+
+    Sounds.Crawlig.pause();
+    if (Sounds.NotMuted) Sounds.Pause.play();
+    
+    oBtnStart.disabled = false;
+}
+function UnPause() {
+    gbGamePaused = false;
+
+    removeClass(oDivGameMenu, "showGameMenu");
+    removeClass(oDivScoreboard, "modal-blur");
+    removeClass(canvArena, "modal-blur");
+    removeClass(oDivTime, "blink_me");
+
+    if (Sounds.NotMuted) Sounds.Crawlig.play();
+
+    ogGameLoop = setInterval(GameLoop, giGameLoopSpeed);
+
+    if (oSelectTime.value == "On") {
+        ogCountDownTime = new Date().setTime(new Date().getTime() + giTimeRemaining);
+        ogCountdownTimer = setInterval(CountdownTimer, 500);
+    }
+
+    StartComputerPlayerTimers();
+}
+
 function ResizeEvent() {
     // Runs each time the DOM window resize event fires.
     // Resets the canvas dimensions to match window,
@@ -635,10 +709,12 @@ function DrawGrid() {
     ctxArena.fillStyle = "black";
     ctxArena.fillRect(0, 0, window.innerWidth, giGridHeight);
 
+    DrawMaze();
+
     ctxArena.strokeStyle = 'orange';
     ctxArena.lineWidth = giGridSize / 2;
     ctxArena.strokeRect(0, 0, window.innerWidth, giGridHeight);
-
+    
     if (ogPellet) {
         ogPellet.forEach(DrawPellet);
     }
@@ -662,15 +738,15 @@ function DrawPlayer(oPlayer) {
                 return;
             } else {
                 oPlayer.Score -= iPointsLostForTailCollision;
-                UpdateScoreboard(oPlayer);
+                UpdateScoreboard();
             }
         }
 
         for (let iLoop = oPlayer.Trail.length; iLoop--;) {
-            ctxArena.fillRect(oPlayer.Trail[iLoop].x * giGridSize,
-                oPlayer.Trail[iLoop].y * giGridSize,
-                giGridSize - 2,
-                giGridSize - 2);
+            ctxArena.fillRect(oPlayer.Trail[iLoop].x * giGridSize + 6,
+                oPlayer.Trail[iLoop].y * giGridSize + 6,
+                giGridSize - 12,
+                giGridSize - 12);
         }
     }
 
@@ -699,6 +775,49 @@ function DrawPellet(oPellet) {
     ctxArena.stroke();
 }
 
+function DrawMaze() {
+    return;
+    let iIndex;
+
+    for (let iLoop = 0; iLoop < giArenaSquaresX; iLoop++) {
+        for (let iLoop2 = 0; iLoop2 < giArenaSquaresY; iLoop2++) {
+
+            iIndex = index(iLoop, iLoop2);
+
+            if (gaMaze[iIndex]) {
+                // Draw the spot
+                ctxArena.lineWidth = 2;
+                ctxArena.strokeStyle = "white";
+                ctxArena.beginPath();
+
+                if (gaMaze[iIndex].walls[0]) {
+                    ctxArena.moveTo(iLoop * giGridSize, iLoop2 * giGridSize);
+                    ctxArena.lineTo(iLoop * giGridSize, iLoop2 * giGridSize + giGridSize);
+                    ctxArena.stroke();
+                }
+
+                if (gaMaze[iIndex].walls[1]) {
+                    ctxArena.moveTo(iLoop * giGridSize,              iLoop2 * giGridSize + giGridSize);
+                    ctxArena.lineTo(iLoop * giGridSize + giGridSize, iLoop2 * giGridSize + giGridSize);
+                    ctxArena.stroke();
+                }
+
+                if (gaMaze[iIndex].walls[2]) {
+                    ctxArena.moveTo(iLoop * giGridSize + giGridSize, iLoop2 * giGridSize + giGridSize);
+                    ctxArena.lineTo(iLoop * giGridSize + giGridSize, iLoop2 * giGridSize);
+                    ctxArena.stroke();
+                }
+
+                if (gaMaze[iIndex].walls[3]) {
+                    ctxArena.moveTo(iLoop * giGridSize + giGridSize, iLoop2 * giGridSize);
+                    ctxArena.lineTo(iLoop * giGridSize,              iLoop2 * giGridSize);
+                    ctxArena.stroke();
+                }
+            }
+        }
+    }
+}
+
 function DrawBegin() {
     ctxArena.font = giGridSize + "px Comic Sans MS";
     ctxArena.fillStyle = "blue";
@@ -710,7 +829,7 @@ function UpdateScoreboard() {
 
     let iPlayerWithHighScore = 0;
     for (let iLoop = ogPlayer.length; iLoop--;) {
-        oDivPlayer[iLoop].innerText = `${ogPlayer[iLoop].Name} (${ogPlayer[iLoop].Lives}) ${ogPlayer[iLoop].Score}`;
+        oSpanPlayer[iLoop].innerText = `${ogPlayer[iLoop].Name} (${ogPlayer[iLoop].Lives}) ${ogPlayer[iLoop].Score}`;
 
         if (ogPlayer[iLoop].Score > ogPlayer[iPlayerWithHighScore].Score) {
             iPlayerWithHighScore = iLoop;
@@ -734,10 +853,8 @@ function CountdownTimer() {
 
     // If the count down is finished, write some text
     if (giTimeRemaining < 0) {
-        clearInterval(ogCountdownTimer);
         oDivTime.innerHTML = "TIME EXPIRED";
-        addClass(oDivTime, "blink_me");
-        TogglePause();
+        Pause();
     }
 }
 

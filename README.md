@@ -4,8 +4,11 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
+* Fix spawning bug where player isn't being drawn
+* Fix edge bug where edges are too close in from the border
+* Change style on score when player dies
+* Add graph weighting incentives for pellets in A*
 * Need to calculate closest pellet with Wall Wrap
-* Add player color picker
 * Grid creation for A* is inefficient, should be updated with tail update
 * Game Options
 	* Diagonal Movement - This should be easy with the update AI
@@ -37,7 +40,7 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Joystick support
 * Center the playfield - it is pretty good but could be better
 * Correct player and pellet size on resize
-* Implement sounds using Howler.js with sprites https://goldfirestudios.com/blog/104/howler.js-Modern-Web-Audio-Javascript-Library?
+* Implement sounds using Howler.js with sprites? https://goldfirestudios.com/blog/104/howler.js-Modern-Web-Audio-Javascript-Library?
 
 ### Changes (oldest to newest):
 
@@ -82,6 +85,14 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 	
 * Better AI collision detection - Added an A* pathfinder algorithm for Nibblers to use.
 * Converted some functions to classes
+* Split up files for better maintainability/readability
+
+* Evaluated A* for passing in Grid with Walls and improving efficiency
+* Added Mute, volume up, and volume down controls
+* Fixed an end game bug regarding togglePause.... broke Pause out to two functions
+* Added Color Pickers for players
+* Added a color picker on Scoreboard to help identify players
+* Added blinking when Nibbler lives get to 0
 
 ### Creative Commons License Attribution 3.0 
 

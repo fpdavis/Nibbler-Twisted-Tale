@@ -86,7 +86,7 @@ function SmartNibbler(oPlayer) {
     for (let iLoop = 0; iLoop < giArenaSquaresX; iLoop++) {
         gaGrid[iLoop] = new Array(giArenaSquaresY);
 
-        for (var iLoop2 = 0; iLoop2 < giArenaSquaresY; iLoop2++) {
+        for (let iLoop2 = 0; iLoop2 < giArenaSquaresY; iLoop2++) {
             gaGrid[iLoop][iLoop2] = 1;
         }
     }
@@ -101,12 +101,14 @@ function SmartNibbler(oPlayer) {
         }
     }
 
-    let oGraph = new Graph(gaGrid);
+    let oGraph = new Graph(gaGrid, { diagonal: gbDiagonalMovement });
     let oStart = oGraph.grid[oPlayer.PositionX][oPlayer.PositionY];
     let oTarget = oGraph.grid[oPlayer.TargetPellet.PositionX][oPlayer.TargetPellet.PositionY];
     let oResult = astar.search(oGraph, oStart, oTarget);
     // result is an array containing the shortest path
 
-    oPlayer.DirectionX = oResult[0].x - oPlayer.PositionX;
-    oPlayer.DirectionY = oResult[0].y - oPlayer.PositionY;
+    if (oResult.length !== 0) {
+        oPlayer.DirectionX = oResult[0].x - oPlayer.PositionX;
+        oPlayer.DirectionY = oResult[0].y - oPlayer.PositionY;
+    }
 }
