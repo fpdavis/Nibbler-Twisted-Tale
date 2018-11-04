@@ -1,4 +1,4 @@
-
+// #region Constant Declrations
 const canvArena = document.getElementById("canArena");
 const ctxArena = canvArena.getContext("2d");
 
@@ -40,22 +40,30 @@ oTxtPlayerName[2] = document.getElementById('txtPlayer3Name');
 oTxtPlayerName[3] = document.getElementById('txtPlayer4Name');
 
 const oNumberLives = document.getElementById('numberLives');
-const oSelectTime = document.getElementById('selectTime');
-const oSelectSound = document.getElementById('selectSound');
+const chkTime = document.getElementById('chkTime');
+const chkMuteMusic = document.getElementById('chkMuteMusic');
+const rangeMusicVolume = document.getElementById('rangeMusicVolume');
+const chkMuteEffects = document.getElementById('chkMuteEffects');
+const rangeEffectsVolume = document.getElementById('rangeEffectsVolume');
 
 const oNumberTime = document.getElementById('numberTime');
-const oSelectWallWrap = document.getElementById('selectWallWrap');
-const oSelectDeadlyWalls = document.getElementById('selectDeadlyWalls');
-const oSelectDeadlyTails = document.getElementById('selectDeadlyTails');
-const oSelectDiagonalMovement = document.getElementById('selectDiagonalMovement');
-const oSelectMaze = document.getElementById('selectMaze');
-const oSelectEnemies = document.getElementById('selectEnemies');
+const chkWallWrap = document.getElementById('chkWallWrap');
+const chkDeadlyWalls = document.getElementById('chkDeadlyWalls');
+const chkDeadlyTails = document.getElementById('chkDeadlyTails');
+const chkDiagonalMovement = document.getElementById('chkDiagonalMovement');
+const chkMaze = document.getElementById('chkMaze');
+const chkEnemies = document.getElementById('chkEnemies');
 const oSelectDificulty = document.getElementById('selectDificulty');
-const oSelectSpeed = document.getElementById('selectSpeed');
+const selectSpeed = document.getElementById('selectSpeed');
+const chkNonStop = document.getElementById('chkNonStop');
+
 const oBtnStart = document.getElementById('btnStart');
 
 const iPointsLostForTailCollision = 5;
 const iPointsLostForWallCollision = 5;
+// #endregion
+
+giVerbosity = goVerbosityEnum.Debug;
 
 var giGameLoopSpeed;
 var gaGrid = [];
@@ -67,14 +75,16 @@ var giMinimumTailLength = 3;
 var gbGamePaused = true;
 var ogPlayer;
 var ogPellet;
+var ogBrainspawn;
+var ogSprite = [];
 var ogCountDownTime;
-var ogCountdownTimer;
 var giTimeRemaining;
 var ogGameLoop;
 var gbWallWrap;
 var gbDeadlyWalls;
 var gbDeadlyTails;
 var gbDiagonalMovement;
+var gbStopAfterEachMove;
 
 var giArenaSquaresX;
 var giArenaSquaresY;
@@ -83,6 +93,7 @@ window.onload = function () {
 
     window.addEventListener('resize', ResizeEvent, false);
     document.addEventListener("keydown", KeydownEvent);
+    document.addEventListener("keyup", KeyupEvent);
     document.addEventListener("click", ClickEvent);
 
     addClass(oDivGameMenu, "showGameMenu");
@@ -99,18 +110,77 @@ var Sounds = {
     NotMuted: true,
     Bite: new Audio('Sounds/Bite-SoundBible.com-2056759375.mp3'),
     Pause: new Audio('Sounds/Splat And Squirt-SoundBible.com-2136633229.mp3'),
-    Crawlig: new Audio('Sounds/termites_and_ants-mike-koenig.mp3')
+    Crawlig: new Audio('Sounds/termites_and_ants-mike-koenig.mp3'),
+    Splat: new Audio('Sounds/Lava.flac')
 }
+
+var Music = {
+    Volume: .5,
+    NotMuted: true,
+    One: new Audio('Music/BossTheme.mp3')
+}
+
+class Animations {
+    constructor() {
+    this.RedExplosion = [];
+    let iIndex;
+        for (let iLoop = 1; iLoop <= 24; iLoop++) {
+            iIndex = ('00' + iLoop).substr(-2);
+            this.RedExplosion.push(new Image());
+            this.RedExplosion[this.RedExplosion.length - 1].src =
+                `Images/Explosions_particles/red_explosion/red_snakeplosion_000${iIndex}.png`;
+            MessageLog("Explosions.RedExplosion.src = " + this.RedExplosion[this.RedExplosion.length - 1].src, goVerbosityEnum.Debug);
+        }
+    }
+}
+const constAnimations = new Animations();
+
+class Sprite  {
+    constructor(Image, x, y, width = 0, height = 0) {
+        this.PositionX = x;
+        this.PositionY = y;
+        this.Loop = false;
+        this.Complete = false;
+        this.CurrentFrame = 0;
+        this.Frames = Image.length;
+        this.Image = Image;
+        this.Width = width !== 0 ? width : this.Image[0].width;
+        this.Height = height !== 0 ? height : this.Image[0].height;
+        this.HalfWidth = this.Width / 2;
+        this.HalfHeight = this.Height / 2;
+        this.AdjustmentX = giGridSize / 2 - this.HalfWidth;
+        this.AdjustmentY = giGridSize / 2 - this.HalfHeight;
+    }
+}
+Sprite.prototype.Draw = function()
+{
+    if (this.CurrentFrame < this.Frames) {
+        let iOffsetX = (this.PositionX * giGridSize) + this.AdjustmentX;
+        let iOffsetY = (this.PositionY * giGridSize) + this.AdjustmentY;
+        
+        ctxArena.drawImage(this.Image[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
+    }
+
+    if (this.CurrentFrame >= this.Frames) {
+        if (this.Loop) {
+            this.CurrentFrame = 0;
+        } else {
+            this.Complete = true;
+        }
+    }
+}
+Sprite.Draw = function (oSprite) { oSprite.Draw(); }
+
 
 class Nibbler {
     constructor() {
-        this.Index;
-        this.Name = "Player ";
+        this.Index = 0;
+        this.Name = "Player";
         this.Lives = 3;
         this.Score = 0;
         this.Dead = false;
         this.Type = "";
-        this.ComputerPlayerTimer = null;
+        this.Timer = null;
 
         this.PositionX = 0;
         this.PositionY = 0;
@@ -118,7 +188,7 @@ class Nibbler {
         this.DirectionX = 0;
         this.DirectionY = 0;
         this.Direction = 0;
-        this.TargetPellet = null;
+        this.Target = null;
 
         this.Trail = [];
         this.TailLength = giMinimumTailLength;
@@ -128,10 +198,18 @@ class Nibbler {
         this.KeyRight = 39; // Right Arrow
         this.KeyDown = 40; // Down Arrow
 
+        this.KeyLeftPressed = false;
+        this.KeyUpPressed = false;
+        this.KeyRightPressed = false;
+        this.KeyDownPressed = false;
+
         this.fillStyle = "lime";
     }
 }
 Nibbler.prototype.UpdateTail = function () {
+
+    if (this.Trail.length > 0 && this.PositionX == this.Trail[this.Trail.length - 1].x && this.PositionY == this.Trail[this.Trail.length - 1].y) return;
+
     this.Trail.push({ x: this.PositionX, y: this.PositionY });
 
     while (this.Trail.length > this.TailLength) {
@@ -157,6 +235,7 @@ Nibbler.UpdateTail = function (oNibbler) { oNibbler.UpdateTail(); }
 
 class Pellet {
     constructor() {
+        this.Index = 0;
         this.Name = "Pellet";
         this.Points = 10;
         this.TailAdjustment = 1;
@@ -165,10 +244,17 @@ class Pellet {
         this.PositionY = 0;
 
         this.Sound = new Audio(Sounds.Bite.src);
-        this.strokeStyle = "grey";
-        this.fillStyle = "Red";
+
+        this.Image = [];
+        this.Image.push(new Image());
+        this.Image[0].src = "Images/yaycandies/size1/bean_blue.png";
+        MessageLog("bean_blue.src = " + this.Image[this.Image.length - 1].src, goVerbosityEnum.Debug);
 
         this.SetSpawnPoint();
+
+        this.Sprite = new Sprite(this.Image, this.PositionX, this.PositionY, giGridSize - giGridSize * .3, giGridSize - giGridSize * .3);
+        this.Sprite.Loop = true;
+        ogSprite.push(this.Sprite);
     }
 }
 Pellet.prototype.SetSpawnPoint = function () {
@@ -180,6 +266,7 @@ Pellet.prototype.SetSpawnPoint = function () {
     {
         if (this.PositionX === ogPlayer[iLoop].PositionX && this.PositionY === ogPlayer[iLoop].PositionY) {
             this.SetSpawnPoint();
+            return;
         }
     }
 
@@ -191,9 +278,9 @@ Pellet.prototype.SetSpawnPoint = function () {
             this.PositionX === ogPellet[iLoop].PositionX &&
             this.PositionY === ogPellet[iLoop].PositionY) {
             this.SetSpawnPoint();
+            return;
         }
     }
-
 }
 Pellet.prototype.Eatten = function (oPlayer) {
 
@@ -202,12 +289,15 @@ Pellet.prototype.Eatten = function (oPlayer) {
         this.Sound.play();
     }
 
+    this.Sprite.Loop = false;
+    this.Sprite = null;
+
     this.Power(oPlayer);
 
     // Tell other players this pellet has been eaten
     for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
     {
-        if (this === ogPlayer[iLoop].TargetPellet) ogPlayer[iLoop].TargetPellet = null;
+        if (this === ogPlayer[iLoop].Target) ogPlayer[iLoop].Target = null;
     }
 }
 Pellet.prototype.Power = function (oPlayer) {
@@ -221,6 +311,116 @@ Pellet.prototype.Power = function (oPlayer) {
             oPlayer.Score += this.Points;
             break;
     }
+}
+Pellet.prototype.Draw = function () {
+
+    //ctxArena.lineWidth = 2;
+    //ctxArena.strokeStyle = this.strokeStyle;
+    //ctxArena.fillStyle = this.fillStyle;
+    //ctxArena.beginPath();
+    //ctxArena.arc(this.PositionX * giGridSize + (giGridSize / 2),
+    //    this.PositionY * giGridSize + (giGridSize / 2),
+    //    giGridSize / 2.8,
+    //    0,
+    //    2 * Math.PI);
+    //ctxArena.fill();
+    //ctxArena.stroke();
+}
+Pellet.Draw = function (oPellet) { oPellet.Draw(); }
+
+class Brainspawn  {
+    constructor() {
+        this.Index = 0;
+        this.Name = "Brainspawn";
+        this.Type = Math.round(Math.random());
+        this.Timer = null;
+
+        this.PositionX = 0;
+        this.PositionY = 0;
+        this.DirectionX = 0;
+        this.DirectionY = 0;
+        this.Direction = 0;
+        this.Target = null;
+
+        this.Sound = new Audio(Sounds.Splat.src);
+        this.strokeStyle = "purple";
+        this.fillStyle = "yellow";
+
+        this.SetSpawnPoint();
+    }
+}
+Brainspawn.prototype.SetSpawnPoint = function () {
+    this.PositionX = Math.floor(Math.random() * (giArenaSquaresX - 2)) + 1;
+    this.PositionY = Math.floor(Math.random() * (giArenaSquaresY - 2)) + 1;
+
+    // Don't spawn on top a player
+    for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
+    {
+        if (this.PositionX === ogPlayer[iLoop].PositionX && this.PositionY === ogPlayer[iLoop].PositionY) {
+            this.SetSpawnPoint();
+            return;
+        }
+    }
+
+    // Don't spawn on top of another pellet
+    for (let iLoop = ogPellet.length; iLoop--;) // Reverse loop for the win
+    {
+        if (ogPellet[iLoop] != null &&
+            this.PositionX === ogPellet[iLoop].PositionX &&
+            this.PositionY === ogPellet[iLoop].PositionY) {
+            this.SetSpawnPoint();
+            return;
+        }
+    }
+}
+Brainspawn.prototype.Draw = function () {
+
+    ctxArena.lineWidth = 2;
+    ctxArena.strokeStyle = this.strokeStyle;
+    ctxArena.fillStyle = this.fillStyle;
+    ctxArena.beginPath();
+    ctxArena.arc(this.PositionX * giGridSize + (giGridSize / 2),
+        this.PositionY * giGridSize + (giGridSize / 2),
+        giGridSize / 2.8,
+        0,
+        2 * Math.PI);
+    ctxArena.fill();
+    ctxArena.stroke();
+    
+    // Check to see if player was killed
+    for (let iLoop = ogPlayer.length; iLoop--;) {
+        if (ogPlayer[iLoop].PositionX === this.PositionX && ogPlayer[iLoop].PositionY === this.PositionY) {
+
+            ogSprite.push(new Sprite(constAnimations.RedExplosion, this.PositionX, this.PositionY));
+            if (Sounds.NotMuted) {
+                this.Sound.volume = Sounds.Volume;
+                this.Sound.play();
+            }
+
+            NibblerDied(ogPlayer[iLoop]);
+            MessageLog(ogPlayer[iLoop].Name + " was killed by " + this.Name + " " + this.Index, goVerbosityEnum.Information);
+        }
+    }
+
+    //this.DrawTarget();
+}
+Brainspawn.Draw = function (oBrainspawn) { oBrainspawn.Draw(); }
+Brainspawn.prototype.Move = function() {
+
+    let oVector = CalculateNewPosition(this.PositionX, this.PositionY, this.DirectionX, this.DirectionY);
+    this.PositionX = oVector.PositionX;
+    this.PositionY = oVector.PositionY;
+    this.DirectionX = oVector.DirectionX;
+    this.DirectionY = oVector.DirectionY;
+}
+Brainspawn.prototype.DrawTarget = function () {
+    ctxArena.lineWidth = 2;
+    ctxArena.strokeStyle = "white";
+    ctxArena.beginPath();
+
+    ctxArena.moveTo(this.PositionX * giGridSize, this.PositionY * giGridSize);
+    ctxArena.lineTo(this.Target.PositionX * giGridSize, this.Target.PositionY * giGridSize);
+    ctxArena.stroke();
 }
 
 function StartGame() {
@@ -240,24 +440,20 @@ function StartGame() {
     giArenaSquaresY = Math.floor(giGridHeight / giGridSize);
 
     InitializePlayers();
-
-    ogPellet = new Array(ogPlayer.length + 1);
-    InitializePellets(ogPellet);
+    InitializePellets();
 
     ResizeEvent();
 
     ogPlayer.forEach(DrawPlayer);
 
-    if (oSelectTime.value == "On") {
+    if (chkTime.checked) {
         giTimeRemaining = 1000 * oNumberTime.value; // 1,000 ms per second
     }
     else {
         oDivTime.innerText = "";
     }
-
-    Sounds.NotMuted = oSelectSound.value == "true";
-
-    switch (oSelectSpeed.value) {
+    
+    switch (selectSpeed.value) {
         case "Slow":
             giGameLoopSpeed = 120;
             break;
@@ -268,21 +464,32 @@ function StartGame() {
             giGameLoopSpeed = 66;
     }
 
-    gbWallWrap = (oSelectWallWrap.value == "On") ? true : false;
-    gbDeadlyWalls = (oSelectDeadlyWalls.value == "On") ? true : false;
-    gbDeadlyTails = (oSelectDeadlyTails.value == "On") ? true : false;
-    gbDiagonalMovement = (oSelectDiagonalMovement.value == "On") ? true : false;
+    gbWallWrap = chkWallWrap.checked;
+    gbDeadlyWalls = chkDeadlyWalls.checked;
+    gbDeadlyTails = chkDeadlyTails.checked;
+    gbDiagonalMovement = chkDiagonalMovement.checked;
+    gbStopAfterEachMove = chkNonStop.checked;
 
-    // Todo:
-    //selectDiagonalMovement
-    //selectMaze
-    //selectEnemies
+    if (chkMaze.checked) {
+        gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
+    }
 
-    gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
+    if (chkEnemies.checked) {
+        ogBrainspawn = new Array(ogPlayer.length > 2 ? ogPlayer.length - 1 : 1);
+        InitializeBrainspawn(ogBrainspawn);
+    } else if (ogBrainspawn) {
+        ogBrainspawn.length = 0;
+    }
+    
+    Sounds.NotMuted = !chkMuteEffects.checked;
+    Music.NotMuted = !chkMuteMusic.checked;
+
+    if (Music.NotMuted) {
+        Music.One.volume = Music.Volume;
+        Music.One.play();
+    }
     
     UnPause();
-    
-    UpdateScoreboard();
 
     oBtnStart.disabled = true;
 }
@@ -341,18 +548,40 @@ function InitializePlayers() {
         ogPlayer[3].KeyDown = 101; // "S"
     }
 }
-function StartComputerPlayerTimers() {
+function StartTimers() {
 
-    if (ogPlayer[0].Type == "Computer") ogPlayer[0].ComputerPlayerTimer = setInterval(function () { ComputerPlayerLoop(ogPlayer[0]) }, giGameLoopSpeed);
-    if (ogPlayer[1] && ogPlayer[1].Type == "Computer") ogPlayer[1].ComputerPlayerTimer = setInterval(function () { ComputerPlayerLoop(ogPlayer[1]) }, giGameLoopSpeed + 10);
-    if (ogPlayer[2] && ogPlayer[2].Type == "Computer") ogPlayer[2].ComputerPlayerTimer = setInterval(function () { ComputerPlayerLoop(ogPlayer[2]) }, giGameLoopSpeed + 20);
-    if (ogPlayer[3] && ogPlayer[3].Type == "Computer") ogPlayer[3].ComputerPlayerTimer = setInterval(function () { ComputerPlayerLoop(ogPlayer[3]) }, giGameLoopSpeed + 40);
+    if (ogPlayer[0].Type == "Computer") ogPlayer[0].Timer = setInterval(function () { ComputerPlayerLoop(ogPlayer[0]) }, giGameLoopSpeed);
+    if (ogPlayer[1] && ogPlayer[1].Type == "Computer") ogPlayer[1].Timer = setInterval(function () { ComputerPlayerLoop(ogPlayer[1]) }, giGameLoopSpeed + 10);
+    if (ogPlayer[2] && ogPlayer[2].Type == "Computer") ogPlayer[2].Timer = setInterval(function () { ComputerPlayerLoop(ogPlayer[2]) }, giGameLoopSpeed + 20);
+    if (ogPlayer[3] && ogPlayer[3].Type == "Computer") ogPlayer[3].Timer = setInterval(function () { ComputerPlayerLoop(ogPlayer[3]) }, giGameLoopSpeed + 40);
+
+    if (ogBrainspawn) {
+        for (let iLoop = ogBrainspawn.length; iLoop--;) {
+            ogBrainspawn[iLoop].Timer =
+                setInterval(function() { BrainspawnLoop(ogBrainspawn[iLoop]) }, giGameLoopSpeed + 200);
+        }
+    }
 }
-function InitializePellets(ogPellet) {
+function InitializePellets() {
 
+    if (ogPellet) {
+        for (let iLoop = ogPellet.length; iLoop--;) {
+            ogPellet[iLoop].Sprite.Loop = false;
+            ogPellet[iLoop].Sprite = null;
+        }
+    }
+
+    ogPellet = new Array(ogPlayer.length + 1);
     for (let iLoop = ogPellet.length; iLoop--;) {
         ogPellet[iLoop] = new Pellet();
-        ogPellet[iLoop].SetSpawnPoint();
+        ogPellet[iLoop].Index = iLoop;
+    }
+}
+function InitializeBrainspawn(ogBrainspawn) {
+
+    for (let iLoop = ogBrainspawn.length; iLoop--;) {
+        ogBrainspawn[iLoop] = new Brainspawn();
+        ogBrainspawn[iLoop].Index = iLoop;
     }
 }
 
@@ -360,24 +589,41 @@ function GameLoop() {
 
     for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
     {
-        HandlePlayer(ogPlayer[iLoop]);
+        MovePlayer(ogPlayer[iLoop]);
+    }
+   
+    DrawGrid();
+
+    for (let iLoop = ogSprite.length; iLoop--;) {
+        if (ogSprite[iLoop].Complete) {
+            ogSprite.splice(iLoop, 1);
+        } else {
+            ogSprite[iLoop].Draw();
+        }
+    }
+    
+    if (ogPellet) {
+        ogPellet.forEach(Pellet.Draw);
     }
 
-    DrawGrid();
+    if (ogBrainspawn) {
+        ogBrainspawn.forEach(Brainspawn.Draw);
+    }
 
     ogPlayer.forEach(DrawPlayer);
     ogPlayer.forEach(Nibbler.UpdateTail);
+    UpdateScoreboard();
 }
 function ComputerPlayerLoop(oPlayer) {
 
     if (oPlayer.Dead) return false;
 
-    if (oPlayer.TargetPellet === null) {
+    if (oPlayer.Target === null) {
 
         if (Math.round(Math.random() * 20) < 1) {
-            oPlayer.TargetPellet = ogPellet[Math.floor(Math.random() * ogPellet.length)];
+            oPlayer.Target = ogPellet[Math.floor(Math.random() * ogPellet.length)];
         } else {
-            oPlayer.TargetPellet = ogPellet[0];
+            oPlayer.Target = ogPellet[0];
             let iClosestDistance = giMaxDistanceToPellet;
 
             // Find nearest pellet 
@@ -388,31 +634,33 @@ function ComputerPlayerLoop(oPlayer) {
 
                 if (iDistance < iClosestDistance) {
                     iClosestDistance = iDistance;
-                    oPlayer.TargetPellet = ogPellet[iLoop];
+                    oPlayer.Target = ogPellet[iLoop];
                 }
             }
         }
     }
 
     if (Math.round(Math.random() * 100) < 1) {
-        DumbNibbler(oPlayer);
+        FindPath_Simple_Nibbler(oPlayer);
     } else {
-        SmartNibbler(oPlayer);
+        Findpath_Nibbler(oPlayer);
     }
 }
-
 function CollidedWithTail(Trail, PositionX, PositionY) {
 
+    if (!Trail) {
+        return false;
+    }
+
     // Check to see if the player encountered their tale
-    // We exclude the segment behind the head since they couldn't run into that
-    // easily and it makes wall calculations much easier. We also don't check
+    // We exclude the check if they are at the minimum length
     // if the tail is the minimum length already.
-    let iSegmentToExclude = Trail.length - 1;
-    for (let iLoop = Trail.length; iLoop--;) {
-        if (iLoop !== iSegmentToExclude && Trail.length > giMinimumTailLength &&
-            Trail[iLoop].x === PositionX &&
-            Trail[iLoop].y === PositionY) {
-            return true;
+    if (Trail.length > giMinimumTailLength) {
+        for (let iLoop = 0; iLoop < Trail.length - giMinimumTailLength; iLoop++) {
+            if (Trail[iLoop].x === PositionX &&
+                Trail[iLoop].y === PositionY) {
+                return true;
+            }
         }
     }
 
@@ -428,10 +676,9 @@ function CollidedWithTail(Trail, PositionX, PositionY) {
         }
     }
 
-
     return false;
 }
-function HandlePlayer(oPlayer) {
+function MovePlayer(oPlayer) {
 
     if (oPlayer.Dead || (oPlayer.DirectionX === 0 && oPlayer.DirectionY === 0)) {
         return;
@@ -443,24 +690,15 @@ function HandlePlayer(oPlayer) {
     oPlayer.DirectionX = oPlayerVector.DirectionX;
     oPlayer.DirectionY = oPlayerVector.DirectionY;
 
+    if (gbStopAfterEachMove) { oPlayer.DirectionX = oPlayer.DirectionY = 0; }
+
+    // Check for wall hit
     if (oPlayerVector.HitWall) {
         if (gbDeadlyWalls) {
             NibblerDied(oPlayer);
-            return;
+            MessageLog(oPlayer.Name + " hit wall and died.", goVerbosityEnum.Information);
         } else {
             oPlayer.Score -= iPointsLostForWallCollision;
-            UpdateScoreboard(oPlayer);
-        }
-    }
-
-    // Check to see if the pellet was eaten
-    for (let iLoop = ogPellet.length; iLoop--;) {
-        if (ogPellet[iLoop].PositionX === oPlayer.PositionX && ogPellet[iLoop].PositionY === oPlayer.PositionY) {
-            ogPellet[iLoop].Eatten(oPlayer);
-            delete ogPellet[iLoop];
-            ogPellet[iLoop] = new Pellet();
-
-            UpdateScoreboard(oPlayer);
         }
     }
 }
@@ -517,7 +755,8 @@ function NibblerDied(oPlayer) {
     oPlayer.Dead = true;
     oPlayer.DirectionX = 0;
     oPlayer.DirectionY = 0;
-    oPlayer.TailLength = giMinimumTailLength;
+    oPlayer.Trail.length = 0;
+    oPlayer.TailLength = giMinimumTailLength; // Need to remove the tail
 
     if (oPlayer.Lives > 0) {
         if (--oPlayer.Lives == 0) addClass(oSpanPlayer[oPlayer.Index], "blink_me");
@@ -536,9 +775,32 @@ function NibblerDied(oPlayer) {
             Pause();
         }
     }
+}
 
-    UpdateScoreboard();
+function BrainspawnLoop(oBrainspawn) {
 
+    if (Math.round(Math.random() * 20) < 1) {
+        oBrainspawn.Target = ogPlayer[Math.floor(Math.random() * ogPlayer.length)];
+    } else {
+        oBrainspawn.Target = ogPlayer[0];
+        let iClosestDistance = giMaxDistanceToPellet;
+
+        // Find nearest player 
+        for (let iLoop = ogPlayer.length; iLoop--;) {
+            var iDifferenceX = oBrainspawn.PositionX - ogPlayer[iLoop].PositionX;
+            var iDifferenceY = oBrainspawn.PositionY - ogPlayer[iLoop].PositionY;
+            var iDistance = Math.sqrt(iDifferenceX * iDifferenceX + iDifferenceY * iDifferenceY);
+
+            if (!ogPlayer[iLoop].Dead && iDistance < iClosestDistance) {
+                iClosestDistance = iDistance;
+                oBrainspawn.Target = ogPlayer[iLoop];
+            }
+        }
+    }
+
+    Findpath_Brainspawn(oBrainspawn);
+    
+    oBrainspawn.Move();
 }
 
 function KeydownEvent(oEvent) {
@@ -549,14 +811,14 @@ function KeydownEvent(oEvent) {
         if (!gbGamePaused && ogPlayer) {
             for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
             {
-                if (ogPlayer[iLoop].Type == "Human" && CheckForKeyEvents(oEvent, ogPlayer[iLoop])) {
+                if (ogPlayer[iLoop].Type == "Human" && CheckForKeyDown(oEvent, ogPlayer[iLoop])) {
+                    CheckForKeyEvents(ogPlayer[iLoop]);
                     break;
                 }
             }
         }
     }
 }
-
 function CheckForSpecialKeys(oEvent) {
 
     switch (oEvent.keyCode) {
@@ -566,18 +828,26 @@ function CheckForSpecialKeys(oEvent) {
             TogglePause();
             break;
         case 77: // Mute
-            oSelectSound.value = Sounds.NotMuted = !Sounds.NotMuted;
-            if (Sounds.NotMuted) Sounds.Crawlig.play();
-            else Sounds.Crawlig.pause();
+            chkMuteEffects.checked = Sounds.NotMuted = !Sounds.NotMuted;
+            chkMuteMusic.checked = Music.NotMuted = !Music.NotMuted;
+            if (Sounds.NotMuted) {
+                Sounds.Crawlig.play();
+                Music.One.play();
+            } else {
+                Sounds.Crawlig.pause();
+                Music.One.pause();
+            }
             break;
         case 189: // -
-            Sounds.Volume = (Sounds.Volume > 0) ? Math.floor((Sounds.Volume - 0.1) * 10) / 10 : 0;
+            rangeEffectsVolume.value = Sounds.Volume = (Sounds.Volume > 0) ? Math.floor((Sounds.Volume - 0.1) * 10) / 10 : 0;
+            rangeMusicVolume.value = Music.One.volume = Music.Volume = (Music.Volume > .1) ? Math.floor((Music.Volume - 0.2) * 10) / 10 : 0;
             Sounds.Crawlig.volume = Sounds.Volume;
             Sounds.Pause.volume = Sounds.Volume;
             break;
         case 187: // =
-            oSelectSound.value = Sounds.NotMuted = true;
-            Sounds.Volume = Sounds.Volume < 1 ? Math.ceil((Sounds.Volume + 0.1) * 10) / 10 : 1;
+            chkMuteEffects.checked = Sounds.NotMuted = true;
+            rangeEffectsVolume.value = Sounds.Volume = Sounds.Volume < 1 ? Math.ceil((Sounds.Volume + 0.1) * 10) / 10 : 1;
+            rangeMusicVolume.value = Music.One.volume = Music.Volume = Music.Volume < 1 ? Math.ceil((Music.Volume + 0.1) * 10) / 10 : 1;
             Sounds.Crawlig.volume = Sounds.Volume;
             Sounds.Pause.volume = Sounds.Volume;
             break;
@@ -587,25 +857,83 @@ function CheckForSpecialKeys(oEvent) {
     ;
     return true;
 }
+function CheckForKeyEvents(oPlayer) {
+    
+    if (oPlayer.KeyLeftPressed) {
+        oPlayer.DirectionX = -1;
+        oPlayer.DirectionY = 0;
+    }
+    else if (oPlayer.KeyRightPressed) {
+        oPlayer.DirectionX = 1;
+        oPlayer.DirectionY = 0;
+    }
 
-function CheckForKeyEvents(oEvent, oPlayer) {
+    if (oPlayer.KeyUpPressed) {
+        oPlayer.DirectionX = 0;
+        oPlayer.DirectionY = -1;
+    }
+    else if (oPlayer.KeyDownPressed) {
+        oPlayer.DirectionX = 0;
+        oPlayer.DirectionY = 1;
+    }
+
+    if (gbDiagonalMovement) {
+
+        if (oPlayer.KeyLeftPressed) {
+            oPlayer.DirectionX = -1;
+        }
+        else if (oPlayer.KeyRightPressed) {
+            oPlayer.DirectionX = 1;
+        }
+    }
+}
+function CheckForKeyDown(oEvent, oPlayer) {
 
     switch (oEvent.keyCode) {
         case oPlayer.KeyLeft:
-            oPlayer.DirectionX = -1;
-            oPlayer.DirectionY = 0;
+            oPlayer.KeyLeftPressed = true;
             break;
         case oPlayer.KeyUp:
-            oPlayer.DirectionX = 0;
-            oPlayer.DirectionY = -1;
+            oPlayer.KeyUpPressed = true;
             break;
         case oPlayer.KeyRight:
-            oPlayer.DirectionX = 1;
-            oPlayer.DirectionY = 0;
+            oPlayer.KeyRightPressed = true;
             break;
         case oPlayer.KeyDown:
-            oPlayer.DirectionX = 0;
-            oPlayer.DirectionY = 1;
+            oPlayer.KeyDownPressed = true;
+            break;
+        default:
+            return false;
+    }
+
+    return true;
+}
+function KeyupEvent(oEvent) {
+
+    if (!gbGamePaused && ogPlayer) {
+        for (let iLoop = ogPlayer.length; iLoop--;) // Reverse loop for the win
+        {
+            if (ogPlayer[iLoop].Type == "Human" && CheckForKeyup(oEvent, ogPlayer[iLoop])) {
+                CheckForKeyEvents(ogPlayer[iLoop]);
+                break;
+            }
+        }
+    }
+}
+function CheckForKeyup(oEvent, oPlayer) {
+
+    switch (oEvent.keyCode) {
+        case oPlayer.KeyLeft:
+            oPlayer.KeyLeftPressed = false;
+            break;
+        case oPlayer.KeyUp:
+            oPlayer.KeyUpPressed = false;
+            break;
+        case oPlayer.KeyRight:
+            oPlayer.KeyRightPressed = false;
+            break;
+        case oPlayer.KeyDown:
+            oPlayer.KeyDownPressed = false;
             break;
         default:
             return false;
@@ -661,7 +989,9 @@ function Pause() {
 
     clearInterval(ogGameLoop);
     clearInterval(ogCountdownTimer);
-    ogPlayer.forEach(function (oPlayer) { clearInterval(oPlayer.ComputerPlayerTimer) });
+    ogPlayer.forEach(function (oPlayer) { clearInterval(oPlayer.Timer) });
+
+    if (ogBrainspawn) ogBrainspawn.forEach(function (oBrainspawn) { clearInterval(oBrainspawn.Timer) });
 
     Sounds.Crawlig.pause();
     if (Sounds.NotMuted) Sounds.Pause.play();
@@ -680,12 +1010,12 @@ function UnPause() {
 
     ogGameLoop = setInterval(GameLoop, giGameLoopSpeed);
 
-    if (oSelectTime.value == "On") {
+    if (chkTime.checked) {
         ogCountDownTime = new Date().setTime(new Date().getTime() + giTimeRemaining);
         ogCountdownTimer = setInterval(CountdownTimer, 500);
     }
 
-    StartComputerPlayerTimers();
+    StartTimers();
 }
 
 function ResizeEvent() {
@@ -714,34 +1044,17 @@ function DrawGrid() {
     ctxArena.strokeStyle = 'orange';
     ctxArena.lineWidth = giGridSize / 2;
     ctxArena.strokeRect(0, 0, window.innerWidth, giGridHeight);
-    
-    if (ogPellet) {
-        ogPellet.forEach(DrawPellet);
-    }
 }
 
 function DrawPlayer(oPlayer) {
     ctxArena.fillStyle = oPlayer.fillStyle;
-
+    
     if (oPlayer.Trail.length === 0) {
         ctxArena.fillRect(oPlayer.PositionX * giGridSize,
             oPlayer.PositionY * giGridSize,
-            giGridSize - 2,
-            giGridSize - 2);
+            giGridSize - 12,
+            giGridSize - 12);
     } else {
-        if (CollidedWithTail(oPlayer.Trail, oPlayer.PositionX, oPlayer.PositionY)) {
-
-            oPlayer.TailLength = giMinimumTailLength;
-
-            if (gbDeadlyTails) {
-                NibblerDied(oPlayer);
-                return;
-            } else {
-                oPlayer.Score -= iPointsLostForTailCollision;
-                UpdateScoreboard();
-            }
-        }
-
         for (let iLoop = oPlayer.Trail.length; iLoop--;) {
             ctxArena.fillRect(oPlayer.Trail[iLoop].x * giGridSize + 6,
                 oPlayer.Trail[iLoop].y * giGridSize + 6,
@@ -750,29 +1063,35 @@ function DrawPlayer(oPlayer) {
         }
     }
 
+    // Check for tail collision
+    if (CollidedWithTail(oPlayer.Trail, oPlayer.PositionX, oPlayer.PositionY)) {
+
+        oPlayer.TailLength = giMinimumTailLength;
+
+        if (gbDeadlyTails) {
+            NibblerDied(oPlayer);
+            MessageLog(oPlayer.Name + " hit tail and died.", goVerbosityEnum.Information);
+        } else {
+            oPlayer.Score -= iPointsLostForTailCollision;
+        }
+    }
+
+    // Check to see if the pellet was eaten
+    for (let iLoop = ogPellet.length; iLoop--;) {
+        if (ogPellet[iLoop].PositionX === oPlayer.PositionX && ogPellet[iLoop].PositionY === oPlayer.PositionY) {
+            ogPellet[iLoop].Eatten(oPlayer);
+            delete ogPellet[iLoop];
+            ogPellet[iLoop] = new Pellet();
+        }
+    }
+
     if (oPlayer.Dead) {
         ctxArena.fillStyle = "black";
         ctxArena.fillRect(oPlayer.PositionX * giGridSize + 6,
             oPlayer.PositionY * giGridSize + 6,
-            giGridSize - 12,
-            giGridSize - 12);
+            giGridSize - 16,
+            giGridSize - 16);
     }
-}
-
-function DrawPellet(oPellet) {
-
-    // Draw the pellet
-    ctxArena.lineWidth = 2;
-    ctxArena.strokeStyle = oPellet.strokeStyle;
-    ctxArena.fillStyle = oPellet.fillStyle;
-    ctxArena.beginPath();
-    ctxArena.arc(oPellet.PositionX * giGridSize + (giGridSize / 2),
-        oPellet.PositionY * giGridSize + (giGridSize / 2),
-        giGridSize / 2.8,
-        0,
-        2 * Math.PI);
-    ctxArena.fill();
-    ctxArena.stroke();
 }
 
 function DrawMaze() {

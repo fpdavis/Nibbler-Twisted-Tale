@@ -1,29 +1,29 @@
-function DumbNibbler(oPlayer) {
+function FindPath_Simple_Nibbler(oPlayer) {
     let iDirection = oPlayer.Direction;
 
-    if (Math.abs(oPlayer.PositionX - oPlayer.TargetPellet.PositionX) >
-        Math.abs(oPlayer.PositionY - oPlayer.TargetPellet.PositionY)) {
-        if (oPlayer.TargetPellet.PositionX > oPlayer.PositionX) {
+    if (Math.abs(oPlayer.PositionX - oPlayer.Target.PositionX) >
+        Math.abs(oPlayer.PositionY - oPlayer.Target.PositionY)) {
+        if (oPlayer.Target.PositionX > oPlayer.PositionX) {
             iDirection = 3;
-        } else if (oPlayer.TargetPellet.PositionX < oPlayer.PositionX) {
+        } else if (oPlayer.Target.PositionX < oPlayer.PositionX) {
             iDirection = 1;
         }
     }
 
-    if (Math.abs(oPlayer.PositionX - oPlayer.TargetPellet.PositionX) <
-        Math.abs(oPlayer.PositionY - oPlayer.TargetPellet.PositionY) ||
+    if (Math.abs(oPlayer.PositionX - oPlayer.Target.PositionX) <
+        Math.abs(oPlayer.PositionY - oPlayer.Target.PositionY) ||
         (iDirection + oPlayer.Direction) % 2 === 0) {
-        if (oPlayer.TargetPellet.PositionY > oPlayer.PositionY) {
+        if (oPlayer.Target.PositionY > oPlayer.PositionY) {
             iDirection = 4;
-        } else if (oPlayer.TargetPellet.PositionY < oPlayer.PositionY) {
+        } else if (oPlayer.Target.PositionY < oPlayer.PositionY) {
             iDirection = 2;
         }
     }
 
     if ((iDirection + oPlayer.Direction) % 2 === 0) {
-        if (oPlayer.TargetPellet.PositionX > oPlayer.PositionX) {
+        if (oPlayer.Target.PositionX > oPlayer.PositionX) {
             iDirection = 3;
-        } else if (oPlayer.TargetPellet.PositionX < oPlayer.PositionX) {
+        } else if (oPlayer.Target.PositionX < oPlayer.PositionX) {
             iDirection = 1;
         }
     }
@@ -81,7 +81,7 @@ function DumbNibbler(oPlayer) {
     }
 }
 
-function SmartNibbler(oPlayer) {
+function Findpath_Nibbler(oPlayer) {
     // Making a 2D array
     for (let iLoop = 0; iLoop < giArenaSquaresX; iLoop++) {
         gaGrid[iLoop] = new Array(giArenaSquaresY);
@@ -92,7 +92,9 @@ function SmartNibbler(oPlayer) {
     }
 
     for (let iLoop = ogPlayer.length; iLoop--;) {
+
         gaGrid[ogPlayer[iLoop].PositionX][ogPlayer[iLoop].PositionY] = 0;
+
         for (let iLoop2 = ogPlayer[iLoop].Trail.length; iLoop2--;) {
             try {
                 gaGrid[ogPlayer[iLoop].Trail[iLoop2].x][ogPlayer[iLoop].Trail[iLoop2].y] = 0;
@@ -101,14 +103,47 @@ function SmartNibbler(oPlayer) {
         }
     }
 
+    for (let iLoop = ogBrainspawn.length; iLoop--;) {
+        gaGrid[ogBrainspawn[iLoop].PositionX][ogBrainspawn[iLoop].PositionY] = 0;
+    }
+
     let oGraph = new Graph(gaGrid, { diagonal: gbDiagonalMovement });
     let oStart = oGraph.grid[oPlayer.PositionX][oPlayer.PositionY];
-    let oTarget = oGraph.grid[oPlayer.TargetPellet.PositionX][oPlayer.TargetPellet.PositionY];
+    let oTarget = oGraph.grid[oPlayer.Target.PositionX][oPlayer.Target.PositionY];
     let oResult = astar.search(oGraph, oStart, oTarget);
     // result is an array containing the shortest path
 
     if (oResult.length !== 0) {
         oPlayer.DirectionX = oResult[0].x - oPlayer.PositionX;
         oPlayer.DirectionY = oResult[0].y - oPlayer.PositionY;
+    }
+}
+function Findpath_Brainspawn(oPlayer) {
+    // Making a 2D array
+    for (let iLoop = 0; iLoop < giArenaSquaresX; iLoop++) {
+        gaGrid[iLoop] = new Array(giArenaSquaresY);
+
+        for (let iLoop2 = 0; iLoop2 < giArenaSquaresY; iLoop2++) {
+            gaGrid[iLoop][iLoop2] = 1;
+        }
+    }
+
+    for (let iLoop = ogBrainspawn.length; iLoop--;) {
+        if (ogBrainspawn[iLoop] == oPlayer) {
+            gaGrid[ogBrainspawn[iLoop].PositionX][ogBrainspawn[iLoop].PositionY] = 1;
+        } else {
+            gaGrid[ogBrainspawn[iLoop].PositionX][ogBrainspawn[iLoop].PositionY] = 0;
+        }
+    }
+
+    let oGraph = new Graph(gaGrid, { diagonal: gbDiagonalMovement });
+    let oStart = oGraph.grid[oPlayer.PositionX][oPlayer.PositionY];
+    let oTarget = oGraph.grid[oPlayer.Target.PositionX][oPlayer.Target.PositionY];
+    let oResult = astar.search(oGraph, oStart, oTarget);
+    // result is an array containing the shortest path
+    
+    if (oResult.length !== 0) {
+        oPlayer.DirectionX = oResult[0].x - oPlayer.PositionX;
+        oPlayer.DirectionY = oResult[0].y - oPlayer.PositionY;    
     }
 }

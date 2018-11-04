@@ -4,18 +4,21 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
-* Fix spawning bug where player isn't being drawn
+* Add volume controls on menu
+* Improve Menu layout
+* Improved graphics for pellets
+* Improved graphics for enemies
+* Read animations and music in from a json file
+* Read wave/level information in from json file
 * Fix edge bug where edges are too close in from the border
 * Change style on score when player dies
 * Add graph weighting incentives for pellets in A*
 * Need to calculate closest pellet with Wall Wrap
 * Grid creation for A* is inefficient, should be updated with tail update
+* Maze creates a copy of the Grid, want to create one grid and pass it in
 * Game Options
-	* Diagonal Movement - This should be easy with the update AI
 	* Maze - Need to determine best algorithm to use
 	* Waves
-	* Enemies
-	* Need a logging/debug framework of some sort?
 * Add power ups from pellets
     * Must be bitten multiple times to be eaten
     * Random direction change
@@ -31,11 +34,9 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 	* Erase ability - Need to better define this
 	* Jump ability
 	* Teleportation (Random/Directional?)
-* Improve Menu layout
 * Improve Pause/Menu User Process/Optioning
 * Initializations are a bit clunky and should be improved
 * Enhance description
-* Improved graphics
 * Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler
 * Joystick support
 * Center the playfield - it is pretty good but could be better
@@ -93,6 +94,17 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Added Color Pickers for players
 * Added a color picker on Scoreboard to help identify players
 * Added blinking when Nibbler lives get to 0
+
+* Added Diagonal Movement
+* Added enemies
+* Added a simple logging/debug messaging routine
+
+* Added an Animation class with an animation loop
+* Added an explosion/splat when Brainspawn kill a player
+* Added splat sound effect when a player is killed by a Brainspawn
+* Added music
+* Fixed bug where player hits own tail while going in straight line
+* Fixed spawning bug where player isn't being drawn
 
 ### Creative Commons License Attribution 3.0 
 
