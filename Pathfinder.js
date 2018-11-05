@@ -36,6 +36,8 @@ function FindPath_Simple_Nibbler(oPlayer) {
 
     let oPlayerVector =
         CalculateNewPosition(oPlayer.PositionX, oPlayer.PositionY, oPlayer.DirectionX, oPlayer.DirectionY);
+    
+    oPlayerVector.Trail = oPlayer.Trail;
 
     // Check for wall collision
     if (oPlayerVector.HitWall) {
@@ -43,7 +45,7 @@ function FindPath_Simple_Nibbler(oPlayer) {
         else if (oPlayerVector.DirectionX === -1) iDirection = 1;
         else if (oPlayerVector.DirectionY === 1) iDirection = 4;
         else if (oPlayerVector.DirectionY === -1) iDirection = 2;
-    } else if (CollidedWithTail(oPlayer.Trail, oPlayerVector.PositionX, oPlayerVector.PositionY)) {
+    } else if (CollidedWithTail(oPlayerVector)) {
         bHitTail = true;
         iDirection = Math.round(Math.random() * 4);
     }
@@ -103,8 +105,10 @@ function Findpath_Nibbler(oPlayer) {
         }
     }
 
-    for (let iLoop = ogBrainspawn.length; iLoop--;) {
-        gaGrid[ogBrainspawn[iLoop].PositionX][ogBrainspawn[iLoop].PositionY] = 0;
+    if (ogBrainspawn) {
+        for (let iLoop = ogBrainspawn.length; iLoop--;) {
+            gaGrid[ogBrainspawn[iLoop].PositionX][ogBrainspawn[iLoop].PositionY] = 0;
+        }
     }
 
     let oGraph = new Graph(gaGrid, { diagonal: gbDiagonalMovement });

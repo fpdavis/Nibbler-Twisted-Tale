@@ -4,37 +4,37 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
-* Add volume controls on menu
-* Improve Menu layout
 * Improved graphics for pellets
-* Improved graphics for enemies
+* Make enemies face the direction they are moving
+* Add character names for computer depending on dificulty settings
 * Read animations and music in from a json file
 * Read wave/level information in from json file
 * Fix edge bug where edges are too close in from the border
 * Change style on score when player dies
+* Add Game Over screen with results
 * Add graph weighting incentives for pellets in A*
-* Need to calculate closest pellet with Wall Wrap
+* Need to calculate closest target and best path with Wall Wrap
 * Grid creation for A* is inefficient, should be updated with tail update
 * Maze creates a copy of the Grid, want to create one grid and pass it in
 * Game Options
 	* Maze - Need to determine best algorithm to use
-	* Waves
+	* Waves/Levels
+	* Dificulty level
 * Add power ups from pellets
     * Must be bitten multiple times to be eaten
     * Random direction change
-    * Multiple spawns
 	* Ability to pause movement
 	* Increase speed
 	* Slow speed
 	* Tail eating ability
+	* Infinite tail
 	* no-wrap
-		* Bounce/Change Direction/Follow Wall
-		* Loose tail
-		* Loose Point
+	* Loose tail
 	* Erase ability - Need to better define this
 	* Jump ability
 	* Teleportation (Random/Directional?)
 * Improve Pause/Menu User Process/Optioning
+* Apply dark theme to menu
 * Initializations are a bit clunky and should be improved
 * Enhance description
 * Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler
@@ -105,6 +105,21 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Added music
 * Fixed bug where player hits own tail while going in straight line
 * Fixed spawning bug where player isn't being drawn
+
+* Improved Menu layout
+* Added volume controls to menu
+* Added a sprite for Brainspawn
+* Cleaned up arrays on new game start
+* Fixed nonstop reversal
+* Sorted sprite array in order of zIndex
+* Improved image loading a little
+* Added a yet to be used tint function that may be removed later
+* Changed dificulty level to arena size selector
+* Added counters for kills and suicides
+* Decreased overall speed
+* Animated all deaths
+* Added Infinite tails
+* Fixed bug with mute getting out of sync with checkboxes
 
 ### Creative Commons License Attribution 3.0 
 

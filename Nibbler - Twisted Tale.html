@@ -12,63 +12,70 @@
 
 <BODY>
 
-<STYLE>
-    html, body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        border: 0;
-        overflow: hidden; /*  Disable scrollbars */
-        display: block;
-        background-color: #000;
-        cursor: crosshair;
-    }
-
-    .wrapper {
-        display: grid;
-        border: 1px solid #000;
-        grid-gap: 10px;
-        grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-    }
-
-    .box {
-        background-color: #000;
-        color: #fff;
-        padding: 10px;
-        font-size: 150%
-    }
-
-    .blink_me {
-        animation: blinker 1s linear infinite;
-    }
-
-    @keyframes blinker {
-        50% {
-            opacity: 0;
+    <STYLE>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            border: 0;
+            overflow: hidden; /*  Disable scrollbars */
+            display: block;
+            background-color: #000;
+            cursor: crosshair;
         }
-    }
-    input[type="color"] {
-        -webkit-appearance: none;
-        border: none;
-        width: 22px;
-        height: 22px;
-    }
-    input[type="color"]::-webkit-color-swatch-wrapper {
-        padding: 0;
-    }
-    input[type="color"]::-webkit-color-swatch {
-        border: none;
-    }
-</STYLE>
+
+        .wrapper {
+            display: grid;
+            border: 1px solid #000;
+            grid-gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+        }
+
+        .box {
+            background-color: #000;
+            color: #fff;
+            padding: 10px;
+            font-size: 150%
+        }
+
+        .blink_me {
+            animation: blinker 1s linear infinite;
+        }
+
+        .dead {
+            color: dimgray;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 22px;
+            height: 22px;
+        }
+
+            input[type="color"]::-webkit-color-swatch-wrapper {
+                padding: 0;
+            }
+
+            input[type="color"]::-webkit-color-swatch {
+                border: none;
+            }
+    </STYLE>
     <div id="divScoreboard">
         <div class="wrapper">
             <div class="box"><input id="colorPlayer1" type="color" value="#00FF00" onchange="oColorMenuPlayer[0].value = ogPlayer[0].fillStyle = this.value;"> <span id="spanPlayer1">Player 1 (-) 000</span></div>
-            <div class="box"><input id="colorPlayer2" type="color" value="#FFFF00" onchange="oColorMenuPlayer[1].value = ogPlayer[1].fillStyle = this.value;">&nbsp;<span id="spanPlayer2">Player 3 (-) 000</span></div>
+            <div class="box"><input id="colorPlayer3" type="color" value="#0000FF" onchange="oColorMenuPlayer[2].value = ogPlayer[2].fillStyle = this.value;">&nbsp;<span id="spanPlayer3">Player 3 (-) 000</span></div>
             <div id="divTime" class="box blink_me">TIME ---</div>
         </div>
         <div class="wrapper">
-            <div class="box"><input id="colorPlayer3" type="color" value="#8A2BE2" onchange="oColorMenuPlayer[2].value = ogPlayer[2].fillStyle = this.value;">&nbsp;<span id="spanPlayer3">Player 2 (-) 000</span></div>
-            <div class="box"><input id="colorPlayer4" type="color" value="#FF69B4" onchange="oColorMenuPlayer[3].value = ogPlayer[3].fillStyle = this.value;">&nbsp;<span id="spanPlayer4">Player 4 (-) 000</span></div>
+            <div class="box"><input id="colorPlayer2" type="color" value="#FF0000" onchange="oColorMenuPlayer[1].value = ogPlayer[1].fillStyle = this.value;">&nbsp;<span id="spanPlayer2">Player 2 (-) 000</span></div>
+            <div class="box"><input id="colorPlayer4" type="color" value="#FFFF00" onchange="oColorMenuPlayer[3].value = ogPlayer[3].fillStyle = this.value;">&nbsp;<span id="spanPlayer4">Player 4 (-) 000</span></div>
             <div id="divHighScore" class="box">HIGHSCORE (Player -) 000</div>
         </div>
     </div>
@@ -147,11 +154,12 @@
             position: absolute;
             top: 3px;
             left: 3px;
-            width: 554px;
-            height: 374px;
+            width: 542px;
+            height: 365px;
             color: #ffffff;
             background-color: rgba(60, 60, 60, 0.4);
             opacity: 0;
+            margin: 5px;
         }
 
         .modal-start {
@@ -167,10 +175,10 @@
         }
 
         .modal-inner h3 {
-            display: block;
             text-align: center;
             font-size: 22px;
-            padding: 10px 10px 10px 10px;
+            position: relative;
+            top: -15px
         }
 
         .modal-blur {
@@ -201,6 +209,56 @@
                 opacity: 1;
             }
         }
+
+        .menuwrapper {
+            display: grid;
+            border: 1px solid #000000;
+            grid-gap: 5px;
+            grid-template-columns: 271px 271px;
+        }
+
+        .menuheader {
+            grid-column: 1 / span 2;
+            grid-row: 1;
+            font-size: 90%;
+            height: 30px;
+            border: 1px solid #000;
+        }
+
+        .menucolumn1 {
+            grid-column: 1;
+            grid-row: 2;
+            font-size: 90%;
+            border: 1px solid #000;
+        }
+
+        .menucolumn2 {
+            grid-column: 2;
+            grid-row: 2;
+            font-size: 90%;
+            border: 1px solid #000;
+        }
+
+        .menucolumn3 {
+            grid-column: 1;
+            grid-row: 3;
+            font-size: 90%;
+            border: 1px solid #000;
+        }
+
+        .menucolumn4 {
+            grid-column: 2;
+            grid-row: 3;
+            font-size: 90%;
+            border: 1px solid #000;
+        }
+
+        .menufooter {
+            grid-column: 1 / span 2;
+            grid-row: 4;
+            font-size: 90%;
+            border: 1px solid #000;
+        }
     </style>
 
     <div class="overlay" id="divGameMenu">
@@ -211,49 +269,72 @@
                 <line id="svg_2" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="378" x2="558" y2="378" />
                 <line id="svg_5" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="2.0" y2="378" />
             </svg>
-            <div class="modal-inner">
-                <h3>Game Options</h3>
-                <input id="colorMenuPlayer1" type="color" value="#00FF00" onchange="oColorPlayer[0].value = ogPlayer[0].fillStyle = this.value;"> Player 1: <select id="selectPlayer1"><option selected>Human</option><option>Computer</option></select>
-                Name: <input id="txtPlayer1Name" type="text" value="Player 1" maxlength="10" size="10" />
+            <div class="modal-inner menuwrapper">
+                <div class="menuheader">
+                    <h3>Game Options</h3>
+                </div>
+                <div class="menucolumn1">
+                    <input id="colorMenuPlayer1" type="color" value="#00FF00" onchange="oColorPlayer[0].value = ogPlayer[0].fillStyle = this.value;" style="vertical-align: middle;">
+                    <select id="selectPlayer1"><option selected>Human</option><option>Computer</option></select>
+                    <input id="txtPlayer1Name" type="text" placeholder="Player 1" maxlength="10" size="10" />
 
-                <br />
-                <input id="colorMenuPlayer2" type="color" value="#FFFF00" onchange="oColorPlayer[1].value = ogPlayer[1].fillStyle = this.value;"> Player 2: <select id="selectPlayer2"><option>Human</option><option>Computer</option><option selected>None</option></select>
-                Name: <input id="txtPlayer2Name" type="text" value="Player 2" maxlength="10" size="10" />
+                    <br />
+                    <input id="colorMenuPlayer2" type="color" value="#FF0000" onchange="oColorPlayer[1].value = ogPlayer[1].fillStyle = this.value;" style="vertical-align: middle;">
+                    <select id="selectPlayer2"><option>Human</option><option>Computer</option><option selected>None</option></select>
+                    <input id="txtPlayer2Name" type="text" placeholder="Player 2" maxlength="10" size="10" />
+                    <br />
+                    <br />Lives:
+                    <input type="range" id="rangeLives" min="1" max="10" value="3" oninput="this.nextElementSibling.value=this.value" style="vertical-align: middle;" />
+                    <input type="number" id="numberLives" min="1" max="10" value="3" style="width: 33px" oninput="this.previousElementSibling.value=this.value" />
 
-                <br />
-                <input id="colorMenuPlayer3" type="color" value="#8A2BE2" onchange="oColorPlayer[2].value = ogPlayer[2].fillStyle = this.value;"> Player 3: <select id="selectPlayer3"><option>Human</option><option>Computer</option><option selected>None</option></select>
-                Name: <input id="txtPlayer3Name" type="text" value="Player 3" maxlength="10" size="10" />
+                    <br />Speed: <select id="selectSpeed"><option>Slow</option><option selected>Normal</option><option>Fast</option></select>
+                </div>
+                <div class="menucolumn3">
+                    <input type="checkbox" id="chkDiagonalMovement" />Diagonal Movement
+                    <br /><input type="checkbox" id="chkWallWrap" checked="checked" oninput="if (this.checked) {chkDeadlyWalls.checked = false }" />Wall Wrap
+                    <br /><input type="checkbox" id="chkMaze" />Maze
+                    <br /><input type="checkbox" id="chkNonStop" checked="checked" />Non-stop
+                </div>
 
-                <br />
-                <input id="colorMenuPlayer4" type="color" value="#FF69B4" onchange="oColorPlayer[3].value = ogPlayer[3].fillStyle = this.value;"> Player 4: <select id="selectPlayer4"><option>Human</option><option>Computer</option><option selected>None</option></select>
-                Name: <input id="txtPlayer4Name" type="text" value="Player 4" maxlength="10" size="10" />
-                
-                <br />Lives:
-                <input type="range" id="rangeLives" min="1" max="10" value="3" oninput="this.nextElementSibling.value=this.value" />
-                <input type="number" id="numberLives" min="1" max="10" value="3" oninput="this.previousElementSibling.value=this.value" />
-                <br />Dificulty: <select id="selectDificulty"><option>Easy</option><option selected>Medium</option><option>Hard</option></select>
+                <div class="menucolumn2">
+                    <input id="colorMenuPlayer3" type="color" value="#0000FF" onchange="oColorPlayer[2].value = ogPlayer[2].fillStyle = this.value;" style="vertical-align: middle;">
+                    <select id="selectPlayer3"><option>Human</option><option>Computer</option><option selected>None</option></select>
+                    <input id="txtPlayer3Name" type="text" placeholder="Player 3" maxlength="10" size="10" />
 
-                <br />Speed: <select id="selectSpeed"><option>Slow</option><option selected>Normal</option><option>Fast</option></select>
+                    <br />
+                    <input id="colorMenuPlayer4" type="color" value="#FFFF00" onchange="oColorPlayer[3].value = ogPlayer[3].fillStyle = this.value;" style="vertical-align: middle;">
+                    <select id="selectPlayer4"><option>Human</option><option>Computer</option><option selected>None</option></select>
+                    <input id="txtPlayer4Name" type="text" placeholder="Player 4" maxlength="10" size="10" />
+                    <br /><br />
+                    Arena Size: <select id="selectArenaSize"><option>Small</option><option selected>Medium</option><option>Large</option></select>
+                    <br /><span style="margin-left: 8px;">
+                        <input type="checkbox" id="chkTime" checked="checked" oninput="numberTime.disabled = !this.checked " />Timer:
+                        <input type="number" id="numberTime" min="30" max="480" value="120" step="10" style="width: 72px" />
+                    </span>
+                </div>
+                <div class="menucolumn4">
+                    <input type="checkbox" id="chkDeadlyTails" checked="checked" />Deadly Tails
+                    <br /><input type="checkbox" id="chkDeadlyWalls" oninput="if (this.checked) {chkWallWrap.checked = false }" />Deadly Walls
+                    <br /><input type="checkbox" id="chkInfiniteTails" />Infinite Tails
+                    <br /><input type="checkbox" id="chkEnemies" checked="checked" />Enemies
+                </div>
+                <div class="menufooter">
+                    <span style="margin-left: 5px;">
+                        Music Volume: [-]
+                        <input type="range" id="rangeMusicVolume" min="0" max="1" step=".1" value=".5"
+                               oninput="Music.One.volume=Music.Volume=this.value" style="vertical-align: middle;" /> [+]
+                        (<input type="checkbox" id="chkMuteMusic"
+                                oninput="Music.NotMuted=!this.checked; if (this.checked) { Music.One.pause() } else { Music.One.play();}" style="vertical-align: middle;" />[M]ute)
+                    </span>
+                    <br />Effects Volume: [-]
+                    <input type="range" id="rangeEffectsVolume" min="0" max="1" step=".1" value=".8"
+                           oninput="Sounds.Volume=this.value" style="vertical-align: middle;" /> [+]
+                    (<input type="checkbox" id="chkMuteEffects" oninput="Sounds.NotMuted=!this.checked" style="vertical-align: middle;" />[M]ute)
 
-                <br /><input type="checkbox" id="chkTime" checked="checked" />Timer:
-                <input type="number" id="numberTime" min="30" max="480" value="120" step="10" />
-
-                <br />Music Volume: [-] <input type="range" id="rangeMusicVolume" min="0" max="1" step=".1" value=".5" oninput="Music.One.volume=Music.Volume=this.value" /> [+] (<input type="checkbox" id="chkMuteMusic" oninput="Music.NotMuted=!this.checked; if (this.checked) { Music.One.pause() } else {
-        Music.One.play();
-    }" /> [M]ute)
-                <br />Effects Volume: [-] <input type="range" id="rangeEffectsVolume" min="0" max="1" step=".1" value=".8" oninput="Sounds.Volume=this.value" /> [+] (<input type="checkbox" id="chkMuteEffects" oninput="Sounds.NotMuted=!this.checked" /> [M]ute)
-                <br /><input type="checkbox" id="chkWallWrap" checked="checked" />Wall Wrap
-                <br /><input type="checkbox" id="chkDeadlyWalls" checked="checked" />Deadly Walls
-                <br /><input type="checkbox" id="chkDeadlyTails" checked="checked" />Deadly Tails
-                <br /><input type="checkbox" id="chkDiagonalMovement" checked="checked" />Diagonal Movement
-                <br /><input type="checkbox" id="chkMaze" checked="checked" />Maze
-                <br /><input type="checkbox" id="chkEnemies" checked="checked" />Enemies
-
-                <input type="button" id="btnStart" Value="Start" class="modal-start" onclick="StartGame();" />
-
-                <br /><input type="checkbox" id="chkNonStop" checked="checked" />Non-stop
-                <br /> Esc|p = Pause
-
+                    <input type="button" id="btnStart" Value="Start" class="modal-start" onclick="StartGame();" />
+                    <br /><br />
+                    <div style="background: coral; opacity: .5; text-align: center; width: 542px;"> Hit [Esc] or [p] to Pause Game</div>
+                </div>
             </div>
         </div>
     </div>

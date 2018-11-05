@@ -54,8 +54,10 @@ const chkDiagonalMovement = document.getElementById('chkDiagonalMovement');
 const chkMaze = document.getElementById('chkMaze');
 const chkEnemies = document.getElementById('chkEnemies');
 const oSelectDificulty = document.getElementById('selectDificulty');
+const selectArenaSize = document.getElementById('selectArenaSize');
 const selectSpeed = document.getElementById('selectSpeed');
 const chkNonStop = document.getElementById('chkNonStop');
+const chkInfiniteTails = document.getElementById('chkInfiniteTails');
 
 const oBtnStart = document.getElementById('btnStart');
 
@@ -85,6 +87,7 @@ var gbDeadlyWalls;
 var gbDeadlyTails;
 var gbDiagonalMovement;
 var gbStopAfterEachMove;
+var gbInfiniteTails;
 
 var giArenaSquaresX;
 var giArenaSquaresY;
@@ -94,7 +97,7 @@ window.onload = function () {
     window.addEventListener('resize', ResizeEvent, false);
     document.addEventListener("keydown", KeydownEvent);
     document.addEventListener("keyup", KeyupEvent);
-    document.addEventListener("click", ClickEvent);
+    document.addEventListener("click", ClickEvent, { passive: true });
 
     addClass(oDivGameMenu, "showGameMenu");
     addClass(oDivScoreboard, "modal-blur");
@@ -122,23 +125,32 @@ var Music = {
 
 class Animations {
     constructor() {
-    this.RedExplosion = [];
-    let iIndex;
-        for (let iLoop = 1; iLoop <= 24; iLoop++) {
-            iIndex = ('00' + iLoop).substr(-2);
-            this.RedExplosion.push(new Image());
-            this.RedExplosion[this.RedExplosion.length - 1].src =
-                `Images/Explosions_particles/red_explosion/red_snakeplosion_000${iIndex}.png`;
-            MessageLog("Explosions.RedExplosion.src = " + this.RedExplosion[this.RedExplosion.length - 1].src, goVerbosityEnum.Debug);
+        this.BlueExplosion = this.Load(24, "Images/Explosions_particles/blue_explosion/bluspark_000", ".png");
+        this.RedExplosion = this.Load(24, "Images/Explosions_particles/red_explosion/red_snakeplosion_000", ".png");
+        this.GreenExplosion = this.Load(24, "Images/Explosions_particles/green_explosion/green_explosion_000", ".png");
+        this.YellowExplosion = this.Load(24, "Images/Explosions_particles/yellow_explosion/yellow_explosion_000", ".png");
+        this.Brainspawn = this.Load(17, "Images/Slime/Slime_000", ".png");
         }
+}
+Animations.prototype.Load = function(Frames, SourcePrefix, SourceSuffix) {
+    let aImage = [];
+    let iIndex;
+    for (let iLoop = 1; iLoop <= Frames; iLoop++) {
+        iIndex = ('00' + iLoop).substr(-2);
+        aImage.push(new Image());
+        aImage[aImage.length - 1].src = SourcePrefix + iIndex + SourceSuffix;
+        MessageLog("aImage.src = " + aImage[aImage.length - 1].src, goVerbosityEnum.Debug);
     }
+
+    return aImage;
 }
 const constAnimations = new Animations();
 
 class Sprite  {
-    constructor(Image, x, y, width = 0, height = 0) {
+    constructor(Image, x, y, z = 0, width = 0, height = 0) {
         this.PositionX = x;
         this.PositionY = y;
+        this.ZIndex = z;
         this.Loop = false;
         this.Complete = false;
         this.CurrentFrame = 0;
@@ -181,6 +193,8 @@ class Nibbler {
         this.Dead = false;
         this.Type = "";
         this.Timer = null;
+        this.Kills = 0;
+        this.Suicides = 0;
 
         this.PositionX = 0;
         this.PositionY = 0;
@@ -192,6 +206,8 @@ class Nibbler {
 
         this.Trail = [];
         this.TailLength = giMinimumTailLength;
+
+        this.Explosion = constAnimations.GreenExplosion;
 
         this.KeyLeft = 37; // Left Arrow
         this.KeyUp = 38; // Up Arrow
@@ -212,8 +228,12 @@ Nibbler.prototype.UpdateTail = function () {
 
     this.Trail.push({ x: this.PositionX, y: this.PositionY });
 
-    while (this.Trail.length > this.TailLength) {
-        this.Trail.shift();
+    if (gbInfiniteTails) {
+        this.TailLength++;
+    } else {
+        while (this.Trail.length > this.TailLength) {
+            this.Trail.shift();
+        }
     }
 }
 Nibbler.prototype.SetSpawnPoint = function () {
@@ -252,7 +272,7 @@ class Pellet {
 
         this.SetSpawnPoint();
 
-        this.Sprite = new Sprite(this.Image, this.PositionX, this.PositionY, giGridSize - giGridSize * .3, giGridSize - giGridSize * .3);
+        this.Sprite = new Sprite(this.Image, this.PositionX, this.PositionY, 30, giGridSize - giGridSize * .3, giGridSize - giGridSize * .3);
         this.Sprite.Loop = true;
         ogSprite.push(this.Sprite);
     }
@@ -334,6 +354,7 @@ class Brainspawn  {
         this.Name = "Brainspawn";
         this.Type = Math.round(Math.random());
         this.Timer = null;
+        this.Kills = 0;
 
         this.PositionX = 0;
         this.PositionY = 0;
@@ -347,6 +368,10 @@ class Brainspawn  {
         this.fillStyle = "yellow";
 
         this.SetSpawnPoint();
+        
+        this.Sprite = new Sprite(constAnimations.Brainspawn, this.PositionX, this.PositionY, 10, giGridSize - giGridSize * .1, giGridSize - giGridSize * .1);
+        this.Sprite.Loop = true;
+        ogSprite.push(this.Sprite);
     }
 }
 Brainspawn.prototype.SetSpawnPoint = function () {
@@ -373,31 +398,18 @@ Brainspawn.prototype.SetSpawnPoint = function () {
         }
     }
 }
-Brainspawn.prototype.Draw = function () {
-
-    ctxArena.lineWidth = 2;
-    ctxArena.strokeStyle = this.strokeStyle;
-    ctxArena.fillStyle = this.fillStyle;
-    ctxArena.beginPath();
-    ctxArena.arc(this.PositionX * giGridSize + (giGridSize / 2),
-        this.PositionY * giGridSize + (giGridSize / 2),
-        giGridSize / 2.8,
-        0,
-        2 * Math.PI);
-    ctxArena.fill();
-    ctxArena.stroke();
-    
+Brainspawn.prototype.Draw = function () {    
     // Check to see if player was killed
     for (let iLoop = ogPlayer.length; iLoop--;) {
         if (ogPlayer[iLoop].PositionX === this.PositionX && ogPlayer[iLoop].PositionY === this.PositionY) {
 
-            ogSprite.push(new Sprite(constAnimations.RedExplosion, this.PositionX, this.PositionY));
             if (Sounds.NotMuted) {
                 this.Sound.volume = Sounds.Volume;
                 this.Sound.play();
             }
 
             NibblerDied(ogPlayer[iLoop]);
+            this.Kills++;
             MessageLog(ogPlayer[iLoop].Name + " was killed by " + this.Name + " " + this.Index, goVerbosityEnum.Information);
         }
     }
@@ -408,10 +420,11 @@ Brainspawn.Draw = function (oBrainspawn) { oBrainspawn.Draw(); }
 Brainspawn.prototype.Move = function() {
 
     let oVector = CalculateNewPosition(this.PositionX, this.PositionY, this.DirectionX, this.DirectionY);
-    this.PositionX = oVector.PositionX;
-    this.PositionY = oVector.PositionY;
+    this.PositionX = this.Sprite.PositionX = oVector.PositionX;
+    this.PositionY = this.Sprite.PositionY = oVector.PositionY;
     this.DirectionX = oVector.DirectionX;
     this.DirectionY = oVector.DirectionY;
+    
 }
 Brainspawn.prototype.DrawTarget = function () {
     ctxArena.lineWidth = 2;
@@ -425,11 +438,13 @@ Brainspawn.prototype.DrawTarget = function () {
 
 function StartGame() {
 
-    switch (oSelectDificulty.value) {
-        case "Easy":
+    if (ogSprite) ogSprite.length = 0;
+
+    switch (selectArenaSize.value) {
+        case "Small":
             giGridSize = 60;
             break;
-        case "Hard":
+        case "Large":
             giGridSize = 30;
             break;
         default:
@@ -455,31 +470,27 @@ function StartGame() {
     
     switch (selectSpeed.value) {
         case "Slow":
-            giGameLoopSpeed = 120;
+            giGameLoopSpeed = 140;
             break;
         case "Fast":
-            giGameLoopSpeed = 40;
+            giGameLoopSpeed = 66;
             break;
         default:
-            giGameLoopSpeed = 66;
+            giGameLoopSpeed = 100;
     }
 
     gbWallWrap = chkWallWrap.checked;
     gbDeadlyWalls = chkDeadlyWalls.checked;
     gbDeadlyTails = chkDeadlyTails.checked;
     gbDiagonalMovement = chkDiagonalMovement.checked;
-    gbStopAfterEachMove = chkNonStop.checked;
+    gbStopAfterEachMove = !chkNonStop.checked;
+    gbInfiniteTails = chkInfiniteTails.checked;
 
     if (chkMaze.checked) {
-        gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
+       // gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
     }
 
-    if (chkEnemies.checked) {
-        ogBrainspawn = new Array(ogPlayer.length > 2 ? ogPlayer.length - 1 : 1);
-        InitializeBrainspawn(ogBrainspawn);
-    } else if (ogBrainspawn) {
-        ogBrainspawn.length = 0;
-    }
+    InitializeBrainspawn();
     
     Sounds.NotMuted = !chkMuteEffects.checked;
     Music.NotMuted = !chkMuteMusic.checked;
@@ -495,11 +506,12 @@ function StartGame() {
 }
 function InitializePlayers() {
 
-    for (let iLoop = 1; iLoop < 4; iLoop++)
+    for (let iLoop = 0; iLoop < 4; iLoop++)
     {
         oColorPlayer[iLoop].style.display = 'none';
         oSpanPlayer[iLoop].innerText = ``;
         removeClass(oSpanPlayer[iLoop], "blink_me");
+        removeClass(oSpanPlayer[iLoop], "dead");
     }
 
     let iNumberOfPlayers = 1;
@@ -520,7 +532,7 @@ function InitializePlayers() {
         oColorPlayer[iLoop].style.display = 'inline-block';
         oColorPlayer[iLoop].value = oColorMenuPlayer[iLoop].value;
         ogPlayer[iLoop].fillStyle = oColorMenuPlayer[iLoop].value;
-        ogPlayer[iLoop].Name = oTxtPlayerName[iLoop].value;
+        ogPlayer[iLoop].Name = oTxtPlayerName[iLoop].value.length > 0 ? oTxtPlayerName[iLoop].value : "Player " + (iLoop + 1);
         ogPlayer[iLoop].Type = oSelectPlayer[iLoop].value;
     }
 
@@ -530,6 +542,7 @@ function InitializePlayers() {
         ogPlayer[1].KeyUp = 87; // "W"
         ogPlayer[1].KeyRight = 68; // "D"
         ogPlayer[1].KeyDown = 83; // "S"
+        ogPlayer[1].Explosion = constAnimations.RedExplosion;
     }
 
     if (ogPlayer.length > 2) {
@@ -538,6 +551,7 @@ function InitializePlayers() {
         ogPlayer[2].KeyUp = 73; // "W"
         ogPlayer[2].KeyRight = 76; // "D"
         ogPlayer[2].KeyDown = 75; // "S"
+        ogPlayer[2].Explosion = constAnimations.BlueExplosion;
     }
 
     if (ogPlayer.length > 3) {
@@ -546,6 +560,7 @@ function InitializePlayers() {
         ogPlayer[3].KeyUp = 104; // "W"
         ogPlayer[3].KeyRight = 102; // "D"
         ogPlayer[3].KeyDown = 101; // "S"
+        ogPlayer[3].Explosion = constAnimations.YellowExplosion;
     }
 }
 function StartTimers() {
@@ -564,12 +579,7 @@ function StartTimers() {
 }
 function InitializePellets() {
 
-    if (ogPellet) {
-        for (let iLoop = ogPellet.length; iLoop--;) {
-            ogPellet[iLoop].Sprite.Loop = false;
-            ogPellet[iLoop].Sprite = null;
-        }
-    }
+    if (ogPellet) ogPellet.length = 0;
 
     ogPellet = new Array(ogPlayer.length + 1);
     for (let iLoop = ogPellet.length; iLoop--;) {
@@ -577,11 +587,17 @@ function InitializePellets() {
         ogPellet[iLoop].Index = iLoop;
     }
 }
-function InitializeBrainspawn(ogBrainspawn) {
+function InitializeBrainspawn() {
+    
+    if (ogBrainspawn) ogBrainspawn.length = 0;
 
-    for (let iLoop = ogBrainspawn.length; iLoop--;) {
-        ogBrainspawn[iLoop] = new Brainspawn();
-        ogBrainspawn[iLoop].Index = iLoop;
+    if (chkEnemies.checked) {
+        ogBrainspawn = new Array(ogPlayer.length > 2 ? ogPlayer.length - 1 : 1);
+        
+        for (let iLoop = ogBrainspawn.length; iLoop--;) {
+            ogBrainspawn[iLoop] = new Brainspawn();
+            ogBrainspawn[iLoop].Index = iLoop;
+        }
     }
 }
 
@@ -594,6 +610,9 @@ function GameLoop() {
    
     DrawGrid();
 
+    ogPlayer.forEach(DrawPlayer);
+
+    ogSprite.sort(function (a, b) { return a.ZIndex - b.ZIndex });
     for (let iLoop = ogSprite.length; iLoop--;) {
         if (ogSprite[iLoop].Complete) {
             ogSprite.splice(iLoop, 1);
@@ -610,7 +629,7 @@ function GameLoop() {
         ogBrainspawn.forEach(Brainspawn.Draw);
     }
 
-    ogPlayer.forEach(DrawPlayer);
+
     ogPlayer.forEach(Nibbler.UpdateTail);
     UpdateScoreboard();
 }
@@ -620,7 +639,7 @@ function ComputerPlayerLoop(oPlayer) {
 
     if (oPlayer.Target === null) {
 
-        if (Math.round(Math.random() * 20) < 1) {
+        if (Math.round(Math.random() * 10) < 1) {
             oPlayer.Target = ogPellet[Math.floor(Math.random() * ogPellet.length)];
         } else {
             oPlayer.Target = ogPellet[0];
@@ -640,25 +659,22 @@ function ComputerPlayerLoop(oPlayer) {
         }
     }
 
-    if (Math.round(Math.random() * 100) < 1) {
+    if (Math.round(Math.random() * 50) < 1) {
         FindPath_Simple_Nibbler(oPlayer);
     } else {
         Findpath_Nibbler(oPlayer);
     }
 }
-function CollidedWithTail(Trail, PositionX, PositionY) {
-
-    if (!Trail) {
-        return false;
-    }
+function CollidedWithTail(oPlayer) {
 
     // Check to see if the player encountered their tale
     // We exclude the check if they are at the minimum length
     // if the tail is the minimum length already.
-    if (Trail.length > giMinimumTailLength) {
-        for (let iLoop = 0; iLoop < Trail.length - giMinimumTailLength; iLoop++) {
-            if (Trail[iLoop].x === PositionX &&
-                Trail[iLoop].y === PositionY) {
+    if (oPlayer.Trail && oPlayer.Trail.length > giMinimumTailLength) {
+        for (let iLoop = 0; iLoop < oPlayer.Trail.length - giMinimumTailLength; iLoop++) {
+            if (oPlayer.Trail[iLoop].x === oPlayer.PositionX &&
+                oPlayer.Trail[iLoop].y === oPlayer.PositionY) {
+                if (gbDeadlyTails) oPlayer.Suicides++;
                 return true;
             }
         }
@@ -666,10 +682,11 @@ function CollidedWithTail(Trail, PositionX, PositionY) {
 
     // Check for collisions with other player tails
     for (let iLoop = ogPlayer.length; iLoop--;) {
-        if (ogPlayer[iLoop].Trail !== Trail) {
+        if (ogPlayer[iLoop].Trail && ogPlayer[iLoop].Trail !== oPlayer.Trail) {
             for (let iLoop2 = ogPlayer[iLoop].Trail.length; iLoop2--;) {
-                if (ogPlayer[iLoop].Trail[iLoop2].x === PositionX &&
-                    ogPlayer[iLoop].Trail[iLoop2].y === PositionY) {
+                if (ogPlayer[iLoop].Trail[iLoop2].x === oPlayer.PositionX &&
+                    ogPlayer[iLoop].Trail[iLoop2].y === oPlayer.PositionY) {
+                    if (gbDeadlyTails) ogPlayer[iLoop].Kills++;
                     return true;
                 }
             }
@@ -695,6 +712,7 @@ function MovePlayer(oPlayer) {
     // Check for wall hit
     if (oPlayerVector.HitWall) {
         if (gbDeadlyWalls) {
+            oPlayer.Suicides++;
             NibblerDied(oPlayer);
             MessageLog(oPlayer.Name + " hit wall and died.", goVerbosityEnum.Information);
         } else {
@@ -752,6 +770,9 @@ function CalculateNewPosition(NewPositionX, NewPositionY, NewDirectionX, NewDire
 
 }
 function NibblerDied(oPlayer) {
+    
+    ogSprite.push(new Sprite(oPlayer.Explosion, oPlayer.PositionX, oPlayer.PositionY, 15));
+
     oPlayer.Dead = true;
     oPlayer.DirectionX = 0;
     oPlayer.DirectionY = 0;
@@ -765,6 +786,7 @@ function NibblerDied(oPlayer) {
         setTimeout(function () { oPlayer.Dead = false; }, 1000, oPlayer);
     } else {
         removeClass(oSpanPlayer[oPlayer.Index], "blink_me");
+        addClass(oSpanPlayer[oPlayer.Index], "dead");
 
         let iLivesRemaining = 0;
         for (let iLoop = ogPlayer.length; iLoop--;) {
@@ -779,7 +801,7 @@ function NibblerDied(oPlayer) {
 
 function BrainspawnLoop(oBrainspawn) {
 
-    if (Math.round(Math.random() * 20) < 1) {
+    if (Math.round(Math.random() * 15) < 1) {
         oBrainspawn.Target = ogPlayer[Math.floor(Math.random() * ogPlayer.length)];
     } else {
         oBrainspawn.Target = ogPlayer[0];
@@ -828,8 +850,18 @@ function CheckForSpecialKeys(oEvent) {
             TogglePause();
             break;
         case 77: // Mute
-            chkMuteEffects.checked = Sounds.NotMuted = !Sounds.NotMuted;
-            chkMuteMusic.checked = Music.NotMuted = !Music.NotMuted;
+            if (chkMuteEffects.checked === Sounds.NotMuted
+                || chkMuteMusic.checked === Music.NotMuted
+                || Sounds.NotMuted != Music.NotMuted) {
+                chkMuteEffects.checked = chkMuteMusic.checked = true;
+                Sounds.NotMuted = Music.NotMuted = false;
+            } else {
+                chkMuteEffects.checked = !chkMuteEffects.checked;
+                Sounds.NotMuted = !Sounds.NotMuted;
+                chkMuteMusic.checked = !chkMuteMusic.checked;
+                Music.NotMuted = !Music.NotMuted;
+            }
+
             if (Sounds.NotMuted) {
                 Sounds.Crawlig.play();
                 Music.One.play();
@@ -845,7 +877,8 @@ function CheckForSpecialKeys(oEvent) {
             Sounds.Pause.volume = Sounds.Volume;
             break;
         case 187: // =
-            chkMuteEffects.checked = Sounds.NotMuted = true;
+            chkMuteEffects.checked = false;
+            Sounds.NotMuted = true;
             rangeEffectsVolume.value = Sounds.Volume = Sounds.Volume < 1 ? Math.ceil((Sounds.Volume + 0.1) * 10) / 10 : 1;
             rangeMusicVolume.value = Music.One.volume = Music.Volume = Music.Volume < 1 ? Math.ceil((Music.Volume + 0.1) * 10) / 10 : 1;
             Sounds.Crawlig.volume = Sounds.Volume;
@@ -1050,21 +1083,21 @@ function DrawPlayer(oPlayer) {
     ctxArena.fillStyle = oPlayer.fillStyle;
     
     if (oPlayer.Trail.length === 0) {
-        ctxArena.fillRect(oPlayer.PositionX * giGridSize,
-            oPlayer.PositionY * giGridSize,
-            giGridSize - 12,
-            giGridSize - 12);
+        ctxArena.fillRect(oPlayer.PositionX * giGridSize + 3,
+            oPlayer.PositionY * giGridSize + 3,
+            giGridSize - 6,
+            giGridSize - 6);
     } else {
         for (let iLoop = oPlayer.Trail.length; iLoop--;) {
-            ctxArena.fillRect(oPlayer.Trail[iLoop].x * giGridSize + 6,
-                oPlayer.Trail[iLoop].y * giGridSize + 6,
-                giGridSize - 12,
-                giGridSize - 12);
+            ctxArena.fillRect(oPlayer.Trail[iLoop].x * giGridSize + 3,
+                oPlayer.Trail[iLoop].y * giGridSize + 3,
+                giGridSize - 6,
+                giGridSize - 6);
         }
     }
 
     // Check for tail collision
-    if (CollidedWithTail(oPlayer.Trail, oPlayer.PositionX, oPlayer.PositionY)) {
+    if (CollidedWithTail(oPlayer)) {
 
         oPlayer.TailLength = giMinimumTailLength;
 
@@ -1089,8 +1122,8 @@ function DrawPlayer(oPlayer) {
         ctxArena.fillStyle = "black";
         ctxArena.fillRect(oPlayer.PositionX * giGridSize + 6,
             oPlayer.PositionY * giGridSize + 6,
-            giGridSize - 16,
-            giGridSize - 16);
+            giGridSize - 12,
+            giGridSize - 12);
     }
 }
 
@@ -1190,4 +1223,50 @@ function removeClass(ele, cls) {
         var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
         ele.className = ele.className.replace(reg, ' ');
     }
+}
+
+function tintImage(imgElement, tintColor) {
+    // create hidden canvas (using image dimensions)
+    let canvas = document.createElement("canvas");
+    canvas.width = imgElement.offsetWidth;
+    canvas.height = imgElement.offsetHeight;
+   
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(imgElement, 0, 0);
+
+    let map = ctx.getImageData(0, 0, 320, 240);
+    let imdata = map.data;
+
+    // convert image to grayscale
+    var r, g, b, avg;
+    var alphas = [];
+    for (var p = 0, len = imdata.length; p < len; p += 4) {
+        r = imdata[p];
+        g = imdata[p + 1];
+        b = imdata[p + 2];
+        alphas[p + 3] = imdata[p + 3];
+
+        avg = Math.floor((r + g + b) / 3);
+
+        imdata[p] = imdata[p + 1] = imdata[p + 2] = avg;
+    }
+
+    ctx.putImageData(map, 0, 0);
+
+    // overlay filled rectangle using lighter composition
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = tintColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    //Replace alpha channel over remastered images
+    map = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    imdata = map.data;
+    for (let p = 0, len = imdata.length; p < len; p += 4) {
+        imdata[p + 3] = alphas[p + 3];
+    }
+    ctx.putImageData(map, 0, 0);
+
+    // replace image source with canvas data
+    imgElement.src = canvas.toDataURL();
 }
