@@ -63,6 +63,7 @@ function StartGame() {
     gbInfiniteTails = chkInfiniteTails.checked;
 
     if (chkMaze.checked) {
+       HideGameMenu();
        gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
     }
     return;
@@ -419,10 +420,7 @@ function Pause() {
 function UnPause() {
     gbGamePaused = false;
 
-    removeClass(oDivGameMenu, "showGameMenu");
-    removeClass(oDivScoreboard, "modal-blur");
-    removeClass(canvArena, "modal-blur");
-    removeClass(oDivTime, "blink_me");
+    HideGameMenu();
 
     if (Sounds.NotMuted) Sounds.Effects["Crawlig"].play();
 
@@ -435,7 +433,12 @@ function UnPause() {
 
     StartTimers();
 }
-
+function HideGameMenu() {
+    removeClass(oDivGameMenu, "showGameMenu");
+    removeClass(oDivScoreboard, "modal-blur");
+    removeClass(canvArena, "modal-blur");
+    removeClass(oDivTime, "blink_me");
+}
 function ResizeEvent() {
     // Runs each time the DOM window resize event fires.
     // Resets the canvas dimensions to match window,

@@ -59,9 +59,9 @@ function Cell(i, j) {
 
 function GenerateMaze(ColsIn, RowsIn) {
 
-    cols = ColsIn;
-    rows = RowsIn;
-    console.log(`${cols}, ${rows}`);
+    cols = Math.floor(ColsIn/2 + 1);
+    rows = Math.floor(RowsIn / 2 + 1);;
+    //console.log(`${cols}, ${rows}`);
 
     for (let j = 0; j < rows; j++) {
         for (let i = 0; i < cols; i++) {
@@ -135,7 +135,7 @@ function CalculateMaze() {
         clearInterval(foo);
         grid.forEach(function (item) { item.visited = false; });
         current = grid[0];
-        foo = setInterval(function () { CalculateMaze(); }, 200);
+        foo = setInterval(function () { RemoveDeadEnds(); }, 100);
         }
 
     //console.log(`${current.i} + ${current.j} * ${cols}`);
@@ -155,28 +155,6 @@ function RemoveDeadEnds() {
 
     current.visited = true;
 
-    // STEP 1
-    let next = current.checkNeighbors();
-    if (next) {
-        next.visited = true;
-
-        // STEP 2
-        stack.push(current);
-
-        // STEP 3
-        removeDead(current);
-
-        // STEP 4
-        current = next;
-    } else if (stack.length > 0) {
-        current = stack.pop();
-    }
-    else {
-        clearInterval(foo);
-    }
-
-    //console.log(`${current.i} + ${current.j} * ${cols}`);
-
     ctxArena.fillStyle = "black";
     ctxArena.fillRect(0, 0, window.innerWidth, giGridHeight);
     DrawMaze(grid);
@@ -186,6 +164,32 @@ function RemoveDeadEnds() {
         current.j * giGridSize + 3,
         giGridSize - 6,
         giGridSize - 6);
+
+    // STEP 1
+    let next = current.checkNeighbors();
+    if (next) {
+        next.visited = true;
+
+        // STEP 2
+        stack.push(current);
+
+        // STEP 3
+        removeDead(current, next);
+
+        // STEP 4
+        current = next;
+    } else if (stack.length > 0) {
+        current = stack.pop();
+    }
+    else {
+        clearInterval(foo);
+        console.log("foo");
+        ExpandGrid();
+    }
+
+    //console.log(`${current.i} + ${current.j} * ${cols}`);
+
+
 }
 
 function index(i, j) {
@@ -196,7 +200,7 @@ function index(i, j) {
     return i + j * cols;
 }
 
-function removeDead(a) {
+function removeDead(a, b) {
 
     let iNumberOfWalls = 0;
 
@@ -204,12 +208,25 @@ function removeDead(a) {
     if (a.walls[1]) iNumberOfWalls++;
     if (a.walls[2]) iNumberOfWalls++;
     if (a.walls[3]) iNumberOfWalls++;
-
+    
     if (iNumberOfWalls > 2) {
-        if (a.walls[0]) a.walls[0] = false;
-        if (a.walls[1]) a.walls[1] = false;
-        if (a.walls[2]) a.walls[2] = false;
-        if (a.walls[3]) a.walls[3] = false;
+        let x = a.j - b.j;
+        if (x === 1) {
+            a.walls[3] = false;
+            b.walls[1] = false;
+        } else if (x === -1) {
+            a.walls[1] = false;
+            b.walls[3] = false;
+        }
+
+        let y = a.i - b.i;
+        if (y === 1) {
+            a.walls[0] = false;
+            b.walls[2] = false;
+        } else if (y === -1) {
+            a.walls[2] = false;
+            b.walls[0] = false;
+        }
     }
 }
 
@@ -232,4 +249,15 @@ function removeWalls(a, b) {
         a.walls[2] = false;
         b.walls[0] = false;
     }
+}
+
+function ExpandGrid() {
+    let BigGrid = [];
+    BigGrid.concat(grid);
+    BigGrid.concat(grid);
+    BigGrid.concat(grid);
+    BigGrid.concat(grid);
+
+    console.table(grid);
+    DrawMaze(BigGrid);
 }
