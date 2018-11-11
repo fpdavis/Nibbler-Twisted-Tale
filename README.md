@@ -124,6 +124,8 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 * Maze is now generated fast and accounts for even or odd rows.
 * Added a quick Benchmark timer
+* Bots honor the maze... for the most part, still a bit buggy though
+
 
 ### Creative Commons License Attribution 3.0 
 

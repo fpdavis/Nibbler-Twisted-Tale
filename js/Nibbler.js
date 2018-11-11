@@ -137,7 +137,7 @@ function NibblerDied(oPlayer) {
     oPlayer.TailLength = giMinimumTailLength; // Need to remove the tail
 
     if (oPlayer.Lives > 0) {
-        if (--oPlayer.Lives == 0) addClass(oSpanPlayer[oPlayer.Index], "blink_me");
+        if (--oPlayer.Lives === 0) addClass(oSpanPlayer[oPlayer.Index], "blink_me");
 
         oPlayer.SetSpawnPoint();
         setTimeout(function () { oPlayer.Dead = false; }, 1000, oPlayer);

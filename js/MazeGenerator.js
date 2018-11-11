@@ -32,22 +32,22 @@ function Cell(i, j) {
     this.checkNeighbors = function () {
         let neighbors = [];
 
-        let top = oaMaze[index(this.i, this.j - 1)];
-        let right = oaMaze[index(this.i + 1, this.j)];
-        let bottom = oaMaze[index(this.i, this.j + 1)];
-        let left = oaMaze[index(this.i - 1, this.j)];
+        let North = oaMaze[MGIndex(this.i, this.j - 1, iColumns, iRows)];
+        let East = oaMaze[MGIndex(this.i + 1, this.j, iColumns, iRows)];
+        let South = oaMaze[MGIndex(this.i, this.j + 1, iColumns, iRows)];
+        let West = oaMaze[MGIndex(this.i - 1, this.j, iColumns, iRows)];
 
-        if (top && !top.visited) {
-            neighbors.push(top);
+        if (North && !North.visited) {
+            neighbors.push(North);
         }
-        if (right && !right.visited) {
-            neighbors.push(right);
+        if (East && !East.visited) {
+            neighbors.push(East);
         }
-        if (bottom && !bottom.visited) {
-            neighbors.push(bottom);
+        if (South && !South.visited) {
+            neighbors.push(South);
         }
-        if (left && !left.visited) {
-            neighbors.push(left);
+        if (West && !West.visited) {
+            neighbors.push(West);
         }
 
         if (neighbors.length > 0) {
@@ -160,7 +160,7 @@ function ClearPerimiterAndRemaining() {
     }
 }
 
-function index(i, j) {
+function MGIndex(i, j, iColumns, iRows) {
     if (i < 0 || j < 0 || i > iColumns - 1 || j > iRows - 1) {
         return -1;
     }

@@ -95,4 +95,12 @@ var gbDiagonalMovement;
 var gbStopAfterEachMove;
 var gbInfiniteTails;
 
+const goWalls = {
+    Lookup: ["West", "South", "East", "North"],
+    West: 0,
+    South: 1,
+    East: 2,
+    North: 3
+}
+
 // #endregion

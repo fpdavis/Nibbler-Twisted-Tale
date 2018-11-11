@@ -1,3 +1,4 @@
+
 function FindPath_Simple_Nibbler(oPlayer) {
     let iDirection = oPlayer.Direction;
 
@@ -89,17 +90,26 @@ function Findpath_Nibbler(oPlayer) {
         gaGrid[iLoop] = new Array(giArenaSquaresY);
 
         for (let iLoop2 = 0; iLoop2 < giArenaSquaresY; iLoop2++) {
-            gaGrid[iLoop][iLoop2] = 1;
+            gaGrid[iLoop][iLoop2] = new GridNode(iLoop, iLoop2, 1);
         }
     }
 
-    for (let iLoop = ogPlayer.length; iLoop--;) {
+    if (chkMaze.checked) {
+        for (let iIndex = gaMaze.length; iIndex--;) {
+            gaGrid[gaMaze[iIndex].i][gaMaze[iIndex].j].walls[0] = gaMaze[iIndex].walls[0];
+            gaGrid[gaMaze[iIndex].i][gaMaze[iIndex].j].walls[1] = gaMaze[iIndex].walls[1];
+            gaGrid[gaMaze[iIndex].i][gaMaze[iIndex].j].walls[2] = gaMaze[iIndex].walls[2];
+            gaGrid[gaMaze[iIndex].i][gaMaze[iIndex].j].walls[3] = gaMaze[iIndex].walls[3];
+        }
+    }
 
-        gaGrid[ogPlayer[iLoop].PositionX][ogPlayer[iLoop].PositionY] = 0;
+    for (let iLoop = gaNibblers.length; iLoop--;) {
 
-        for (let iLoop2 = ogPlayer[iLoop].Trail.length; iLoop2--;) {
+        gaGrid[gaNibblers[iLoop].PositionX][gaNibblers[iLoop].PositionY].weight = 0;
+
+        for (let iLoop2 = gaNibblers[iLoop].Trail.length; iLoop2--;) {
             try {
-                gaGrid[ogPlayer[iLoop].Trail[iLoop2].x][ogPlayer[iLoop].Trail[iLoop2].y] = 0;
+                gaGrid[gaNibblers[iLoop].Trail[iLoop2].x][gaNibblers[iLoop].Trail[iLoop2].y].weight = 0;
             } catch {
             }
         }
@@ -107,7 +117,7 @@ function Findpath_Nibbler(oPlayer) {
 
     if (gaBrainspawns) {
         for (let iLoop = gaBrainspawns.length; iLoop--;) {
-            gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY] = 0;
+            gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY].weight = 0;
         }
     }
 
@@ -120,6 +130,19 @@ function Findpath_Nibbler(oPlayer) {
     if (oResult.length !== 0) {
         oPlayer.DirectionX = oResult[0].x - oPlayer.PositionX;
         oPlayer.DirectionY = oResult[0].y - oPlayer.PositionY;
+
+        //if (chkMaze.checked) {
+        //    for (let iIndex = gaMaze.length; iIndex--;) {
+        //        gaMaze[iIndex].highlight = false;
+        //    }
+
+        //    for (let iIndex = oResult.length; iIndex--;) {
+        //        gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)].highlight = true;
+        //    }
+        //}
+    } else {
+        NibblerDied(oPlayer);
+        MessageLog(oPlayer.Name + " was traped and died.", goVerbosityEnum.Information);
     }
 }
 function Findpath_Brainspawn(oPlayer) {
@@ -128,15 +151,24 @@ function Findpath_Brainspawn(oPlayer) {
         gaGrid[iLoop] = new Array(giArenaSquaresY);
 
         for (let iLoop2 = 0; iLoop2 < giArenaSquaresY; iLoop2++) {
-            gaGrid[iLoop][iLoop2] = 1;
+            gaGrid[iLoop][iLoop2] = new GridNode(iLoop, iLoop2, 1);
+        }
+    }
+
+    if (chkMaze.checked) {
+        for (let iIndex = gaMaze.length; iIndex--;) {
+            gaGrid[gaMaze[iIndex].i][gaMaze[iIndex].j].walls[0] = gaMaze[iIndex].walls[0];
+            gaGrid[gaMaze[iIndex].i][gaMaze[iIndex].j].walls[1] = gaMaze[iIndex].walls[1];
+            gaGrid[gaMaze[iIndex].i][gaMaze[iIndex].j].walls[2] = gaMaze[iIndex].walls[2];
+            gaGrid[gaMaze[iIndex].i][gaMaze[iIndex].j].walls[3] = gaMaze[iIndex].walls[3];
         }
     }
 
     for (let iLoop = gaBrainspawns.length; iLoop--;) {
         if (gaBrainspawns[iLoop] == oPlayer) {
-            gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY] = 1;
+            gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY].weight = 1;
         } else {
-            gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY] = 0;
+            gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY].weight = 0;
         }
     }
 
@@ -148,6 +180,16 @@ function Findpath_Brainspawn(oPlayer) {
     
     if (oResult.length !== 0) {
         oPlayer.DirectionX = oResult[0].x - oPlayer.PositionX;
-        oPlayer.DirectionY = oResult[0].y - oPlayer.PositionY;    
+        oPlayer.DirectionY = oResult[0].y - oPlayer.PositionY;   
+
+        //if (chkMaze.checked) {
+            //for (let iIndex = gaMaze.length; iIndex--;) {
+            //    gaMaze[iIndex].highlight = false;
+            //}
+
+            //for (let iIndex = oResult.length; iIndex--;) {
+            //    gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)].highlight = true;
+            //}
+        //}
     }
 }

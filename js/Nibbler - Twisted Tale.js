@@ -34,10 +34,9 @@ function SetupArena() {
 
     ResizeEvent();
 
+    gaMaze.length = 0;
     if (chkMaze.checked) {
-        HideGameMenu();
-        gaMaze.length = 0;
-        oBenchmark = new Benchmark("GenerateMaze");
+        HideGameMenu();        
         gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
     }
 
@@ -46,7 +45,6 @@ function SetupArena() {
 }
 
 function StartGame() {
-    oBenchmark.stop();
     if (gaSprites) gaSprites.length = 0;
 
     InitializePlayers();
@@ -174,6 +172,25 @@ function ComputerPlayerLoop(oPlayer) {
 }
 
 function CalculateNewPosition(NewPositionX, NewPositionY, NewDirectionX, NewDirectionY) {
+    
+    if (chkMaze.checked) {
+        let iIndex = MGIndex(NewPositionX, NewPositionY, giArenaSquaresX, giArenaSquaresY);
+
+        if (gaMaze[iIndex]) {
+            if (NewDirectionX > 0 && gaMaze[iIndex].walls[goWalls.East]) {
+                NewDirectionX = 0;
+            }
+            else if (NewDirectionX < 0 && gaMaze[iIndex].walls[goWalls.West]) {
+                NewDirectionX = 0;
+            }
+            if (NewDirectionY < 0 && gaMaze[iIndex].walls[goWalls.North]) {
+                NewDirectionY = 0;
+            }
+            else if (NewDirectionY > 0 && gaMaze[iIndex].walls[goWalls.South]) {
+                NewDirectionY = 0;
+            }
+        }
+    }
 
     NewPositionX += NewDirectionX;
     NewPositionY += NewDirectionY;

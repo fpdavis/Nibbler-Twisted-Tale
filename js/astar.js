@@ -4,6 +4,27 @@
 // Implements the astar search algorithm in javascript using a Binary Heap.
 // Includes Binary Heap (with modifications) from Marijn Haverbeke.
 // http://eloquentjavascript.net/appendix2.html
+
+function GridNode(x, y, weight, walls = [false, false, false, false]) {
+    this.x = x;
+    this.y = y;
+    this.weight = weight;
+    this.walls = walls;
+}
+GridNode.prototype.toString = function () {
+    return "[" + this.x + " " + this.y + "]";
+};
+GridNode.prototype.getCost = function (fromNeighbor) {
+    // Take diagonal weight into consideration.
+    if (fromNeighbor && fromNeighbor.x != this.x && fromNeighbor.y != this.y) {
+        return this.weight * 1.41421;
+    }
+    return this.weight;
+};
+GridNode.prototype.isWall = function () {
+    return this.weight === 0;
+};
+
 (function (definition) {
     /* global module, define */
     if (typeof module === 'object' && typeof module.exports === 'object') {
@@ -34,17 +55,17 @@
     }
 
     var astar = {
-        /**
-        * Perform an A* Search on a graph given a start and end node.
-        * @param {Graph} graph
-        * @param {GridNode} start
-        * @param {GridNode} end
-        * @param {Object} [options]
-        * @param {bool} [options.closest] Specifies whether to return the
-                   path to the closest node if the target is unreachable.
-        * @param {Function} [options.heuristic] Heuristic function (see
-        *          astar.heuristics).
-        */
+        ///**
+        //* Perform an A* Search on a graph given a start and end node.
+        //* @param {Graph} graph
+        //* @param {GridNode} start
+        //* @param {GridNode} end
+        //* @param {Object} [options]
+        //* @param {bool} [options.closest] Specifies whether to return the
+        //           path to the closest node if the target is unreachable.
+        //* @param {Function} [options.heuristic] Heuristic function (see
+        //*          astar.heuristics).
+        //*/
         search: function (graph, start, end, options) {
             graph.cleanDirty();
             options = options || {};
@@ -148,26 +169,23 @@
         }
     };
 
-    /**
-     * A graph memory structure
-     * @param {Array} gridIn 2D array of input weights
-     * @param {Object} [options]
-     * @param {bool} [options.diagonal] Specifies whether diagonal moves are allowed
-     */
+    ///**
+    // * A graph memory structure
+    // * @param {Array} gridIn 2D array of input weights
+    // * @param {Object} [options]
+    // * @param {bool} [options.diagonal] Specifies whether diagonal moves are allowed
+    // */
     function Graph(gridIn, options) {
         options = options || {};
         this.nodes = [];
         this.diagonal = !!options.diagonal;
-        this.grid = [];
-        for (var x = 0; x < gridIn.length; x++) {
-            this.grid[x] = [];
-
-            for (var y = 0, row = gridIn[x]; y < row.length; y++) {
-                var node = new GridNode(x, y, row[y]);
-                this.grid[x][y] = node;
-                this.nodes.push(node);
+        this.grid = gridIn;
+        for (var x = 0; x < this.grid.length; x++) {
+            for (var y = 0, row = this.grid[x]; y < row.length; y++) {
+                this.nodes.push(this.grid[x][y]);
             }
         }
+
         this.init();
     }
 
@@ -177,69 +195,78 @@
             astar.cleanNode(this.nodes[i]);
         }
     };
-
     Graph.prototype.cleanDirty = function () {
         for (var i = 0; i < this.dirtyNodes.length; i++) {
             astar.cleanNode(this.dirtyNodes[i]);
         }
         this.dirtyNodes = [];
     };
-
     Graph.prototype.markDirty = function (node) {
         this.dirtyNodes.push(node);
     };
-
     Graph.prototype.neighbors = function (node) {
         var ret = [];
         var x = node.x;
         var y = node.y;
         var grid = this.grid;
 
+        // TODO: Secondary wall checks are here (backword looking) due to some walls not having both sides in the grid.
+        // This should be fixed in grid generation.
+
         // West
-        if (grid[x - 1] && grid[x - 1][y]) {
+        if (!node.walls[goWalls.West] && grid[x - 1] && grid[x - 1][y] && !grid[x - 1][y].walls[goWalls.East]) {
             ret.push(grid[x - 1][y]);
         }
 
         // East
-        if (grid[x + 1] && grid[x + 1][y]) {
+        if (!node.walls[goWalls.East] && grid[x + 1] && grid[x + 1][y] && !grid[x + 1][y].walls[goWalls.West]) {
             ret.push(grid[x + 1][y]);
         }
 
-        // South
-        if (grid[x] && grid[x][y - 1]) {
+        // North
+        if (!node.walls[goWalls.North] && grid[x] && grid[x][y - 1] && !grid[x][y - 1].walls[goWalls.South]) {
             ret.push(grid[x][y - 1]);
         }
 
-        // North
-        if (grid[x] && grid[x][y + 1]) {
+        // South
+        if (!node.walls[goWalls.South] && grid[x] && grid[x][y + 1] && !grid[x][y + 1].walls[goWalls.North]) {
             ret.push(grid[x][y + 1]);
         }
 
         if (this.diagonal) {
-            // Southwest
-            if (grid[x - 1] && grid[x - 1][y - 1]) {
-                ret.push(grid[x - 1][y - 1]);
+            // South
+            if (!node.walls[goWalls.South]) {
+                // Southwest
+                if (!gnode.walls[goWalls.West] &&
+                    grid[x - 1] && grid[x - 1][y - 1]) {
+                    ret.push(grid[x - 1][y - 1]);
+                }
+
+                // Southeast
+                if (!node.walls[goWalls.East] &&
+                    grid[x + 1] && grid[x + 1][y - 1]) {
+                    ret.push(grid[x + 1][y - 1]);
+                }
             }
 
-            // Southeast
-            if (grid[x + 1] && grid[x + 1][y - 1]) {
-                ret.push(grid[x + 1][y - 1]);
-            }
+            // North
+            if (!node.walls[goWalls.North]) {
+                // Northwest
+                if (!node.walls[goWalls.West] &&
+                    grid[x - 1] && grid[x - 1][y + 1]) {
+                    ret.push(grid[x - 1][y + 1]);
+                }
 
-            // Northwest
-            if (grid[x - 1] && grid[x - 1][y + 1]) {
-                ret.push(grid[x - 1][y + 1]);
-            }
-
-            // Northeast
-            if (grid[x + 1] && grid[x + 1][y + 1]) {
-                ret.push(grid[x + 1][y + 1]);
+                // Northeast
+                if (!node.walls[goWalls.East] &&
+                    grid[x + 1] && grid[x + 1][y + 1]) {
+                    ret.push(grid[x + 1][y + 1]);
+                }
             }
         }
 
         return ret;
     };
-
     Graph.prototype.toString = function () {
         var graphString = [];
         var nodes = this.grid;
@@ -254,33 +281,10 @@
         return graphString.join("\n");
     };
 
-    function GridNode(x, y, weight) {
-        this.x = x;
-        this.y = y;
-        this.weight = weight;
-    }
-
-    GridNode.prototype.toString = function () {
-        return "[" + this.x + " " + this.y + "]";
-    };
-
-    GridNode.prototype.getCost = function (fromNeighbor) {
-        // Take diagonal weight into consideration.
-        if (fromNeighbor && fromNeighbor.x != this.x && fromNeighbor.y != this.y) {
-            return this.weight * 1.41421;
-        }
-        return this.weight;
-    };
-
-    GridNode.prototype.isWall = function () {
-        return this.weight === 0;
-    };
-
     function BinaryHeap(scoreFunction) {
         this.content = [];
         this.scoreFunction = scoreFunction;
     }
-
     BinaryHeap.prototype = {
         push: function (element) {
             // Add the new element to the end of the array.
