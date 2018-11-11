@@ -55,3 +55,21 @@ function tintImage(imgElement, tintColor) {
     // replace image source with canvas data
     imgElement.src = canvas.toDataURL();
 }
+var oBenchmark;
+function Benchmark(name) {
+    let oStartDate = new Date();
+    return {
+        stop: function () {
+            let oEndDate = new Date();
+            let iDuration = oEndDate.getTime() - oStartDate.getTime();
+
+            let iSeconds = Math.floor((iDuration / 1000) % 60);
+            let iMilliseconds = Math.floor(iDuration - (iSeconds * 1000));
+            let iMinutes = Math.floor((iDuration / 1000 / 60) % 60);
+            let iHours = Math.floor((iDuration / (1000 * 60 * 60)) % 24);
+            let iDays = Math.floor(iDuration / (1000 * 60 * 60 * 24));
+
+            MessageLog(`Timer: ${name} finished in ${iDays}:${iHours}:${iMinutes}:${iSeconds}.${iMilliseconds}`, goVerbosityEnum.Verbose);
+        }
+    }
+};

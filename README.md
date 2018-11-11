@@ -33,6 +33,7 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 	* Erase ability - Need to better define this
 	* Jump ability
 	* Teleportation (Random/Directional?)
+	* Incorporate Benchmark into Messagelog
 * Improve Pause/Menu User Process/Optioning
 * Apply dark theme to menu
 * Initializations are a bit clunky and should be improved
@@ -120,6 +121,9 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Animated all deaths
 * Added Infinite tails
 * Fixed bug with mute getting out of sync with checkboxes
+
+* Maze is now generated fast and accounts for even or odd rows.
+* Added a quick Benchmark timer
 
 ### Creative Commons License Attribution 3.0 
 

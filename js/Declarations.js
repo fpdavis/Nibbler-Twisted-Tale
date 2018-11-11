@@ -96,5 +96,3 @@ var gbStopAfterEachMove;
 var gbInfiniteTails;
 
 // #endregion
-
-giVerbosity = goVerbosityEnum.Debug;

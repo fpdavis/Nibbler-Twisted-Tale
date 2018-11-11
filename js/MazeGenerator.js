@@ -17,8 +17,10 @@
 
 let iColumns, iRows;
 let oaMaze = [];
+let aBigMaze = [];
 let oCurrentCell;
 let oStack = [];
+let bOddColumns;
 
 function Cell(i, j) {
     this.i = i;
@@ -59,8 +61,12 @@ function Cell(i, j) {
 
 function GenerateMaze(ColsIn, RowsIn) {
 
+    MessageLog(`Generating Maze ${ColsIn} x ${RowsIn}`, goVerbosityEnum.Debug);
     iColumns = Math.floor(ColsIn / 2);
     iRows = Math.floor(RowsIn / 2);
+
+    if (ColsIn % 2 !== 0) bOddColumns = true;
+
     oaMaze.length = 0;
 
     for (let j = 0; j < iRows; j++) {
@@ -71,62 +77,55 @@ function GenerateMaze(ColsIn, RowsIn) {
     }
 
     oCurrentCell = oaMaze[0];
-    gbSpaceBarHit = false;
-    setTimeout(function () { CalculateMaze(); }, 15);
+    CalculateMaze();
+    return aBigMaze;
 }
 
 function CalculateMaze() {
 
-    oCurrentCell.visited = true;
-    oCurrentCell.highlight = true;
-    //DrawGrid(oaMaze);
-    oCurrentCell.highlight = false;
+    while (true) {
+        oCurrentCell.visited = true;
 
-    let next = oCurrentCell.checkNeighbors();
-    if (next) {
-        next.visited = true;
-        oStack.push(oCurrentCell);
-        removeWalls(oCurrentCell, next);
-        oCurrentCell = next;
-
-        setTimeout(function () { CalculateMaze(); }, 0);
-    } else if (oStack.length > 0) {
-        oCurrentCell = oStack.pop();
-
-        setTimeout(function () { CalculateMaze(); }, 0);
-    }
-    else {
-        oaMaze.forEach(function (item) { item.visited = false; });
-        oCurrentCell = oaMaze[0];
-        setTimeout(function () { RemoveDeadEnds(); }, 0);
+        let next = oCurrentCell.checkNeighbors();
+        if (next) {
+            next.visited = true;
+            oStack.push(oCurrentCell);
+            removeWalls(oCurrentCell, next);
+            oCurrentCell = next;
+        } else if (oStack.length > 0) {
+            oCurrentCell = oStack.pop();
+        }
+        else {
+            break;
+        }
     }
 
-    //console.log(`${current.i} + ${current.j} * ${cols}`);
-
+    oaMaze.forEach(function (item) { item.visited = false; });
+    oCurrentCell = oaMaze[0];
+    RemoveDeadEnds();
 }
 
 function RemoveDeadEnds() {
 
-    oCurrentCell.visited = true;
-    oCurrentCell.highlight = true;
-    //DrawGrid(oaMaze);
-    oCurrentCell.highlight = false;
+    while (true) {
+        oCurrentCell.visited = true;
 
-    let next = oCurrentCell.checkNeighbors();
-    if (next) {
-        next.visited = true;
-        oStack.push(oCurrentCell);
-        removeDead(oCurrentCell, next);
-        oCurrentCell = next;
-        setTimeout(function () { RemoveDeadEnds(); }, 0);
-    } else if (oStack.length > 0) {
-        oCurrentCell = oStack.pop();
-        setTimeout(function () { RemoveDeadEnds(); }, 0);
+        let next = oCurrentCell.checkNeighbors();
+        if (next) {
+            next.visited = true;
+            oStack.push(oCurrentCell);
+            removeDead(oCurrentCell, next);
+            oCurrentCell = next;
+        } else if (oStack.length > 0) {
+            oCurrentCell = oStack.pop();
+        }
+        else {
+            break;
+        }
     }
-    else {
-        ClearPerimiterAndRemaining();
-        ExpandMaze();
-    }
+
+    ClearPerimiterAndRemaining();
+    ExpandMaze();
 }
 
 function ClearPerimiterAndRemaining() {
@@ -134,13 +133,16 @@ function ClearPerimiterAndRemaining() {
 
     for (let iLoop = 0; iLoop < oaMaze.length; iLoop++) {
         bClearWalls = false;
-        if (iLoop < iColumns) {
+        if (iLoop < iColumns * 2) {
             bClearWalls = true;
         }
         else if (iLoop > oaMaze.length - iColumns) {
             bClearWalls = true;
         }
         else if (iLoop % iColumns === 0) {
+            bClearWalls = true;
+        }
+        else if ((iLoop - 1) % iColumns === 0) {
             bClearWalls = true;
         }
         else if ((iLoop + 1) % iColumns === 0) {
@@ -227,24 +229,28 @@ function removeWalls(a, b) {
     }
 }
 
-function ExpandMaze() {
-
-    let aBigMaze = [];
-
-    let iTotalCols = iColumns * 2;
-    let iTotalRows = iRows * 2;
-    let iCurrentRow = 0;
-
+function ExpandMaze() {    
     let aMazeTopLeft = oaMaze;
     let aMazeTopRight = TransposeMazeH(JSON.parse(JSON.stringify(oaMaze)), 1);
     let aMazeBottomLeft = TransposeMazeV(JSON.parse(JSON.stringify(oaMaze)));
     let aMazeBottomRight = TransposeMazeV(JSON.parse(JSON.stringify(aMazeTopRight)));
     let iIndex = 0;
-
+    let iCurrentRow = 0;
+    
     while (iIndex < oaMaze.length * 2) {
 
         for (let iTopLeftIndex = iCurrentRow * iColumns; iTopLeftIndex < iCurrentRow * iColumns + iColumns; iTopLeftIndex++) {
             aBigMaze[iIndex++] = aMazeTopLeft[iTopLeftIndex];
+        }
+
+        if (bOddColumns) {
+            aBigMaze[iIndex] = new Cell();
+            let NewIndicies = ReverseIndex(iIndex);
+            aBigMaze[iIndex].walls[0] = aBigMaze[iIndex].walls[1] = aBigMaze[iIndex].walls[2] = aBigMaze[iIndex].walls[3] = false;
+            aBigMaze[iIndex].i = NewIndicies.i;
+            aBigMaze[iIndex].j = NewIndicies.j;
+
+            iIndex++;
         }
 
         for (let iTopRightIndex = iCurrentRow * iColumns; iTopRightIndex < iCurrentRow * iColumns + iColumns; iTopRightIndex++) {
@@ -258,6 +264,7 @@ function ExpandMaze() {
 
         iCurrentRow++;
     }
+
     iCurrentRow = 0;
     while (iIndex < oaMaze.length * 4) {
 
@@ -271,13 +278,21 @@ function ExpandMaze() {
             iIndex++;
         }
 
+        if (bOddColumns) {
+            aBigMaze[iIndex] = new Cell();
+            let NewIndicies = ReverseIndex(iIndex);
+            aBigMaze[iIndex].walls[0] = aBigMaze[iIndex].walls[1] = aBigMaze[iIndex].walls[2] = aBigMaze[iIndex].walls[3] = false;
+            aBigMaze[iIndex].i = NewIndicies.i;
+            aBigMaze[iIndex].j = NewIndicies.j;
+
+            iIndex++;
+        }
+
         for (let iBottomRightIndex = iCurrentRow * iColumns; iBottomRightIndex < iCurrentRow * iColumns + iColumns; iBottomRightIndex++) {
-            if (aMazeBottomRight[iBottomRightIndex]) {
-                aBigMaze[iIndex] = aMazeBottomRight[iBottomRightIndex];
-                let NewIndicies = ReverseIndex(iIndex);
-                aBigMaze[iIndex].i = NewIndicies.i;
-                aBigMaze[iIndex].j = NewIndicies.j;
-            }
+            aBigMaze[iIndex] = aMazeBottomRight[iBottomRightIndex];
+            let NewIndicies = ReverseIndex(iIndex);
+            aBigMaze[iIndex].i = NewIndicies.i;
+            aBigMaze[iIndex].j = NewIndicies.j;
 
             iIndex++;
         }
@@ -285,8 +300,7 @@ function ExpandMaze() {
         iCurrentRow++;
     }
 
-    gaMaze = aBigMaze;
-    StartGame();
+   return aBigMaze;
 }
 
 function TransposeMazeH(Maze) {

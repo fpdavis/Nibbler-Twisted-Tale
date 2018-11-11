@@ -18,24 +18,32 @@ const goVerbosityEnum = {
     Verbose: 4,
     Debug: 5
 }
-var giVerbosity = goVerbosityEnum.Warning;
+var giVerbosity = goVerbosityEnum.Debug;
 
 function MessageLog(Message, Verbosity = goVerbosityEnum.Warning) {
+    
     if (Verbosity <= giVerbosity) {
-        switch (Verbosity) {
-            case 0:
-            case 1:
+        switch(Verbosity) {
+            case goVerbosityEnum.Critical:
                 console.error(Message);
                 break;
-            case 2:
+            case goVerbosityEnum.Error:
+                console.error(Message);
+                break;
+            case goVerbosityEnum.Warning:
                 console.warn(Message);
                 break;
-            case 3:
+            case goVerbosityEnum.Information:
                 console.info(Message);
                 break;
-            case 4:
-            case 5:
+            case goVerbosityEnum.Verbose:
+                console.info(Message);
+                break;
+            case goVerbosityEnum.Debug:
                 console.debug(Message);
+                break;
+            default: 
+                console.log(Message);
                 break;
         }
     }

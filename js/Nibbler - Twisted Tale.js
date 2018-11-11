@@ -10,16 +10,18 @@ window.onload = function () {
     addClass(canvArena, "modal-blur");
 
     Sounds.Effects["Crawlig"].loop = true;
+
+    console.info("Message logging set to " + goVerbosityEnum.Lookup[giVerbosity]);
 }
 
 function SetupArena() {
 
     switch (selectArenaSize.value) {
         case "Small":
-            giGridSize = 60;
+            giGridSize = 80;
             break;
         case "Large":
-            giGridSize = 30;
+            giGridSize = 20;
             break;
         default:
             giGridSize = 40;
@@ -35,15 +37,16 @@ function SetupArena() {
     if (chkMaze.checked) {
         HideGameMenu();
         gaMaze.length = 0;
-        GenerateMaze(giArenaSquaresX, giArenaSquaresY);
+        oBenchmark = new Benchmark("GenerateMaze");
+        gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
     }
-    else {
-        StartGame();
-    }
+
+    StartGame();
+
 }
 
 function StartGame() {
-
+    oBenchmark.stop();
     if (gaSprites) gaSprites.length = 0;
 
     InitializePlayers();
@@ -498,7 +501,7 @@ function DrawMaze(Maze) {
                 ctxArena.fillRect(x, y, giGridSize, giGridSize);
             }
 
-            //if (giVerbosity = goVerbosityEnum.Debug) DrawCharacter(iIndex, x, y);
+            if (giVerbosity = goVerbosityEnum.Debug) DrawCharacter(iIndex, x, y);
 
             // Draw the spot
             ctxArena.beginPath();
