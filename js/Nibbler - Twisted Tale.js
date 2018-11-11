@@ -12,9 +12,7 @@ window.onload = function () {
     Sounds.Effects["Crawlig"].loop = true;
 }
 
-function StartGame() {
-
-    if (gaSprites) gaSprites.length = 0;
+function SetupArena() {
 
     switch (selectArenaSize.value) {
         case "Small":
@@ -27,14 +25,30 @@ function StartGame() {
             giGridSize = 40;
     }
 
+    giGridSizeHalf = giGridSize / 2;
+
     giArenaSquaresX = Math.floor(window.innerWidth / giGridSize);
     giArenaSquaresY = Math.floor(giGridHeight / giGridSize);
 
-    InitializePlayers();
-    InitializePellets();
-
     ResizeEvent();
 
+    if (chkMaze.checked) {
+        HideGameMenu();
+        gaMaze.length = 0;
+        GenerateMaze(giArenaSquaresX, giArenaSquaresY);
+    }
+    else {
+        StartGame();
+    }
+}
+
+function StartGame() {
+
+    if (gaSprites) gaSprites.length = 0;
+
+    InitializePlayers();
+    InitializePellets();
+    
     gaNibblers.forEach(DrawPlayer);
 
     if (chkTime.checked) {
@@ -62,11 +76,6 @@ function StartGame() {
     gbStopAfterEachMove = !chkNonStop.checked;
     gbInfiniteTails = chkInfiniteTails.checked;
 
-    if (chkMaze.checked) {
-       HideGameMenu();
-       gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
-    }
-    return;
     InitializeBrainspawn();
     
     Sounds.NotMuted = !chkMuteEffects.checked;
@@ -228,9 +237,11 @@ function KeydownEvent(oEvent) {
     }
 }
 function CheckForSpecialKeys(oEvent) {
-
+ 
     switch (oEvent.keyCode) {
         case 32: // Space
+            gbSpaceBarHit = true;
+            break;
         case 80: // "P"
         case 27: // Escape
             TogglePause();
@@ -273,7 +284,7 @@ function CheckForSpecialKeys(oEvent) {
         default:
             return false;
     }
-    ;
+    
     return true;
 }
 function CheckForKeyEvents(oPlayer) {
@@ -407,7 +418,11 @@ function Pause() {
     addClass(oDivTime, "blink_me");
 
     clearInterval(goGameLoop);
-    clearInterval(ogCountdownTimer);
+
+    if (chkTime.checked) {
+        clearInterval(ogCountdownTimer);
+    }
+
     gaNibblers.forEach(function (oPlayer) { clearInterval(oPlayer.Timer) });
 
     if (gaBrainspawns) gaBrainspawns.forEach(function (oBrainspawn) { clearInterval(oBrainspawn.Timer) });
@@ -456,63 +471,75 @@ function ResizeEvent() {
     DrawGrid();
 }
 
-function DrawGrid() {
+function DrawGrid(Maze = gaMaze) {
     ctxArena.fillStyle = "black";
     ctxArena.fillRect(0, 0, window.innerWidth, giGridHeight);
 
-    DrawMaze(gaMaze);
+    DrawMaze(Maze);
 
     ctxArena.strokeStyle = 'orange';
-    ctxArena.lineWidth = giGridSize / 2;
+    ctxArena.lineWidth = giGridSizeHalf;
     ctxArena.strokeRect(0, 0, window.innerWidth, giGridHeight);
 }
 function DrawMaze(Maze) {
 
-    let iIndex;
+    ctxArena.lineWidth = 2;
+    ctxArena.strokeStyle = "white";
 
-    for (let iLoop = 0; iLoop < giArenaSquaresX; iLoop++) {
-        for (let iLoop2 = 0; iLoop2 < giArenaSquaresY; iLoop2++) {
+    for (let iIndex = Maze.length; iIndex--;) {
 
-            iIndex = index(iLoop, iLoop2);
+        if (Maze[iIndex]) {
 
-            if (Maze[iIndex]) {
-                // Draw the spot
-                ctxArena.lineWidth = 2;
-                ctxArena.strokeStyle = "white";
-                ctxArena.beginPath();
+            let x = Maze[iIndex].i * giGridSize;
+            let y = Maze[iIndex].j * giGridSize;
 
-                if (Maze[iIndex].walls[0]) {
-                    ctxArena.moveTo(iLoop * giGridSize, iLoop2 * giGridSize);
-                    ctxArena.lineTo(iLoop * giGridSize, iLoop2 * giGridSize + giGridSize);
-                    ctxArena.stroke();
-                }
+            if (Maze[iIndex].highlight) {
+                ctxArena.fillStyle = "red";
+                ctxArena.fillRect(x, y, giGridSize, giGridSize);
+            }
 
-                if (Maze[iIndex].walls[1]) {
-                    ctxArena.moveTo(iLoop * giGridSize,              iLoop2 * giGridSize + giGridSize);
-                    ctxArena.lineTo(iLoop * giGridSize + giGridSize, iLoop2 * giGridSize + giGridSize);
-                    ctxArena.stroke();
-                }
+            //if (giVerbosity = goVerbosityEnum.Debug) DrawCharacter(iIndex, x, y);
 
-                if (Maze[iIndex].walls[2]) {
-                    ctxArena.moveTo(iLoop * giGridSize + giGridSize, iLoop2 * giGridSize + giGridSize);
-                    ctxArena.lineTo(iLoop * giGridSize + giGridSize, iLoop2 * giGridSize);
-                    ctxArena.stroke();
-                }
+            // Draw the spot
+            ctxArena.beginPath();
 
-                if (Maze[iIndex].walls[3]) {
-                    ctxArena.moveTo(iLoop * giGridSize + giGridSize, iLoop2 * giGridSize);
-                    ctxArena.lineTo(iLoop * giGridSize,              iLoop2 * giGridSize);
-                    ctxArena.stroke();
-                }
+            if (Maze[iIndex].walls[0]) {
+                ctxArena.moveTo(x, y);
+                ctxArena.lineTo(x, y + giGridSize);
+                ctxArena.stroke();
+            }
+
+            if (Maze[iIndex].walls[1]) {
+                ctxArena.moveTo(x, y + giGridSize);
+                ctxArena.lineTo(x + giGridSize, y + giGridSize);
+                ctxArena.stroke();
+            }
+
+            if (Maze[iIndex].walls[2]) {
+                ctxArena.moveTo(x + giGridSize, y + giGridSize);
+                ctxArena.lineTo(x + giGridSize, y);
+                ctxArena.stroke();
+            }
+
+            if (Maze[iIndex].walls[3]) {
+                ctxArena.moveTo(x + giGridSize, y);
+                ctxArena.lineTo(x, y);
+                ctxArena.stroke();
             }
         }
     }
+}
+function DrawCharacter(Character, x, y) {
+    ctxArena.font = giGridSizeHalf + "px Comic Sans MS";
+    ctxArena.fillStyle = "#383838";
+    ctxArena.textAlign = "center";
+    ctxArena.fillText(Character, x + giGridSizeHalf, y + giGridSizeHalf);
 }
 function DrawBegin() {
     ctxArena.font = giGridSize + "px Comic Sans MS";
     ctxArena.fillStyle = "blue";
     ctxArena.textAlign = "center";
-    ctxArena.fillText("Click to Begin", window.innerWidth / 2, giGridHeight / 2);
+    ctxArena.fillText("Click to Begin", window.innerWidth / 2, giGridSizeHalf);
 }
 
 function UpdateScoreboard() {

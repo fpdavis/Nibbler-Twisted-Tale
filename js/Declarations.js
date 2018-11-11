@@ -70,8 +70,10 @@ var giGameLoopSpeed;
 var gaGrid = [];
 var gaMaze = [];
 var giGridSize;
+var giGridSizeHalf;
 var giGridHeight = window.innerHeight - oDivScoreboard.offsetHeight;
 var giMaxDistanceToPellet;
+var gbSpaceBarHit;
 
 var gbGamePaused = true;
 var gaNibblers;

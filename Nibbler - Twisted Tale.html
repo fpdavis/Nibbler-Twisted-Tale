@@ -84,7 +84,7 @@
                     <br /><br />
                     Arena Size: <select id="selectArenaSize"><option>Small</option><option selected>Medium</option><option>Large</option></select>
                     <br /><span style="margin-left: 8px;">
-                        <input type="checkbox" id="chkTime" checked="checked" oninput="numberTime.disabled = !this.checked " />Timer:
+                        <input type="checkbox" id="chkTime" oninput="numberTime.disabled = !this.checked " />Timer:
                         <input type="number" id="numberTime" min="30" max="480" value="120" step="10" style="width: 72px" />
                     </span>
                 </div>
@@ -92,22 +92,22 @@
                     <input type="checkbox" id="chkDeadlyTails" checked="checked" />Deadly Tails
                     <br /><input type="checkbox" id="chkDeadlyWalls" oninput="if (this.checked) {chkWallWrap.checked = false }" />Deadly Walls
                     <br /><input type="checkbox" id="chkInfiniteTails" />Infinite Tails
-                    <br /><input type="checkbox" id="chkEnemies" checked="checked" />Enemies
+                    <br /><input type="checkbox" id="chkEnemies" />Enemies
                 </div>
                 <div class="menufooter">
                     <span style="margin-left: 5px;">
                         Music Volume: [-]
                         <input type="range" id="rangeMusicVolume" min="0" max="1" step=".1" value=".5"
                                oninput="Music.One.volume=Music.Volume=this.value" style="vertical-align: middle;" /> [+]
-                        (<input type="checkbox" id="chkMuteMusic"
+                        (<input type="checkbox" id="chkMuteMusic" checked="checked"
                                 oninput="Music.NotMuted=!this.checked; if (this.checked) { Music.One.pause() } else { Music.One.play();}" style="vertical-align: middle;" />[M]ute)
                     </span>
                     <br />Effects Volume: [-]
                     <input type="range" id="rangeEffectsVolume" min="0" max="1" step=".1" value=".8"
                            oninput="Sounds.Volume=this.value" style="vertical-align: middle;" /> [+]
-                    (<input type="checkbox" id="chkMuteEffects" oninput="Sounds.NotMuted=!this.checked" style="vertical-align: middle;" />[M]ute)
+                    (<input type="checkbox" id="chkMuteEffects" checked="checked" oninput="Sounds.NotMuted=!this.checked" style="vertical-align: middle;" />[M]ute)
 
-                    <input type="button" id="btnStart" Value="Start" class="modal-start" onclick="StartGame();" />
+                    <input type="button" id="btnStart" Value="Start" class="modal-start" onclick="SetupArena();" />
                     <br /><br />
                     <div style="background: coral; opacity: .5; text-align: center; width: 542px;"> Hit [Esc] or [p] to Pause Game</div>
                 </div>

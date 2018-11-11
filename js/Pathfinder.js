@@ -105,9 +105,9 @@ function Findpath_Nibbler(oPlayer) {
         }
     }
 
-    if (ogBrainspawn) {
-        for (let iLoop = ogBrainspawn.length; iLoop--;) {
-            gaGrid[ogBrainspawn[iLoop].PositionX][ogBrainspawn[iLoop].PositionY] = 0;
+    if (gaBrainspawns) {
+        for (let iLoop = gaBrainspawns.length; iLoop--;) {
+            gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY] = 0;
         }
     }
 
@@ -132,11 +132,11 @@ function Findpath_Brainspawn(oPlayer) {
         }
     }
 
-    for (let iLoop = ogBrainspawn.length; iLoop--;) {
-        if (ogBrainspawn[iLoop] == oPlayer) {
-            gaGrid[ogBrainspawn[iLoop].PositionX][ogBrainspawn[iLoop].PositionY] = 1;
+    for (let iLoop = gaBrainspawns.length; iLoop--;) {
+        if (gaBrainspawns[iLoop] == oPlayer) {
+            gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY] = 1;
         } else {
-            gaGrid[ogBrainspawn[iLoop].PositionX][ogBrainspawn[iLoop].PositionY] = 0;
+            gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY] = 0;
         }
     }
 
