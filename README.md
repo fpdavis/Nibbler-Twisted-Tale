@@ -4,23 +4,22 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
+* Add a counter for number of times a path couldn't be calculate and apply kill after some threshold. Currently kills are being stollen from Brainspawn and other player tails.
 * Improved graphics for pellets
 * Make enemies face the direction they are moving
 * Add character names for computer depending on dificulty settings
 * Read animations and music in from a json file
 * Read wave/level information in from json file
 * Fix edge bug where edges are too close in from the border
-* Change style on score when player dies
 * Add Game Over screen with results
 * Add graph weighting incentives for pellets in A*
 * Need to calculate closest target and best path with Wall Wrap
 * Grid creation for A* is inefficient, should be updated with tail update
 * Maze creates a copy of the Grid, want to create one grid and pass it in
 * Game Options
-	* Maze - Need to determine best algorithm to use
 	* Waves/Levels
 	* Dificulty level
-* Add power ups from pellets
+	* Add power ups from pellets
     * Must be bitten multiple times to be eaten
     * Random direction change
 	* Ability to pause movement
@@ -36,7 +35,6 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 	* Incorporate Benchmark into Messagelog
 * Improve Pause/Menu User Process/Optioning
 * Apply dark theme to menu
-* Initializations are a bit clunky and should be improved
 * Enhance description
 * Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler
 * Joystick support
@@ -126,6 +124,8 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Added a quick Benchmark timer
 * Bots honor the maze... for the most part, still a bit buggy though
 
+* Added click events to labels on menu
+* Changed mouse icon on input fields on menu
 
 ### Creative Commons License Attribution 3.0 
 

@@ -172,3 +172,11 @@ svg {
     font-size: 90%;
     border: 1px solid #000;
 }
+
+.spanCheckPrevious {
+    cursor: pointer;
+}
+
+input {
+    cursor: pointer;
+}

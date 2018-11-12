@@ -235,9 +235,9 @@ GridNode.prototype.isWall = function () {
 
         if (this.diagonal) {
             // South
-            if (!node.walls[goWalls.South]) {
+            if (!node.walls[goWalls.North]) {
                 // Southwest
-                if (!gnode.walls[goWalls.West] &&
+                if (!node.walls[goWalls.West] &&
                     grid[x - 1] && grid[x - 1][y - 1]) {
                     ret.push(grid[x - 1][y - 1]);
                 }
@@ -250,7 +250,7 @@ GridNode.prototype.isWall = function () {
             }
 
             // North
-            if (!node.walls[goWalls.North]) {
+            if (!node.walls[goWalls.South]) {
                 // Northwest
                 if (!node.walls[goWalls.West] &&
                     grid[x - 1] && grid[x - 1][y + 1]) {

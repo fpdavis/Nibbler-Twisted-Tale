@@ -239,6 +239,71 @@ function CalculateNewPosition(NewPositionX, NewPositionY, NewDirectionX, NewDire
     };
 
 }
+function RandomOpenNeighbor(oPlayer) {
+
+    let oaNeighbors = OpenNeighbors(oPlayer);
+
+    if (oaNeighbors.length > 0) {
+        let iRandomIndex = Math.floor(Math.random() * oaNeighbors.length);
+        return oaNeighbors[iRandomIndex];
+    } else {
+        return undefined;
+    }
+}
+function OpenNeighbors(i, j) {
+    let oaNeighbors = [];
+    let oNode = gaMaze[MGIndex(i, j, giArenaSquaresX, giArenaSquaresY)];
+
+    // TODO: Secondary wall checks are here (backword looking) due to some walls not having both sides in the grid.
+    // This should be fixed in grid generation.
+
+    let North = gaMaze[MGIndex(i,    j - 1, giArenaSquaresX, giArenaSquaresY)];
+    let East = gaMaze[MGIndex(i + 1, j,     giArenaSquaresX, giArenaSquaresY)];
+    let South = gaMaze[MGIndex(i,    j + 1, giArenaSquaresX, giArenaSquaresY)];
+    let West = gaMaze[MGIndex(i - 1, j,     giArenaSquaresX, giArenaSquaresY)];
+
+    if (North && !oNode.walls[goWalls.North]) {
+        oaNeighbors.push(North);
+    }
+    if (South && !oNode.walls[goWalls.South]) {
+        oaNeighbors.push(South);
+    }
+    if (East && !oNode.walls[goWalls.East]) {
+        oaNeighbors.push(East);
+    }
+    if (West && !oNode.walls[goWalls.West]) {
+        oaNeighbors.push(West);
+    }
+          
+    if (gbDiagonalMovement) {
+        let NorthEast = gaMaze[MGIndex(i + 1, j - 1, giArenaSquaresX, giArenaSquaresY)];
+        let SouthEast = gaMaze[MGIndex(i + 1, j + 1, giArenaSquaresX, giArenaSquaresY)];
+        let SouthWest = gaMaze[MGIndex(i - 1, j + 1, giArenaSquaresX, giArenaSquaresY)];
+        let NorthWest = gaMaze[MGIndex(i - 1, j - 1, giArenaSquaresX, giArenaSquaresY)];
+
+        if (!oNode.walls[goWalls.North]) {
+            if (NorthWest && !oNode.walls[goWalls.West]) {
+                oaNeighbors.push(NorthWest);
+            }
+
+            if (NorthEast && !oNode.walls[goWalls.East]) {
+                oaNeighbors.push(NorthEast);
+            }
+        }
+
+        if (!oNode.walls[goWalls.South]) {
+            if (SouthWest && !oNode.walls[goWalls.West]) {
+                oaNeighbors.push(SouthWest);
+            }
+
+            if (SouthEast && !oNode.walls[goWalls.East]) {
+                oaNeighbors.push(SouthEast);
+            }
+        }
+    }
+
+    return oaNeighbors;
+}
 
 function KeydownEvent(oEvent) {
 
@@ -394,6 +459,39 @@ function CheckForKeyup(oEvent, oPlayer) {
 
 function ClickEvent(event) {
 
+
+    if (giVerbosity = goVerbosityEnum.Debug) {
+
+        let iPositionX = Math.floor(event.pageX / giGridSize);
+        let iPositionY = Math.floor((event.pageY - 100) / giGridSize);
+        let iIndex = MGIndex(iPositionX, iPositionY, giArenaSquaresX, giArenaSquaresY);
+        
+        MessageLog(`==============================================`, goVerbosityEnum.Debug);
+        MessageLog(`  Mouse Coordinates: (${event.pageX}, ${event.pageY})`, goVerbosityEnum.Debug);
+        MessageLog(`        Coordinates: (${iPositionX}, ${iPositionY})`, goVerbosityEnum.Debug);
+        MessageLog(`Reduced Coordinates: ${iIndex}`, goVerbosityEnum.Debug);
+
+        let oNode = gaMaze[iIndex];
+        let sWalls = "";
+
+        MessageLog(`   Node Coordinates: (${oNode.i}, ${oNode.j})`, goVerbosityEnum.Debug);
+        if (oNode.walls[goWalls.West]) sWalls += "["
+        if (oNode.walls[goWalls.South] && oNode.walls[goWalls.North]) sWalls += "=";
+        else if (oNode.walls[goWalls.South]) sWalls += "_";
+        else if (oNode.walls[goWalls.North]) sWalls += "¯";
+        if (oNode.walls[goWalls.East]) sWalls += "]";
+
+        if (event.button === 1) {
+            gaMaze.forEach(function (oNode) { oNode.highlight = false; });
+        }
+
+        MessageLog(`Walls: ${sWalls}`, goVerbosityEnum.Debug);
+        let oaOpenNeighbors = OpenNeighbors(iPositionX, iPositionY);
+        MessageLog(`Neighbors: ` + oaOpenNeighbors.length, goVerbosityEnum.Debug);
+        oaOpenNeighbors.forEach(function (oNeighbor) { oNeighbor.highlight = true; });
+                
+    }
+
     if (gbGamePaused) {
         return;
     }
@@ -514,7 +612,7 @@ function DrawMaze(Maze) {
             let y = Maze[iIndex].j * giGridSize;
 
             if (Maze[iIndex].highlight) {
-                ctxArena.fillStyle = "red";
+                ctxArena.fillStyle = Maze[iIndex].fillStyle;
                 ctxArena.fillRect(x, y, giGridSize, giGridSize);
             }
 
@@ -523,27 +621,25 @@ function DrawMaze(Maze) {
             // Draw the spot
             ctxArena.beginPath();
 
-            if (Maze[iIndex].walls[0]) {
-                ctxArena.moveTo(x, y);
-                ctxArena.lineTo(x, y + giGridSize);
+            if (Maze[iIndex].walls[goWalls.North]) {
+                ctxArena.moveTo(x,              y);
+                ctxArena.lineTo(x + giGridSize, y);
                 ctxArena.stroke();
             }
-
-            if (Maze[iIndex].walls[1]) {
-                ctxArena.moveTo(x, y + giGridSize);
+            if (Maze[iIndex].walls[goWalls.South]) {
+                ctxArena.moveTo(x,              y + giGridSize);
+                ctxArena.lineTo(x + giGridSize, y + giGridSize);
+                ctxArena.stroke();
+            }
+            if (Maze[iIndex].walls[goWalls.East]) {
+                ctxArena.moveTo(x + giGridSize, y);
                 ctxArena.lineTo(x + giGridSize, y + giGridSize);
                 ctxArena.stroke();
             }
 
-            if (Maze[iIndex].walls[2]) {
-                ctxArena.moveTo(x + giGridSize, y + giGridSize);
-                ctxArena.lineTo(x + giGridSize, y);
-                ctxArena.stroke();
-            }
-
-            if (Maze[iIndex].walls[3]) {
-                ctxArena.moveTo(x + giGridSize, y);
-                ctxArena.lineTo(x, y);
+            if (Maze[iIndex].walls[goWalls.West]) {
+                ctxArena.moveTo(x, y);
+                ctxArena.lineTo(x, y + giGridSize);
                 ctxArena.stroke();
             }
         }

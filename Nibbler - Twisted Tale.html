@@ -24,13 +24,13 @@
 
     <div id="divScoreboard">
         <div class="wrapper">
-            <div class="box"><input id="colorPlayer1" type="color" value="#00FF00" onchange="oColorMenuPlayer[0].value = ogPlayer[0].fillStyle = this.value;"> <span id="spanPlayer1">Player 1 (-) 000</span></div>
-            <div class="box"><input id="colorPlayer3" type="color" value="#0000FF" onchange="oColorMenuPlayer[2].value = ogPlayer[2].fillStyle = this.value;">&nbsp;<span id="spanPlayer3">Player 3 (-) 000</span></div>
+            <div class="box"><input id="colorPlayer1" type="color" value="#00FF00" onchange="oColorMenuPlayer[0].value = gaNibblers[0].fillStyle = this.value;"> <span id="spanPlayer1">Player 1 (-) 000</span></div>
+            <div class="box"><input id="colorPlayer3" type="color" value="#0000FF" onchange="oColorMenuPlayer[2].value = gaNibblers[2].fillStyle = this.value;">&nbsp;<span id="spanPlayer3">Player 3 (-) 000</span></div>
             <div id="divTime" class="box blink_me">TIME ---</div>
         </div>
         <div class="wrapper">
-            <div class="box"><input id="colorPlayer2" type="color" value="#FF0000" onchange="oColorMenuPlayer[1].value = ogPlayer[1].fillStyle = this.value;">&nbsp;<span id="spanPlayer2">Player 2 (-) 000</span></div>
-            <div class="box"><input id="colorPlayer4" type="color" value="#FFFF00" onchange="oColorMenuPlayer[3].value = ogPlayer[3].fillStyle = this.value;">&nbsp;<span id="spanPlayer4">Player 4 (-) 000</span></div>
+            <div class="box"><input id="colorPlayer2" type="color" value="#FF0000" onchange="oColorMenuPlayer[1].value = gaNibblers[1].fillStyle = this.value;">&nbsp;<span id="spanPlayer2">Player 2 (-) 000</span></div>
+            <div class="box"><input id="colorPlayer4" type="color" value="#FFFF00" onchange="oColorMenuPlayer[3].value = gaNibblers[3].fillStyle = this.value;">&nbsp;<span id="spanPlayer4">Player 4 (-) 000</span></div>
             <div id="divHighScore" class="box">HIGHSCORE (Player -) 000</div>
         </div>
     </div>
@@ -50,12 +50,12 @@
                     <h3>Game Options</h3>
                 </div>
                 <div class="menucolumn1">
-                    <input id="colorMenuPlayer1" type="color" value="#00FF00" onchange="oColorPlayer[0].value = ogPlayer[0].fillStyle = this.value;" style="vertical-align: middle;">
+                    <input id="colorMenuPlayer1" type="color" value="#00FF00" onchange="oColorPlayer[0].value = gaNibblers[0].fillStyle = this.value;" style="vertical-align: middle;">
                     <select id="selectPlayer1"><option selected>Human</option><option>Computer</option></select>
                     <input id="txtPlayer1Name" type="text" placeholder="Player 1" maxlength="10" size="10" />
 
                     <br />
-                    <input id="colorMenuPlayer2" type="color" value="#FF0000" onchange="oColorPlayer[1].value = ogPlayer[1].fillStyle = this.value;" style="vertical-align: middle;">
+                    <input id="colorMenuPlayer2" type="color" value="#FF0000" onchange="oColorPlayer[1].value = gaNibblers[1].fillStyle = this.value;" style="vertical-align: middle;">
                     <select id="selectPlayer2"><option>Human</option><option>Computer</option><option selected>None</option></select>
                     <input id="txtPlayer2Name" type="text" placeholder="Player 2" maxlength="10" size="10" />
                     <br />
@@ -66,19 +66,24 @@
                     <br />Speed: <select id="selectSpeed"><option>Slow</option><option selected>Normal</option><option>Fast</option></select>
                 </div>
                 <div class="menucolumn3">
-                    <input type="checkbox" id="chkDiagonalMovement" />Diagonal Movement
-                    <br /><input type="checkbox" id="chkWallWrap" checked="checked" oninput="if (this.checked) {chkDeadlyWalls.checked = false }" />Wall Wrap
-                    <br /><input type="checkbox" id="chkMaze" checked="checked" />Maze
-                    <br /><input type="checkbox" id="chkNonStop" />Non-stop
-                </div>
+                    <input type="checkbox" id="chkDiagonalMovement" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">
+    Diagonal Movement</span>
+    <br /><input type="checkbox" id="chkWallWrap" checked="checked" oninput="if (this.checked) {chkDeadlyWalls.checked = false }" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; if (previousSibling.checked) {chkDeadlyWalls.checked = false }">
+        Wall Wrap
+    </span>
+    <br /><input type="checkbox" id="chkMaze" checked="checked" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">
+        Maze
+    </span>
+    <br /><input type="checkbox" id="chkNonStop"><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Non-stop</span>
+</div>
 
                 <div class="menucolumn2">
-                    <input id="colorMenuPlayer3" type="color" value="#0000FF" onchange="oColorPlayer[2].value = ogPlayer[2].fillStyle = this.value;" style="vertical-align: middle;">
+                    <input id="colorMenuPlayer3" type="color" value="#0000FF" onchange="oColorPlayer[2].value = gaNibblers[2].fillStyle = this.value;" style="vertical-align: middle;">
                     <select id="selectPlayer3"><option>Human</option><option>Computer</option><option selected>None</option></select>
                     <input id="txtPlayer3Name" type="text" placeholder="Player 3" maxlength="10" size="10" />
 
                     <br />
-                    <input id="colorMenuPlayer4" type="color" value="#FFFF00" onchange="oColorPlayer[3].value = ogPlayer[3].fillStyle = this.value;" style="vertical-align: middle;">
+                    <input id="colorMenuPlayer4" type="color" value="#FFFF00" onchange="oColorPlayer[3].value = gaNibblers[3].fillStyle = this.value;" style="vertical-align: middle;">
                     <select id="selectPlayer4"><option>Human</option><option>Computer</option><option selected>None</option></select>
                     <input id="txtPlayer4Name" type="text" placeholder="Player 4" maxlength="10" size="10" />
                     <br /><br />
@@ -89,28 +94,34 @@
                     </span>
                 </div>
                 <div class="menucolumn4">
-                    <input type="checkbox" id="chkDeadlyTails" checked="checked" />Deadly Tails
-                    <br /><input type="checkbox" id="chkDeadlyWalls" oninput="if (this.checked) {chkWallWrap.checked = false }" />Deadly Walls
-                    <br /><input type="checkbox" id="chkInfiniteTails" />Infinite Tails
-                    <br /><input type="checkbox" id="chkEnemies" />Enemies
-                </div>
+                    <input type="checkbox" id="chkDeadlyTails" checked="checked" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">
+    Deadly Tails</span>
+    <br /><input type="checkbox" id="chkDeadlyWalls" oninput="if (this.checked) {chkWallWrap.checked = false }" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; if (previousSibling.checked) {chkWallWrap.checked = false }">
+    Deadly Walls</span>
+    <br /><input type="checkbox" id="chkInfiniteTails" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Infinite Tails</span>
+    <br /><input type="checkbox" id="chkEnemies" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Enemies</span>
+</div>
                 <div class="menufooter">
                     <span style="margin-left: 5px;">
                         Music Volume: [-]
                         <input type="range" id="rangeMusicVolume" min="0" max="1" step=".1" value=".5"
                                oninput="Music.One.volume=Music.Volume=this.value" style="vertical-align: middle;" /> [+]
                         (<input type="checkbox" id="chkMuteMusic" checked="checked"
-                                oninput="Music.NotMuted=!this.checked; if (this.checked) { Music.One.pause() } else { Music.One.play();}" style="vertical-align: middle;" />[M]ute)
-                    </span>
+                                oninput="Music.NotMuted=!this.checked; if (this.checked) { Music.One.pause() } else { Music.One.play();}" style="vertical-align: middle;" />
+                         <span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; Music.NotMuted=!this.checked; if (this.checked) { Music.One.pause() } else { Music.One.play();}">
+                             [M]ute)</span>
+                         </span>
                     <br />Effects Volume: [-]
                     <input type="range" id="rangeEffectsVolume" min="0" max="1" step=".1" value=".8"
                            oninput="Sounds.Volume=this.value" style="vertical-align: middle;" /> [+]
-                    (<input type="checkbox" id="chkMuteEffects" checked="checked" oninput="Sounds.NotMuted=!this.checked" style="vertical-align: middle;" />[M]ute)
+                    (<input type="checkbox" id="chkMuteEffects" checked="checked" oninput="Sounds.NotMuted=!this.checked" style="vertical-align: middle;" />
+                     <span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; Sounds.NotMuted=!this.checke">
+                         [M]ute)</span>
 
-                    <input type="button" id="btnStart" Value="Start" class="modal-start" onclick="SetupArena();" />
-                    <br /><br />
-                    <div style="background: coral; opacity: .5; text-align: center; width: 542px;"> Hit [Esc] or [p] to Pause Game</div>
-                </div>
+                         <input type="button" id="btnStart" Value="Start" class="modal-start" onclick="SetupArena();" />
+                         <br /><br />
+                         <div style="background: coral; opacity: .5; text-align: center; width: 542px;"> Hit [Esc] or [p] to Pause Game</div>
+</div>
             </div>
         </div>
     </div>

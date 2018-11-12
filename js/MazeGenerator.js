@@ -28,7 +28,11 @@ function Cell(i, j) {
     this.walls = [true, true, true, true];
     this.visited = false;
     this.highlight = false;
-
+    this.fillStyle = "red";
+    this.strokeStyle = "blue";
+    this.Nibbler = false;
+    this.Brainspawn = false;
+    this.Pellet = false;
     this.checkNeighbors = function () {
         let neighbors = [];
 
@@ -78,6 +82,14 @@ function GenerateMaze(ColsIn, RowsIn) {
 
     oCurrentCell = oaMaze[0];
     CalculateMaze();
+
+    oaMaze.forEach(function (item) { item.visited = false; });
+    oCurrentCell = oaMaze[0];
+    RemoveDeadEnds();
+
+    ClearPerimiterAndRemaining();
+    ExpandMaze();
+
     return aBigMaze;
 }
 
@@ -99,10 +111,26 @@ function CalculateMaze() {
             break;
         }
     }
+}
+function removeWalls(a, b) {
 
-    oaMaze.forEach(function (item) { item.visited = false; });
-    oCurrentCell = oaMaze[0];
-    RemoveDeadEnds();
+    let x = a.j - b.j;
+    if (x === 1) {
+        a.walls[goWalls.North] = false;
+        b.walls[goWalls.South] = false;
+    } else if (x === -1) {
+        a.walls[goWalls.South] = false;
+        b.walls[goWalls.North] = false;
+    }
+
+    let y = a.i - b.i;
+    if (y === 1) {
+        a.walls[goWalls.West] = false;
+        b.walls[goWalls.East] = false;
+    } else if (y === -1) {
+        a.walls[goWalls.East] = false;
+        b.walls[goWalls.West] = false;
+    }
 }
 
 function RemoveDeadEnds() {
@@ -114,7 +142,7 @@ function RemoveDeadEnds() {
         if (next) {
             next.visited = true;
             oStack.push(oCurrentCell);
-            removeDead(oCurrentCell, next);
+            removeWallsIfMoreThanTwo(oCurrentCell, next);
             oCurrentCell = next;
         } else if (oStack.length > 0) {
             oCurrentCell = oStack.pop();
@@ -123,40 +151,48 @@ function RemoveDeadEnds() {
             break;
         }
     }
-
-    ClearPerimiterAndRemaining();
-    ExpandMaze();
 }
-
 function ClearPerimiterAndRemaining() {
-    let bClearWalls;
+    
 
     for (let iLoop = 0; iLoop < oaMaze.length; iLoop++) {
         bClearWalls = false;
-        if (iLoop < iColumns * 2) {
-            bClearWalls = true;
+        if (iLoop < iColumns) { // Top Row
+            oaMaze[iLoop].walls[goWalls.North] = oaMaze[iLoop].walls[goWalls.South] = oaMaze[iLoop].walls[goWalls.East] = oaMaze[iLoop].walls[goWalls.West] = false;
         }
-        else if (iLoop > oaMaze.length - iColumns) {
-            bClearWalls = true;
+        else if (iLoop < iColumns * 2) { // Second Row
+            oaMaze[iLoop].walls[goWalls.North] = oaMaze[iLoop].walls[goWalls.East] = oaMaze[iLoop].walls[goWalls.West] = false;
         }
-        else if (iLoop % iColumns === 0) {
-            bClearWalls = true;
+        else if (iLoop > oaMaze.length - iColumns) { // Bottom Row
+            oaMaze[iLoop].walls[goWalls.South] = oaMaze[iLoop].walls[goWalls.East] = oaMaze[iLoop].walls[goWalls.West] = false;
         }
-        else if ((iLoop - 1) % iColumns === 0) {
-            bClearWalls = true;
+        else if (iLoop % iColumns === 0) { // First Column
+            oaMaze[iLoop].walls[goWalls.North] = oaMaze[iLoop].walls[goWalls.South] = oaMaze[iLoop].walls[goWalls.East] = oaMaze[iLoop].walls[goWalls.West] = false;
         }
-        else if ((iLoop + 1) % iColumns === 0) {
-            bClearWalls = true;
+        else if ((iLoop + 1) % iColumns === 0) { // Second Column
+            oaMaze[iLoop].walls[goWalls.North] = oaMaze[iLoop].walls[goWalls.South] = oaMaze[iLoop].walls[goWalls.West] = false;
         }
-
-        if (bClearWalls) {
-            oaMaze[iLoop].walls[0] = oaMaze[iLoop].walls[1] = oaMaze[iLoop].walls[2] = oaMaze[iLoop].walls[3] = false;
+        else if ((iLoop - 1) % iColumns === 0) { // Last Column
+            oaMaze[iLoop].walls[goWalls.North] = oaMaze[iLoop].walls[goWalls.South] = oaMaze[iLoop].walls[goWalls.East] = false;
         }
-
+                
         if (iLoop < oaMaze.length - 1) {
-            removeDead(oaMaze[iLoop], oaMaze[iLoop + 1]);
-            removeDead(oaMaze[iLoop + 1], oaMaze[iLoop]);
+            removeWallsIfMoreThanTwo(oaMaze[iLoop], oaMaze[iLoop + 1]);
+            removeWallsIfMoreThanTwo(oaMaze[iLoop + 1], oaMaze[iLoop]);
         }
+    }
+}
+function removeWallsIfMoreThanTwo(a, b) {
+
+    let iNumberOfWalls = 0;
+
+    if (a.walls[goWalls.North]) iNumberOfWalls++;
+    if (a.walls[goWalls.South]) iNumberOfWalls++;
+    if (a.walls[goWalls.East]) iNumberOfWalls++;
+    if (a.walls[goWalls.West]) iNumberOfWalls++;
+
+    if (iNumberOfWalls > 2) {
+        removeWalls(a, b);
     }
 }
 
@@ -178,57 +214,6 @@ function ReverseIndex(index) {
     return { i: i, j: j };
 }
 
-function removeDead(a, b) {
-
-    let iNumberOfWalls = 0;
-
-    if (a.walls[0]) iNumberOfWalls++;
-    if (a.walls[1]) iNumberOfWalls++;
-    if (a.walls[2]) iNumberOfWalls++;
-    if (a.walls[3]) iNumberOfWalls++;
-       
-    if (iNumberOfWalls > 2) {
-        let x = a.j - b.j;
-        if (x === 1) {
-            a.walls[3] = false;
-            b.walls[1] = false;
-        } else if (x === -1) {
-            a.walls[1] = false;
-            b.walls[3] = false;
-        }
-
-        let y = a.i - b.i;
-        if (y === 1) {
-            a.walls[0] = false;
-            b.walls[2] = false;
-        } else if (y === -1) {
-            a.walls[2] = false;
-            b.walls[0] = false;
-        }
-    }
-}
-
-function removeWalls(a, b) {
-
-    let x = a.j - b.j;
-    if (x === 1) {
-        a.walls[3] = false;
-        b.walls[1] = false;
-    } else if (x === -1) {
-        a.walls[1] = false;
-        b.walls[3] = false;
-    }
-
-    let y = a.i - b.i;
-    if (y === 1) {
-        a.walls[0] = false;
-        b.walls[2] = false;
-    } else if (y === -1) {
-        a.walls[2] = false;
-        b.walls[0] = false;
-    }
-}
-
 function ExpandMaze() {    
     let aMazeTopLeft = oaMaze;
     let aMazeTopRight = TransposeMazeH(JSON.parse(JSON.stringify(oaMaze)), 1);
@@ -246,7 +231,7 @@ function ExpandMaze() {
         if (bOddColumns) {
             aBigMaze[iIndex] = new Cell();
             let NewIndicies = ReverseIndex(iIndex);
-            aBigMaze[iIndex].walls[0] = aBigMaze[iIndex].walls[1] = aBigMaze[iIndex].walls[2] = aBigMaze[iIndex].walls[3] = false;
+            aBigMaze[iIndex].walls[goWalls.North] = aBigMaze[iIndex].walls[goWalls.South] = aBigMaze[iIndex].walls[goWalls.East] = aBigMaze[iIndex].walls[goWalls.West] = false;
             aBigMaze[iIndex].i = NewIndicies.i;
             aBigMaze[iIndex].j = NewIndicies.j;
 
@@ -281,7 +266,7 @@ function ExpandMaze() {
         if (bOddColumns) {
             aBigMaze[iIndex] = new Cell();
             let NewIndicies = ReverseIndex(iIndex);
-            aBigMaze[iIndex].walls[0] = aBigMaze[iIndex].walls[1] = aBigMaze[iIndex].walls[2] = aBigMaze[iIndex].walls[3] = false;
+            aBigMaze[iIndex].walls[goWalls.North] = aBigMaze[iIndex].walls[goWalls.South] = aBigMaze[iIndex].walls[goWalls.East] = aBigMaze[iIndex].walls[goWalls.West] = false;
             aBigMaze[iIndex].i = NewIndicies.i;
             aBigMaze[iIndex].j = NewIndicies.j;
 
@@ -302,7 +287,6 @@ function ExpandMaze() {
 
    return aBigMaze;
 }
-
 function TransposeMazeH(Maze) {
 
     let oTempCell = new Cell;
@@ -312,10 +296,10 @@ function TransposeMazeH(Maze) {
     let iDistanceToEndOfRow;
 
     for (let iLoop = 0; iLoop < Maze.length - iColumns; iLoop++) {
-        oTempCell.walls[0] = Maze[iLoop].walls[0];
-        oTempCell.walls[1] = Maze[iLoop].walls[1];
-        oTempCell.walls[2] = Maze[iLoop].walls[2];
-        oTempCell.walls[3] = Maze[iLoop].walls[3];
+        oTempCell.walls[goWalls.North] = Maze[iLoop].walls[goWalls.North];
+        oTempCell.walls[goWalls.South] = Maze[iLoop].walls[goWalls.South];
+        oTempCell.walls[goWalls.East]  = Maze[iLoop].walls[goWalls.East];
+        oTempCell.walls[goWalls.West]  = Maze[iLoop].walls[goWalls.West];
 
         iCurrentRow = Math.floor(iLoop / iColumns);
         iEndOfThisRow = iColumns + (iCurrentRow * iColumns);
@@ -328,15 +312,15 @@ function TransposeMazeH(Maze) {
 
         if (iTransposeIndex - iLoop >= 0) {
 
-            Maze[iLoop].walls[0] = Maze[iTransposeIndex].walls[2];
-            Maze[iLoop].walls[1] = Maze[iTransposeIndex].walls[1];
-            Maze[iLoop].walls[2] = Maze[iTransposeIndex].walls[0];
-            Maze[iLoop].walls[3] = Maze[iTransposeIndex].walls[3];
+            Maze[iLoop].walls[goWalls.North] = Maze[iTransposeIndex].walls[goWalls.North];
+            Maze[iLoop].walls[goWalls.South] = Maze[iTransposeIndex].walls[goWalls.South];
+            Maze[iLoop].walls[goWalls.East]  = Maze[iTransposeIndex].walls[goWalls.West];
+            Maze[iLoop].walls[goWalls.West]  = Maze[iTransposeIndex].walls[goWalls.East];
 
-            Maze[iTransposeIndex].walls[0] = oTempCell.walls[2];
-            Maze[iTransposeIndex].walls[1] = oTempCell.walls[1];
-            Maze[iTransposeIndex].walls[2] = oTempCell.walls[0];
-            Maze[iTransposeIndex].walls[3] = oTempCell.walls[3];
+            Maze[iTransposeIndex].walls[goWalls.North] = oTempCell.walls[goWalls.North];
+            Maze[iTransposeIndex].walls[goWalls.South] = oTempCell.walls[goWalls.South];
+            Maze[iTransposeIndex].walls[goWalls.East]  = oTempCell.walls[goWalls.West];
+            Maze[iTransposeIndex].walls[goWalls.West]  = oTempCell.walls[goWalls.East];
         }
         else {
             iLoop += Math.floor(iColumns / 2) - 1;
@@ -355,10 +339,10 @@ function TransposeMazeV(Maze) {
     let iCellsToSkip;
 
     for (let iLoop = 0; iLoop < Maze.length / 2; iLoop++) {
-        oTempCell.walls[0] = Maze[iLoop].walls[0];
-        oTempCell.walls[1] = Maze[iLoop].walls[1];
-        oTempCell.walls[2] = Maze[iLoop].walls[2];
-        oTempCell.walls[3] = Maze[iLoop].walls[3];
+        oTempCell.walls[goWalls.North] = Maze[iLoop].walls[goWalls.North];
+        oTempCell.walls[goWalls.South] = Maze[iLoop].walls[goWalls.South];
+        oTempCell.walls[goWalls.East]  = Maze[iLoop].walls[goWalls.East];
+        oTempCell.walls[goWalls.West]  = Maze[iLoop].walls[goWalls.West];
 
         iCurrentRow = Math.floor(iLoop / iColumns); // 0
         iTransposeRow = iRows - iCurrentRow - 1; // 10
@@ -369,15 +353,15 @@ function TransposeMazeV(Maze) {
 
         //console.log(`${iCurrentRow}, ${iTransposeRow}, ${iRowsToSkip}, ${iCellsToSkip}, ${iLoop} <=> ${iTransposeIndex}`);
 
-        Maze[iLoop].walls[0] = Maze[iTransposeIndex].walls[0];
-        Maze[iLoop].walls[1] = Maze[iTransposeIndex].walls[3];
-        Maze[iLoop].walls[2] = Maze[iTransposeIndex].walls[2];
-        Maze[iLoop].walls[3] = Maze[iTransposeIndex].walls[1];
+        Maze[iLoop].walls[goWalls.North] = Maze[iTransposeIndex].walls[goWalls.South];
+        Maze[iLoop].walls[goWalls.South] = Maze[iTransposeIndex].walls[goWalls.North];
+        Maze[iLoop].walls[goWalls.East] = Maze[iTransposeIndex].walls[goWalls.East];
+        Maze[iLoop].walls[goWalls.West] = Maze[iTransposeIndex].walls[goWalls.West];
 
-        Maze[iTransposeIndex].walls[0] = oTempCell.walls[0];
-        Maze[iTransposeIndex].walls[1] = oTempCell.walls[3];
-        Maze[iTransposeIndex].walls[2] = oTempCell.walls[2];
-        Maze[iTransposeIndex].walls[3] = oTempCell.walls[1];
+        Maze[iTransposeIndex].walls[goWalls.North] = oTempCell.walls[goWalls.South];
+        Maze[iTransposeIndex].walls[goWalls.South] = oTempCell.walls[goWalls.North];
+        Maze[iTransposeIndex].walls[goWalls.East]  = oTempCell.walls[goWalls.East];
+        Maze[iTransposeIndex].walls[goWalls.West]  = oTempCell.walls[goWalls.West];
     }
 
     return Maze;
