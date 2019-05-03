@@ -71,5 +71,5 @@ function Benchmark(name) {
 
             MessageLog(`Timer: ${name} finished in ${iDays}:${iHours}:${iMinutes}:${iSeconds}.${iMilliseconds}`, goVerbosityEnum.Verbose);
         }
-    }
-};
+    };
+}

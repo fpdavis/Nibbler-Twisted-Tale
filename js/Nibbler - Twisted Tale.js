@@ -460,36 +460,39 @@ function CheckForKeyup(oEvent, oPlayer) {
 function ClickEvent(event) {
 
 
-    if (giVerbosity = goVerbosityEnum.Debug) {
+    if (giVerbosity === goVerbosityEnum.Debug) {
 
-        let iPositionX = Math.floor(event.pageX / giGridSize);
-        let iPositionY = Math.floor((event.pageY - 100) / giGridSize);
-        let iIndex = MGIndex(iPositionX, iPositionY, giArenaSquaresX, giArenaSquaresY);
-        
         MessageLog(`==============================================`, goVerbosityEnum.Debug);
         MessageLog(`  Mouse Coordinates: (${event.pageX}, ${event.pageY})`, goVerbosityEnum.Debug);
-        MessageLog(`        Coordinates: (${iPositionX}, ${iPositionY})`, goVerbosityEnum.Debug);
-        MessageLog(`Reduced Coordinates: ${iIndex}`, goVerbosityEnum.Debug);
 
-        let oNode = gaMaze[iIndex];
-        let sWalls = "";
+        if (gaMaze.length > 0) {
 
-        MessageLog(`   Node Coordinates: (${oNode.i}, ${oNode.j})`, goVerbosityEnum.Debug);
-        if (oNode.walls[goWalls.West]) sWalls += "["
-        if (oNode.walls[goWalls.South] && oNode.walls[goWalls.North]) sWalls += "=";
-        else if (oNode.walls[goWalls.South]) sWalls += "_";
-        else if (oNode.walls[goWalls.North]) sWalls += "¯";
-        if (oNode.walls[goWalls.East]) sWalls += "]";
+            let iPositionX = Math.floor(event.pageX / giGridSize);
+            let iPositionY = Math.floor((event.pageY - 100) / giGridSize);
+            let iIndex = MGIndex(iPositionX, iPositionY, giArenaSquaresX, giArenaSquaresY);
 
-        if (event.button === 1) {
-            gaMaze.forEach(function (oNode) { oNode.highlight = false; });
+            MessageLog(`        Coordinates: (${iPositionX}, ${iPositionY})`, goVerbosityEnum.Debug);
+            MessageLog(`Reduced Coordinates: ${iIndex}`, goVerbosityEnum.Debug);
+
+            let oNode = gaMaze[iIndex];
+            let sWalls = "";
+
+            MessageLog(`   Node Coordinates: (${oNode.i}, ${oNode.j})`, goVerbosityEnum.Debug);
+            if (oNode.walls[goWalls.West]) sWalls += "["
+            if (oNode.walls[goWalls.South] && oNode.walls[goWalls.North]) sWalls += "=";
+            else if (oNode.walls[goWalls.South]) sWalls += "_";
+            else if (oNode.walls[goWalls.North]) sWalls += "¯";
+            if (oNode.walls[goWalls.East]) sWalls += "]";
+
+            if (event.button === 1) {
+                gaMaze.forEach(function (oNode) { oNode.highlight = false; });
+            }
+
+            MessageLog(`Walls: ${sWalls}`, goVerbosityEnum.Debug);
+            let oaOpenNeighbors = OpenNeighbors(iPositionX, iPositionY);
+            MessageLog(`Neighbors: ` + oaOpenNeighbors.length, goVerbosityEnum.Debug);
+            oaOpenNeighbors.forEach(function (oNeighbor) { oNeighbor.highlight = true; });
         }
-
-        MessageLog(`Walls: ${sWalls}`, goVerbosityEnum.Debug);
-        let oaOpenNeighbors = OpenNeighbors(iPositionX, iPositionY);
-        MessageLog(`Neighbors: ` + oaOpenNeighbors.length, goVerbosityEnum.Debug);
-        oaOpenNeighbors.forEach(function (oNeighbor) { oNeighbor.highlight = true; });
-                
     }
 
     if (gbGamePaused) {
@@ -616,7 +619,7 @@ function DrawMaze(Maze) {
                 ctxArena.fillRect(x, y, giGridSize, giGridSize);
             }
 
-            if (giVerbosity = goVerbosityEnum.Debug) DrawCharacter(iIndex, x, y);
+            if (giVerbosity === goVerbosityEnum.Debug) DrawCharacter(iIndex, x, y);
 
             // Draw the spot
             ctxArena.beginPath();

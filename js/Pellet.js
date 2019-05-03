@@ -1,3 +1,4 @@
+gaAnimations["BlueBean"] = LoadImage("Images/yaycandies/size1/bean_blue.png");
 
 class Pellet {
     constructor() {

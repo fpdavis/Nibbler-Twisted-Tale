@@ -1,3 +1,7 @@
+gaAnimations["BlueExplosion"] = LoadAnimation(24, "Images/Explosions_particles/blue_explosion/bluspark_", ".png");
+gaAnimations["RedExplosion"] = LoadAnimation(24, "Images/Explosions_particles/red_explosion/red_snakeplosion_", ".png");
+gaAnimations["GreenExplosion"] = LoadAnimation(24, "Images/Explosions_particles/green_explosion/green_explosion_", ".png");
+gaAnimations["YellowExplosion"] = LoadAnimation(24, "Images/Explosions_particles/yellow_explosion/yellow_explosion_", ".png");
 
 class Nibbler {
     constructor() {

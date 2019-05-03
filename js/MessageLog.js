@@ -18,7 +18,7 @@ const goVerbosityEnum = {
     Verbose: 4,
     Debug: 5
 }
-var giVerbosity = goVerbosityEnum.Debug;
+var giVerbosity = goVerbosityEnum.Information;
 
 function MessageLog(Message, Verbosity = goVerbosityEnum.Warning) {
     

@@ -4,9 +4,10 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
+* Each animation direction should have their own frame count
+* Dead Nibblers block the path
 * Add a counter for number of times a path couldn't be calculate and apply kill after some threshold. Currently kills are being stollen from Brainspawn and other player tails.
 * Improved graphics for pellets
-* Make enemies face the direction they are moving
 * Add character names for computer depending on dificulty settings
 * Read animations and music in from a json file
 * Read wave/level information in from json file
@@ -126,6 +127,10 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 * Added click events to labels on menu
 * Changed mouse icon on input fields on menu
+
+* Fixed bug where giVerbosity was always being set to goVerbosityEnum.Debug
+* Changed image naming conventions to remove 0s from index numbers
+* Enemies now face the direction they are moving
 
 ### Creative Commons License Attribution 3.0 
 
