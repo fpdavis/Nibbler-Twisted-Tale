@@ -4,8 +4,7 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
-* Each animation direction should have their own frame count
-* Dead Nibblers block the path
+* Changing Arena Size after first game doesn't work properly.
 * Add a counter for number of times a path couldn't be calculate and apply kill after some threshold. Currently kills are being stollen from Brainspawn and other player tails.
 * Improved graphics for pellets
 * Add character names for computer depending on dificulty settings
@@ -34,8 +33,6 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 	* Jump ability
 	* Teleportation (Random/Directional?)
 	* Incorporate Benchmark into Messagelog
-* Improve Pause/Menu User Process/Optioning
-* Apply dark theme to menu
 * Enhance description
 * Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler
 * Joystick support
@@ -131,6 +128,10 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Fixed bug where giVerbosity was always being set to goVerbosityEnum.Debug
 * Changed image naming conventions to remove 0s from index numbers
 * Enemies now face the direction they are moving
+
+* Each animation direction has its own frame count
+* Dead Nibblers are no longer deadly
+* Dead Nibblers are no longer obsticles in the pathfinder algorythim
 
 ### Creative Commons License Attribution 3.0 
 

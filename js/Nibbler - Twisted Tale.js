@@ -50,7 +50,7 @@ function StartGame() {
     InitializePlayers();
     InitializePellets();
     
-    gaNibblers.forEach(DrawPlayer);
+    gaNibblers.forEach(DrawLivingPlayer);
 
     if (chkTime.checked) {
         giTimeRemaining = 1000 * oNumberTime.value; // 1,000 ms per second
@@ -114,8 +114,19 @@ function GameLoop() {
     }
    
     DrawGrid();
+        
+    gaNibblers.forEach(PreDrawChecks);
+    gaNibblers.forEach(DrawDeadPlayer);
 
-    gaNibblers.forEach(DrawPlayer);
+    if (gaPellets) {
+        gaPellets.forEach(Pellet.Draw);
+    }
+
+    gaNibblers.forEach(DrawLivingPlayer);    
+
+    if (gaBrainspawns) {
+        gaBrainspawns.forEach(Brainspawn.Draw);
+    }
 
     gaSprites.sort(function (a, b) { return a.ZIndex - b.ZIndex });
     for (let iLoop = gaSprites.length; iLoop--;) {
@@ -125,15 +136,6 @@ function GameLoop() {
             gaSprites[iLoop].Draw();
         }
     }
-    
-    if (gaPellets) {
-        gaPellets.forEach(Pellet.Draw);
-    }
-
-    if (gaBrainspawns) {
-        gaBrainspawns.forEach(Brainspawn.Draw);
-    }
-
 
     gaNibblers.forEach(Nibbler.UpdateTail);
     UpdateScoreboard();

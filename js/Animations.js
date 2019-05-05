@@ -47,11 +47,11 @@ class Sprite {
         this.PositionY = y;
         this.DirectionX = 0;
         this.DirectionY = 0;
+        this.Directional = false;
         this.ZIndex = z;
         this.Loop = false;
         this.Complete = false;
         this.CurrentFrame = 0;
-        this.Frames = Image.length;
         this.Image = Image;
         this.Width = width !== 0 ? width : this.Image[0].width;
         this.Height = height !== 0 ? height : this.Image[0].height;
@@ -62,53 +62,56 @@ class Sprite {
     }
 }
 Sprite.prototype.Draw = function () {
-    if (this.CurrentFrame < this.Frames) {
-        let iOffsetX = (this.PositionX * giGridSize) + this.AdjustmentX;
-        let iOffsetY = (this.PositionY * giGridSize) + this.AdjustmentY;
 
-        if (this.DirectionX === 0 && this.DirectionY === 0 && this.Image.length > 0) {
-            ctxArena.drawImage(this.Image[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
+    let oCurrentImage;
+
+    if (!this.Directional || (this.DirectionX === 0 && this.DirectionY === 0 && this.Image.length > 0)) {
+        oCurrentImage = this.Image;
+    }
+    else if (this.DirectionX === -1 && this.DirectionY === 0 && this.Image_West && this.Image_West.length > 0) {
+        oCurrentImage = this.Image_West;
+    }
+    else if (this.DirectionX === 1 && this.DirectionY === 0 && this.Image_East && this.Image_East.length > 0) {
+        oCurrentImage = this.Image_East;
+    }
+    else if (this.DirectionX === 0 && this.DirectionY === -1 && this.Image_North && this.Image_North.length > 0) {
+        oCurrentImage = this.Image_North;
+    }
+    else if (this.DirectionX === 0 && this.DirectionY === 1 && this.Image_South && this.Image_South.length > 0) {
+        oCurrentImage = this.Image_South;
+    }
+    else if (gbDiagonalMovement) {
+        if (this.DirectionX === 1 && this.DirectionY === 1 && this.Image_SouthEast && this.Image_SouthEast.length > 0) {
+            oCurrentImage = this.Image_SouthEast;
         }
-        else if (this.DirectionX === -1 && this.DirectionY === 0 && this.Image_West && this.Image_West.length > 0) {
-            ctxArena.drawImage(this.Image_West[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
+        else if (this.DirectionX === 1 && this.DirectionY === -1 && this.Image_NorthEast && this.Image_NorthEast.length > 0) {
+            oCurrentImage = this.Image_NorthEast;
         }
-        else if (this.DirectionX === 1 && this.DirectionY === 0 && this.Image_East && this.Image_East.length > 0) {
-            ctxArena.drawImage(this.Image_East[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
+        else if (this.DirectionX === -1 && this.DirectionY === -1 && this.Image_NorthWest && this.Image_NorthWest.length > 0) {
+            oCurrentImage = this.Image_NorthWest;
         }
-        else if (this.DirectionX === 0 && this.DirectionY === -1 && this.Image_North && this.Image_North.length > 0) {
-            ctxArena.drawImage(this.Image_North[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
+        else if (this.DirectionX === -1 && this.DirectionY === 1 && this.Image_SouthWest && this.Image_SouthWest.length > 0) {
+            oCurrentImage = this.Image_South;
         }
-        else if (this.DirectionX === 0 && this.DirectionY === 1 && this.Image_South && this.Image_South.length > 0) {
-            ctxArena.drawImage(this.Image_South[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
-        }
-        else if (gbDiagonalMovement) {
-            if (this.DirectionX === 1 && this.DirectionY === 1 && this.Image_SouthEast && this.Image_SouthEast.length > 0) {
-                ctxArena.drawImage(this.Image_SouthEast[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
-            }
-            else if (this.DirectionX === 1 && this.DirectionY === -1 && this.Image_NorthEast && this.Image_NorthEast.length > 0) {
-                ctxArena.drawImage(this.Image_NorthEast[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
-            }
-            else if (this.DirectionX === -1 && this.DirectionY === -1 && this.Image_NorthWest && this.Image_NorthWest.length > 0) {
-                ctxArena.drawImage(this.Image_NorthWest[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
-            }
-            else if (this.DirectionX === -1 && this.DirectionY === 1 && this.Image_SouthWest && this.Image_SouthWest.length > 0) {
-                ctxArena.drawImage(this.Image_South[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
-            }
-            else {
-                ctxArena.drawImage(this.Image[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
-            }
-        }
-        else  {
-            ctxArena.drawImage(this.Image[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
+        else {
+            oCurrentImage = this.Image;
         }
     }
+    else {
+        oCurrentImage = this.Image;
+    }
 
-    if (this.CurrentFrame >= this.Frames) {
+    if (this.CurrentFrame >= oCurrentImage.length) {
         if (this.Loop) {
             this.CurrentFrame = 0;
         } else {
             this.Complete = true;
+            return;
         }
     }
+
+    let iOffsetX = (this.PositionX * giGridSize) + this.AdjustmentX;
+    let iOffsetY = (this.PositionY * giGridSize) + this.AdjustmentY;
+    ctxArena.drawImage(oCurrentImage[this.CurrentFrame++], iOffsetX, iOffsetY, this.Width, this.Height);
 };
 Sprite.Draw = function (oSprite) { oSprite.Draw(); };

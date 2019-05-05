@@ -105,12 +105,14 @@ function Findpath_Nibbler(oPlayer) {
 
     for (let iLoop = gaNibblers.length; iLoop--;) {
 
-        gaGrid[gaNibblers[iLoop].PositionX][gaNibblers[iLoop].PositionY].weight = 0;
+        if (!gaNibblers[iLoop].Dead) {
+            gaGrid[gaNibblers[iLoop].PositionX][gaNibblers[iLoop].PositionY].weight = 0;
 
-        for (let iLoop2 = gaNibblers[iLoop].Trail.length; iLoop2--;) {
-            try {
-                gaGrid[gaNibblers[iLoop].Trail[iLoop2].x][gaNibblers[iLoop].Trail[iLoop2].y].weight = 0;
-            } catch {
+            for (let iLoop2 = gaNibblers[iLoop].Trail.length; iLoop2--;) {
+                try {
+                    gaGrid[gaNibblers[iLoop].Trail[iLoop2].x][gaNibblers[iLoop].Trail[iLoop2].y].weight = 0;
+                } catch {
+                }
             }
         }
     }
@@ -145,7 +147,7 @@ function Findpath_Nibbler(oPlayer) {
         MessageLog(oPlayer.Name + " was traped and died.", goVerbosityEnum.Information);
     }
 }
-function Findpath_Brainspawn(oPlayer) {
+function Findpath_Brainspawn(oBrainspawn) {
     // Making a 2D array
     for (let iLoop = 0; iLoop < giArenaSquaresX; iLoop++) {
         gaGrid[iLoop] = new Array(giArenaSquaresY);
@@ -165,7 +167,7 @@ function Findpath_Brainspawn(oPlayer) {
     }
 
     for (let iLoop = gaBrainspawns.length; iLoop--;) {
-        if (gaBrainspawns[iLoop] == oPlayer) {
+        if (gaBrainspawns[iLoop] === oBrainspawn) {
             gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY].weight = 1;
         } else {
             gaGrid[gaBrainspawns[iLoop].PositionX][gaBrainspawns[iLoop].PositionY].weight = 0;
@@ -173,23 +175,23 @@ function Findpath_Brainspawn(oPlayer) {
     }
 
     let oGraph = new Graph(gaGrid, { diagonal: gbDiagonalMovement });
-    let oStart = oGraph.grid[oPlayer.PositionX][oPlayer.PositionY];
-    let oTarget = oGraph.grid[oPlayer.Target.PositionX][oPlayer.Target.PositionY];
+    let oStart = oGraph.grid[oBrainspawn.PositionX][oBrainspawn.PositionY];
+    let oTarget = oGraph.grid[oBrainspawn.Target.PositionX][oBrainspawn.Target.PositionY];
     let oResult = astar.search(oGraph, oStart, oTarget);
     // result is an array containing the shortest path
     
     if (oResult.length !== 0) {
-        oPlayer.DirectionX = oResult[0].x - oPlayer.PositionX;
-        oPlayer.DirectionY = oResult[0].y - oPlayer.PositionY;   
+        oBrainspawn.DirectionX = oResult[0].x - oBrainspawn.PositionX;
+        oBrainspawn.DirectionY = oResult[0].y - oBrainspawn.PositionY;   
 
         //if (chkMaze.checked) {
-            //for (let iIndex = gaMaze.length; iIndex--;) {
-            //    gaMaze[iIndex].highlight = false;
-            //}
+        //    for (let iIndex = gaMaze.length; iIndex--;) {
+        //        gaMaze[iIndex].highlight = false;
+        //    }
 
-            //for (let iIndex = oResult.length; iIndex--;) {
-            //    gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)].highlight = true;
-            //}
+        //    for (let iIndex = oResult.length; iIndex--;) {
+        //        gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)].highlight = true;
+        //    }
         //}
     }
 }

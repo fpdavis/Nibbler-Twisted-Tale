@@ -29,7 +29,7 @@ class Brainspawn {
         this.Sprite.Image_East = gaAnimations["Brainspawn_East"];
         this.Sprite.Image_North = gaAnimations["Brainspawn_North"];
         this.Sprite.Image_South = gaAnimations["Brainspawn_South"];
-
+        this.Sprite.Directional = true;
         this.Sprite.Loop = true;
         gaSprites.push(this.Sprite);
     }

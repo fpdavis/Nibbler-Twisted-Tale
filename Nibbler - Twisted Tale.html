@@ -51,12 +51,12 @@
                 </div>
                 <div class="menucolumn1">
                     <input id="colorMenuPlayer1" type="color" value="#00FF00" onchange="oColorPlayer[0].value = gaNibblers[0].fillStyle = this.value;" style="vertical-align: middle;">
-                    <select id="selectPlayer1"><option selected>Human</option><option>Computer</option></select>
+                    <select id="selectPlayer1"><option>Human</option><option selected>Computer</option></select>
                     <input id="txtPlayer1Name" type="text" placeholder="Player 1" maxlength="10" size="10" />
 
                     <br />
                     <input id="colorMenuPlayer2" type="color" value="#FF0000" onchange="oColorPlayer[1].value = gaNibblers[1].fillStyle = this.value;" style="vertical-align: middle;">
-                    <select id="selectPlayer2"><option>Human</option><option>Computer</option><option selected>None</option></select>
+                    <select id="selectPlayer2"><option>Human</option><option selected>Computer</option><option>None</option></select>
                     <input id="txtPlayer2Name" type="text" placeholder="Player 2" maxlength="10" size="10" />
                     <br />
                     <br />Lives:
@@ -79,12 +79,12 @@
 
                 <div class="menucolumn2">
                     <input id="colorMenuPlayer3" type="color" value="#0000FF" onchange="oColorPlayer[2].value = gaNibblers[2].fillStyle = this.value;" style="vertical-align: middle;">
-                    <select id="selectPlayer3"><option>Human</option><option>Computer</option><option selected>None</option></select>
+                    <select id="selectPlayer3"><option>Human</option><option selected>Computer</option><option>None</option></select>
                     <input id="txtPlayer3Name" type="text" placeholder="Player 3" maxlength="10" size="10" />
 
                     <br />
                     <input id="colorMenuPlayer4" type="color" value="#FFFF00" onchange="oColorPlayer[3].value = gaNibblers[3].fillStyle = this.value;" style="vertical-align: middle;">
-                    <select id="selectPlayer4"><option>Human</option><option>Computer</option><option selected>None</option></select>
+                    <select id="selectPlayer4"><option>Human</option><option selected>Computer</option><option>None</option></select>
                     <input id="txtPlayer4Name" type="text" placeholder="Player 4" maxlength="10" size="10" />
                     <br /><br />
                     Arena Size: <select id="selectArenaSize"><option>Small</option><option selected>Medium</option><option>Large</option></select>
@@ -99,7 +99,7 @@
     <br /><input type="checkbox" id="chkDeadlyWalls" oninput="if (this.checked) {chkWallWrap.checked = false }" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; if (previousSibling.checked) {chkWallWrap.checked = false }">
     Deadly Walls</span>
     <br /><input type="checkbox" id="chkInfiniteTails" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Infinite Tails</span>
-    <br /><input type="checkbox" id="chkEnemies" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Enemies</span>
+    <br /><input type="checkbox" id="chkEnemies" checked="checked" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Enemies</span>
 </div>
                 <div class="menufooter">
                     <span style="margin-left: 5px;">

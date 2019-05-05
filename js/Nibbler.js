@@ -184,7 +184,39 @@ function MovePlayer(oPlayer) {
         }
     }
 }
-function DrawPlayer(oPlayer) {
+function PreDrawChecks(oPlayer) {
+
+    if (oPlayer.Dead) return;
+
+    // Check for tail collision
+    if (CollidedWithTail(oPlayer)) {
+
+        oPlayer.TailLength = giMinimumTailLength;
+
+        if (gbDeadlyTails) {
+            NibblerDied(oPlayer);
+            MessageLog(oPlayer.Name + " hit tail and died.", goVerbosityEnum.Information);
+        } else {
+            oPlayer.Score -= iPointsLostForTailCollision;
+        }
+    }
+
+    if (!oPlayer.Dead) {
+        // Check to see if the pellet was eaten
+        for (let iLoop = gaPellets.length; iLoop--;) {
+            if (gaPellets[iLoop].PositionX === oPlayer.PositionX && gaPellets[iLoop].PositionY === oPlayer.PositionY) {
+                gaPellets[iLoop].Eatten(oPlayer);
+                delete gaPellets[iLoop];
+                gaPellets[iLoop] = new Pellet();
+            }
+        }
+    }
+}
+
+function DrawLivingPlayer(oPlayer) {
+
+    if (oPlayer.Dead) return;
+
     ctxArena.fillStyle = oPlayer.fillStyle;
 
     if (oPlayer.Trail.length === 0) {
@@ -200,37 +232,25 @@ function DrawPlayer(oPlayer) {
                 giGridSize - 6);
         }
     }
-
-    // Check for tail collision
-    if (CollidedWithTail(oPlayer)) {
-
-        oPlayer.TailLength = giMinimumTailLength;
-
-        if (gbDeadlyTails) {
-            NibblerDied(oPlayer);
-            MessageLog(oPlayer.Name + " hit tail and died.", goVerbosityEnum.Information);
-        } else {
-            oPlayer.Score -= iPointsLostForTailCollision;
-        }
-    }
-
-    // Check to see if the pellet was eaten
-    for (let iLoop = gaPellets.length; iLoop--;) {
-        if (gaPellets[iLoop].PositionX === oPlayer.PositionX && gaPellets[iLoop].PositionY === oPlayer.PositionY) {
-            gaPellets[iLoop].Eatten(oPlayer);
-            delete gaPellets[iLoop];
-            gaPellets[iLoop] = new Pellet();
-        }
-    }
-
-    if (oPlayer.Dead) {
-        ctxArena.fillStyle = "black";
-        ctxArena.fillRect(oPlayer.PositionX * giGridSize + 6,
-            oPlayer.PositionY * giGridSize + 6,
-            giGridSize - 12,
-            giGridSize - 12);
-    }
 }
+
+function DrawDeadPlayer(oPlayer) {
+    
+    if (!oPlayer.Dead) return;
+
+    ctxArena.fillStyle = oPlayer.fillStyle;
+    ctxArena.fillRect(oPlayer.PositionX * giGridSize + 3,
+        oPlayer.PositionY * giGridSize + 3,
+        giGridSize - 6,
+        giGridSize - 6);
+
+    ctxArena.fillStyle = "black";
+    ctxArena.fillRect(oPlayer.PositionX * giGridSize + 6,
+        oPlayer.PositionY * giGridSize + 6,
+        giGridSize - 12,
+        giGridSize - 12);
+}
+
 function CollidedWithTail(oPlayer) {
 
     // Check to see if the player encountered their tale
@@ -248,7 +268,7 @@ function CollidedWithTail(oPlayer) {
 
     // Check for collisions with other player tails
     for (let iLoop = gaNibblers.length; iLoop--;) {
-        if (gaNibblers[iLoop].Trail && gaNibblers[iLoop].Trail !== oPlayer.Trail) {
+        if (gaNibblers[iLoop].Lives > 0 && gaNibblers[iLoop].Trail && gaNibblers[iLoop].Trail !== oPlayer.Trail) {
             for (let iLoop2 = gaNibblers[iLoop].Trail.length; iLoop2--;) {
                 if (gaNibblers[iLoop].Trail[iLoop2].x === oPlayer.PositionX &&
                     gaNibblers[iLoop].Trail[iLoop2].y === oPlayer.PositionY) {
