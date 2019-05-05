@@ -24,15 +24,6 @@ Pellet.prototype.SetSpawnPoint = function () {
     this.PositionX = Math.floor(Math.random() * (giArenaSquaresX - 2)) + 1;
     this.PositionY = Math.floor(Math.random() * (giArenaSquaresY - 2)) + 1;
 
-    // Don't spawn on top a player
-    for (let iLoop = gaNibblers.length; iLoop--;) // Reverse loop for the win
-    {
-        if (this.PositionX === gaNibblers[iLoop].PositionX && this.PositionY === gaNibblers[iLoop].PositionY) {
-            this.SetSpawnPoint();
-            return;
-        }
-    }
-
     // Don't spawn on top of another pellet
     for (let iLoop = gaPellets.length; iLoop--;) // Reverse loop for the win
     {
@@ -44,7 +35,24 @@ Pellet.prototype.SetSpawnPoint = function () {
             return;
         }
     }
-}
+
+    // Don't spawn on top a player or the tail
+    for (let iLoop = gaNibblers.length; iLoop--;) // Reverse loop for the win
+    {
+        if (gaNibblers[iLoop] != null && !gaNibblers[iLoop].Dead) {
+            if (this.PositionX === gaNibblers[iLoop].PositionX && this.PositionY === gaNibblers[iLoop].PositionY) {
+                this.SetSpawnPoint();
+                return;
+            }
+            for (let iLoop2 = gaNibblers[iLoop].Trail.length; iLoop2--;) {
+                if (this.PositionX === gaNibblers[iLoop].Trail[iLoop2].x && this.PositionY === gaNibblers[iLoop].Trail[iLoop2].y) {
+                    this.SetSpawnPoint();
+                    return;
+                }
+            }
+        }
+    }
+};
 Pellet.prototype.Eatten = function (oPlayer) {
 
     if (Sounds.NotMuted) {

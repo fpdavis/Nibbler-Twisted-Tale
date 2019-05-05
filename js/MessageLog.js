@@ -17,8 +17,23 @@ const goVerbosityEnum = {
     Information: 3,
     Verbose: 4,
     Debug: 5
-}
+};
 var giVerbosity = goVerbosityEnum.Information;
+
+function ChangeVerbosity(iIncrement) {
+        
+    giVerbosity += iIncrement;
+
+    if (giVerbosity < 0) {
+        giVerbosity = oVerbosityEnum.Lookup.length - 1;
+    }
+    else if (giVerbosity >= goVerbosityEnum.Lookup.length) {
+        giVerbosity = 0;
+    }
+
+    MessageLog(`Changing Verbosity to ` + goVerbosityEnum.Lookup[giVerbosity], goVerbosityEnum.Critical);
+
+}
 
 function MessageLog(Message, Verbosity = goVerbosityEnum.Warning) {
     

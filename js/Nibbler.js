@@ -59,17 +59,36 @@ Nibbler.prototype.SetSpawnPoint = function () {
     this.PositionX = Math.floor(Math.random() * (giArenaSquaresX - 2)) + 1;
     this.PositionY = Math.floor(Math.random() * (giArenaSquaresY - 2)) + 1;
 
-    // Don't spawn on top of another player
-    for (let iLoop = gaNibblers.length; iLoop--;) // Reverse loop for the win
-    {
-        if (gaNibblers[iLoop] != null &&
-            this !== gaNibblers[iLoop] &&
-            this.PositionX === gaNibblers[iLoop].PositionX &&
-            this.PositionY === gaNibblers[iLoop].PositionY) {
-            this.SetSpawnPoint();
+    // Don't spawn on a Brainspawn
+    if (gaBrainspawns) {
+        for (let iLoop = gaBrainspawns.length; iLoop--;) // Reverse loop for the win
+        {
+            if (gaBrainspawns[iLoop] != null &&
+                this.PositionX === gaBrainspawns[iLoop].PositionX &&
+                this.PositionY === gaBrainspawns[iLoop].PositionY) {
+                this.SetSpawnPoint();
+                return;
+            }
         }
     }
-}
+
+    // Don't spawn on top a player or the tail
+    for (let iLoop = gaNibblers.length; iLoop--;) // Reverse loop for the win
+    {
+        if (gaNibblers[iLoop] != null && !gaNibblers[iLoop].Dead && this !== gaNibblers[iLoop]) {
+            if (this.PositionX === gaNibblers[iLoop].PositionX && this.PositionY === gaNibblers[iLoop].PositionY) {
+                this.SetSpawnPoint();
+                return;
+            }
+            for (let iLoop2 = gaNibblers[iLoop].Trail.length; iLoop2--;) {
+                if (this.PositionX === gaNibblers[iLoop].Trail[iLoop2].x && this.PositionY === gaNibblers[iLoop].Trail[iLoop2].y) {
+                    this.SetSpawnPoint();
+                    return;
+                }
+            }
+        }
+    }
+};
 Nibbler.UpdateTail = function (oNibbler) { oNibbler.UpdateTail(); }
 
 function InitializePlayers() {
@@ -144,7 +163,7 @@ function NibblerDied(oPlayer) {
         if (--oPlayer.Lives === 0) addClass(oSpanPlayer[oPlayer.Index], "blink_me");
 
         oPlayer.SetSpawnPoint();
-        setTimeout(function () { oPlayer.Dead = false; }, 1000, oPlayer);
+        setTimeout(function () { oPlayer.Dead = false; }, iSpawnTimeOut, oPlayer);
     } else {
         removeClass(oSpanPlayer[oPlayer.Index], "blink_me");
         addClass(oSpanPlayer[oPlayer.Index], "dead");
@@ -233,7 +252,6 @@ function DrawLivingPlayer(oPlayer) {
         }
     }
 }
-
 function DrawDeadPlayer(oPlayer) {
     
     if (!oPlayer.Dead) return;

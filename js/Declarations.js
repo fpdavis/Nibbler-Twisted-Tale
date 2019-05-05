@@ -63,6 +63,7 @@ const oBtnStart = document.getElementById('btnStart');
 
 const iPointsLostForTailCollision = 5;
 const iPointsLostForWallCollision = 5;
+const iSpawnTimeOut = 2000; // Miliseconds
 // #endregion
 
 // #region Globals
@@ -95,6 +96,7 @@ var gbDiagonalMovement;
 var gbStopAfterEachMove;
 var gbInfiniteTails;
 
+var giCurrentSong = 0;
 var gaAnimations = new Object();
 
 const goWalls = {

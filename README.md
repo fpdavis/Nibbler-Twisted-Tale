@@ -4,11 +4,12 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
-* Changing Arena Size after first game doesn't work properly.
+* Nibblers keep getting traped and dying.
 * Add a counter for number of times a path couldn't be calculate and apply kill after some threshold. Currently kills are being stollen from Brainspawn and other player tails.
+* Changing Arena Size after first game doesn't work properly.
 * Improved graphics for pellets
 * Add character names for computer depending on dificulty settings
-* Read animations and music in from a json file
+* Read animations from a json file
 * Read wave/level information in from json file
 * Fix edge bug where edges are too close in from the border
 * Add Game Over screen with results
@@ -132,6 +133,11 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Each animation direction has its own frame count
 * Dead Nibblers are no longer deadly
 * Dead Nibblers are no longer obsticles in the pathfinder algorythim
+* Pellets can no longer spawn on Nibblers
+* Nibblers can no longer spawn on Brainspawn
+* Added ability to change loggin level on the fly using the ` key
+* Added ability to change the song being played using the , and . keys
+* Reading sounds and music in from json data files located in Data directory
 
 ### Creative Commons License Attribution 3.0 
 

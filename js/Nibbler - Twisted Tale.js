@@ -1,5 +1,7 @@
 window.onload = function () {
 
+    console.info("Message logging set to " + goVerbosityEnum.Lookup[giVerbosity]);
+
     window.addEventListener('resize', ResizeEvent, false);
     document.addEventListener("keydown", KeydownEvent);
     document.addEventListener("keyup", KeyupEvent);
@@ -9,9 +11,10 @@ window.onload = function () {
     addClass(oDivScoreboard, "modal-blur");
     addClass(canvArena, "modal-blur");
 
-    Sounds.Effects["Crawlig"].loop = true;
+    LoadSounds(gaSoundData);
+    LoadMusic(gaMusicData);
 
-    console.info("Message logging set to " + goVerbosityEnum.Lookup[giVerbosity]);
+    Sounds.Effects["Crawlig"].loop = true;    
 }
 
 function SetupArena() {
@@ -83,8 +86,8 @@ function StartGame() {
     Music.NotMuted = !chkMuteMusic.checked;
 
     if (Music.NotMuted) {
-        Music.Songs.BossTheme.volume = Music.Volume;
-        Music.Songs.BossTheme.play();
+        Music.Songs[giCurrentSong].volume = Music.Volume;
+        Music.Songs[giCurrentSong].play();
     }
     
     UnPause();
@@ -348,15 +351,15 @@ function CheckForSpecialKeys(oEvent) {
 
             if (Sounds.NotMuted) {
                 Sounds.Effects["Crawlig"].play();
-                Music.Songs.BossTheme.play();
+                Music.Songs[giCurrentSong].play();
             } else {
                 Sounds.Effects["Crawlig"].pause();
-                Music.Songs.BossTheme.pause();
+                Music.Songs[giCurrentSong].pause();
             }
             break;
         case 189: // -
             rangeEffectsVolume.value = Sounds.Volume = (Sounds.Volume > 0) ? Math.floor((Sounds.Volume - 0.1) * 10) / 10 : 0;
-            rangeMusicVolume.value = Music.Songs.BossTheme.volume = Music.Volume = (Music.Volume > .1) ? Math.floor((Music.Volume - 0.2) * 10) / 10 : 0;
+            rangeMusicVolume.value = Music.Songs[giCurrentSong].volume = Music.Volume = (Music.Volume > .1) ? Math.floor((Music.Volume - 0.2) * 10) / 10 : 0;
             Sounds.Effects["Crawlig"].volume = Sounds.Volume;
             Sounds.Pause.volume = Sounds.Volume;
             break;
@@ -364,11 +367,21 @@ function CheckForSpecialKeys(oEvent) {
             chkMuteEffects.checked = false;
             Sounds.NotMuted = true;
             rangeEffectsVolume.value = Sounds.Volume = Sounds.Volume < 1 ? Math.ceil((Sounds.Volume + 0.1) * 10) / 10 : 1;
-            rangeMusicVolume.value = Music.Songs.BossTheme.volume = Music.Volume = Music.Volume < 1 ? Math.ceil((Music.Volume + 0.1) * 10) / 10 : 1;
+            rangeMusicVolume.value = Music.Songs[giCurrentSong].volume = Music.Volume = Music.Volume < 1 ? Math.ceil((Music.Volume + 0.1) * 10) / 10 : 1;
             Sounds.Effects["Crawlig"].volume = Sounds.Volume;
             Sounds.Pause.volume = Sounds.Volume;
             break;
+        case 188: // ,
+            ChangeCurrentSong(-1);
+            break;
+        case 190: // .
+            ChangeCurrentSong(1);
+            break;
+        case 192: // `
+            ChangeVerbosity(1);
+            break;
         default:
+            MessageLog(`No key match for (` + oEvent.keyCode + ')', goVerbosityEnum.Debug);
             return false;
     }
     

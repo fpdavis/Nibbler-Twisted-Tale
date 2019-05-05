@@ -3,6 +3,9 @@
     <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 
     <TITLE>Nibbler - Twisted Tale</TITLE>
+    <script type="text/javascript" src="Data/Music.json"></script>
+    <script type="text/javascript" src="Data/Sound.json"></script>
+    
     <script type="text/javascript" src="js/Declarations.js" defer="defer"></script>
     <script type="text/javascript" src="js/Utilities.js" defer="defer"></script>
     <script type="text/javascript" src="js/Animations.js" defer="defer"></script>
@@ -105,10 +108,10 @@
                     <span style="margin-left: 5px;">
                         Music Volume: [-]
                         <input type="range" id="rangeMusicVolume" min="0" max="1" step=".1" value=".5"
-                               oninput="Music.One.volume=Music.Volume=this.value" style="vertical-align: middle;" /> [+]
+                               oninput="Music.Songs[giCurrentSong].volume=Music.Volume=this.value" style="vertical-align: middle;" /> [+]
                         (<input type="checkbox" id="chkMuteMusic" checked="checked"
-                                oninput="Music.NotMuted=!this.checked; if (this.checked) { Music.One.pause() } else { Music.One.play();}" style="vertical-align: middle;" />
-                         <span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; Music.NotMuted=!this.checked; if (this.checked) { Music.One.pause() } else { Music.One.play();}">
+                                oninput="Music.NotMuted=!this.checked; if (this.checked) { Music.Songs[giCurrentSong].pause() } else { Music.Songs[giCurrentSong].play();}" style="vertical-align: middle;" />
+                         <span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; Music.NotMuted=!this.checked; if (this.checked) { Music.Songs[giCurrentSong].pause() } else { Music.Songs.[giCurrentSong].play();}">
                              [M]ute)</span>
                          </span>
                     <br />Effects Volume: [-]
