@@ -237,36 +237,41 @@ function DrawLivingPlayer(oPlayer) {
     if (oPlayer.Dead) return;
 
     ctxArena.fillStyle = oPlayer.fillStyle;
+    ctxArena.strokeStyle = oPlayer.fillStyle;
+    ctxArena.lineWidth = 6;
 
-    if (oPlayer.Trail.length === 0) {
-        ctxArena.fillRect(oPlayer.PositionX * giGridSize + 3,
-            oPlayer.PositionY * giGridSize + 3,
-            giGridSize - 6,
-            giGridSize - 6);
-    } else {
-        for (let iLoop = oPlayer.Trail.length; iLoop--;) {
+    ctxArena.strokeRect(oPlayer.PositionX * giGridSize + 6,
+        oPlayer.PositionY * giGridSize + 6,
+        giGridSize - 12,
+        giGridSize - 12);
+
+    for (let iLoop = oPlayer.Trail.length; iLoop--;) {
+        
+        if (oPlayer.Trail[iLoop].x === oPlayer.PositionX && oPlayer.Trail[iLoop].y === oPlayer.PositionY) {
+            ctxArena.strokeRect(oPlayer.PositionX * giGridSize + 6,
+                oPlayer.PositionY * giGridSize + 6,
+                giGridSize - 12,
+                giGridSize - 12);
+        }
+        else {
             ctxArena.fillRect(oPlayer.Trail[iLoop].x * giGridSize + 3,
                 oPlayer.Trail[iLoop].y * giGridSize + 3,
                 giGridSize - 6,
                 giGridSize - 6);
         }
     }
+
 }
 function DrawDeadPlayer(oPlayer) {
     
     if (!oPlayer.Dead) return;
 
-    ctxArena.fillStyle = oPlayer.fillStyle;
-    ctxArena.fillRect(oPlayer.PositionX * giGridSize + 3,
+    ctxArena.strokeStyle = oPlayer.fillStyle;
+    ctxArena.lineWidth = 6;
+    ctxArena.strokeRect(oPlayer.PositionX * giGridSize + 3,
         oPlayer.PositionY * giGridSize + 3,
         giGridSize - 6,
         giGridSize - 6);
-
-    ctxArena.fillStyle = "black";
-    ctxArena.fillRect(oPlayer.PositionX * giGridSize + 6,
-        oPlayer.PositionY * giGridSize + 6,
-        giGridSize - 12,
-        giGridSize - 12);
 }
 
 function CollidedWithTail(oPlayer) {

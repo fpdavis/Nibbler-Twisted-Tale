@@ -5,7 +5,6 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 ### Todo (in order of importance):
 
 * Nibblers keep getting traped and dying.
-* Add a counter for number of times a path couldn't be calculate and apply kill after some threshold. Currently kills are being stollen from Brainspawn and other player tails.
 * Changing Arena Size after first game doesn't work properly.
 * Improved graphics for pellets
 * Add character names for computer depending on dificulty settings
@@ -138,6 +137,12 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Added ability to change loggin level on the fly using the ` key
 * Added ability to change the song being played using the , and . keys
 * Reading sounds and music in from json data files located in Data directory
+
+* Refined the debug path highlighting
+* Added Page Up/Page Down speed control for game loop (must unpause, not Start, for new speed to take effect)
+* Added routine to generate an empty maze primarily for use in debug mode.
+* Added routine to pad out maze so it is always the same size as the grid, before empty nodes (cells with no walls)
+  at the bottom of the grid were not represented in the maze.
 
 ### Creative Commons License Attribution 3.0 
 

@@ -19,8 +19,8 @@ class Brainspawn {
         this.Target = null;
 
         this.Sound = new Audio(Sounds.Effects["Splat"].src);
-        this.strokeStyle = "purple";
-        this.fillStyle = "yellow";
+        this.strokeStyle = "yellow";
+        this.fillStyle = "purple";
 
         this.SetSpawnPoint();
         

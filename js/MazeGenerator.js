@@ -89,8 +89,37 @@ function GenerateMaze(ColsIn, RowsIn) {
 
     ClearPerimiterAndRemaining();
     ExpandMaze();
+    PadoutMaze(ColsIn, RowsIn);
 
     return aBigMaze;
+}
+function PadoutMaze(iColumns, iRows) {
+
+    let LastIndicies = ReverseIndex(aBigMaze.length - 1);
+
+    for (let j = LastIndicies.j + 1; j < iRows; j++) {
+        for (let i = 0; i < iColumns; i++) {
+            let cell = new Cell(i, j);
+            cell.walls = [false, false, false, false];
+            aBigMaze.push(cell);
+        }
+    }
+}
+function GenerateEmptyMaze(iColumns, iRows) {
+    
+    MessageLog(`Generating Empty Maze ${iColumns} x ${iRows}`, goVerbosityEnum.Debug);
+    
+    oaMaze.length = 0;
+
+    for (let j = 0; j < iRows; j++) {
+        for (let i = 0; i < iColumns; i++) {
+            let cell = new Cell(i, j);
+            cell.walls = [false, false, false, false];
+            oaMaze.push(cell);
+        }
+    }
+
+    return oaMaze;
 }
 
 function CalculateMaze() {

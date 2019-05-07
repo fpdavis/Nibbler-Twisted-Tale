@@ -133,17 +133,21 @@ function Findpath_Nibbler(oPlayer) {
         oPlayer.DirectionX = oResult[0].x - oPlayer.PositionX;
         oPlayer.DirectionY = oResult[0].y - oPlayer.PositionY;
 
-        //if (chkMaze.checked) {
-        //    for (let iIndex = gaMaze.length; iIndex--;) {
-        //        gaMaze[iIndex].highlight = false;
-        //    }
+        if (giVerbosity === goVerbosityEnum.Debug) {
+            for (let iIndex = oResult.length; iIndex--;) {
+                if (gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)]) {
+                    gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)].highlight = true;
+                    gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)].fillStyle = oPlayer.fillStyle;
+                }
+                else {
 
-        //    for (let iIndex = oResult.length; iIndex--;) {
-        //        gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)].highlight = true;
-        //    }
-        //}
+                    MessageLog("MGIndex: " + MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY), goVerbosityEnum.Error);
+                    MessageLog("X, Y: " + oResult[iIndex].x + ", " + oResult[iIndex].x, goVerbosityEnum.Error);
+                }
+            }
+        }
     } else {
-        NibblerDied(oPlayer);
+        //NibblerDied(oPlayer);
         MessageLog(oPlayer.Name + " was traped and died.", goVerbosityEnum.Information);
     }
 }
@@ -184,14 +188,18 @@ function Findpath_Brainspawn(oBrainspawn) {
         oBrainspawn.DirectionX = oResult[0].x - oBrainspawn.PositionX;
         oBrainspawn.DirectionY = oResult[0].y - oBrainspawn.PositionY;   
 
-        //if (chkMaze.checked) {
-        //    for (let iIndex = gaMaze.length; iIndex--;) {
-        //        gaMaze[iIndex].highlight = false;
-        //    }
+        if (giVerbosity === goVerbosityEnum.Debug && chkMaze.checked) {
+            for (let iIndex = oResult.length; iIndex--;) {
+                if (gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)]) {
+                    gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)].highlight = true;
+                    gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)].fillStyle = oBrainspawn.fillStyle;
+                }
+                else {
 
-        //    for (let iIndex = oResult.length; iIndex--;) {
-        //        gaMaze[MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY)].highlight = true;
-        //    }
-        //}
+                    MessageLog("MGIndex: " + MGIndex(oResult[iIndex].x, oResult[iIndex].y, giArenaSquaresX, giArenaSquaresY), goVerbosityEnum.Error);
+                    MessageLog("X, Y: " + oResult[iIndex].x + ", " + oResult[iIndex].x, goVerbosityEnum.Error);
+                }
+            }
+        }
     }
 }

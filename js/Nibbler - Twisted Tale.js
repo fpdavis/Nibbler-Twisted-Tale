@@ -14,8 +14,8 @@ window.onload = function () {
     LoadSounds(gaSoundData);
     LoadMusic(gaMusicData);
 
-    Sounds.Effects["Crawlig"].loop = true;    
-}
+    Sounds.Effects["Crawlig"].loop = true;
+};
 
 function SetupArena() {
 
@@ -39,8 +39,11 @@ function SetupArena() {
 
     gaMaze.length = 0;
     if (chkMaze.checked) {
-        HideGameMenu();        
+        HideGameMenu();
         gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
+    }
+    else {
+        gaMaze = GenerateEmptyMaze(giArenaSquaresX, giArenaSquaresY);        
     }
 
     StartGame();
@@ -380,6 +383,16 @@ function CheckForSpecialKeys(oEvent) {
         case 192: // `
             ChangeVerbosity(1);
             break;
+        case 33: // Page Up            
+            giGameLoopSpeed = giGameLoopSpeed <= 99 ? 66 : giGameLoopSpeed - 40;
+            MessageLog(`Game Loop Speed = ` + giGameLoopSpeed, goVerbosityEnum.Information);
+            Pause();
+            break;
+        case 34: // Page Down
+            giGameLoopSpeed += 40;
+            MessageLog(`Game Loop Speed = ` + giGameLoopSpeed, goVerbosityEnum.Information);
+            Pause();
+            break;
         default:
             MessageLog(`No key match for (` + oEvent.keyCode + ')', goVerbosityEnum.Debug);
             return false;
@@ -479,6 +492,10 @@ function ClickEvent(event) {
 
         MessageLog(`==============================================`, goVerbosityEnum.Debug);
         MessageLog(`  Mouse Coordinates: (${event.pageX}, ${event.pageY})`, goVerbosityEnum.Debug);
+        
+        if (gbGamePaused) {
+            return;
+        }
 
         if (gaMaze.length > 0) {
 
@@ -508,10 +525,6 @@ function ClickEvent(event) {
             MessageLog(`Neighbors: ` + oaOpenNeighbors.length, goVerbosityEnum.Debug);
             oaOpenNeighbors.forEach(function (oNeighbor) { oNeighbor.highlight = true; });
         }
-    }
-
-    if (gbGamePaused) {
-        return;
     }
 
     let iXOffset = Math.abs(gaNibblers[0].PositionX * giGridSize - event.pageX);
@@ -628,13 +641,18 @@ function DrawMaze(Maze) {
 
             let x = Maze[iIndex].i * giGridSize;
             let y = Maze[iIndex].j * giGridSize;
+            
+            if (giVerbosity === goVerbosityEnum.Debug) {
+                DrawCharacter(iIndex, x, y);
 
-            if (Maze[iIndex].highlight) {
-                ctxArena.fillStyle = Maze[iIndex].fillStyle;
-                ctxArena.fillRect(x, y, giGridSize, giGridSize);
-            }
-
-            if (giVerbosity === goVerbosityEnum.Debug) DrawCharacter(iIndex, x, y);
+                if (Maze[iIndex].highlight) {
+                    ctxArena.beginPath();
+                    ctxArena.fillStyle = Maze[iIndex].fillStyle;
+                    ctxArena.arc(x + giGridSizeHalf, y + giGridSizeHalf, giGridSizeHalf * .2, 0, 2 * Math.PI);
+                    ctxArena.fill();
+                    Maze[iIndex].highlight = false;
+                }
+            } 
 
             // Draw the spot
             ctxArena.beginPath();
