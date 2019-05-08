@@ -4,7 +4,6 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
-* Nibblers keep getting traped and dying.
 * Changing Arena Size after first game doesn't work properly.
 * Improved graphics for pellets
 * Add character names for computer depending on dificulty settings
@@ -42,6 +41,8 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Changes (oldest to newest):
 
+* Intelligently assign a different target if a path can't be calculate to target
+* For non-stop calculate a new (valid/random?) direction when a maze wall is hit
 * Make sure spawn points are not the same
 * Created a class for the player in preparation for multi-player
 * Added explosion to grab pellet
@@ -49,7 +50,7 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Added pause sound
 * Sorted and enhanced Todo list
 * Added Attributions
-
+* PAth finding algorythm should take into account when tails are not deadly (for when a path can't be calculated multiple times)
 * Added multi-player support, currently hard coded for two players
 * Added space bar and "P" key for pause
 * Tightened up bite sound
@@ -143,6 +144,13 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Added routine to generate an empty maze primarily for use in debug mode.
 * Added routine to pad out maze so it is always the same size as the grid, before empty nodes (cells with no walls)
   at the bottom of the grid were not represented in the maze.
+
+* Fixed issues with maze generation!
+* Nibblers don't get traped as much due to:
+     Fixed maze generation dead ends
+	 Assign null target when path to current target can't be calculated (this can be improved)
+	 Kill Nibbler after it can't calculate a path after X number of tries
+	 Increased chance of using dumb pathfinding algorythm that foces movement
 
 ### Creative Commons License Attribution 3.0 
 

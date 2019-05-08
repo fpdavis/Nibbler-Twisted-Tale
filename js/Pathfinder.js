@@ -130,6 +130,8 @@ function Findpath_Nibbler(oPlayer) {
     // result is an array containing the shortest path
 
     if (oResult.length !== 0) {
+        oPlayer.NoPathFoundCounter = 0;
+
         oPlayer.DirectionX = oResult[0].x - oPlayer.PositionX;
         oPlayer.DirectionY = oResult[0].y - oPlayer.PositionY;
 
@@ -147,8 +149,12 @@ function Findpath_Nibbler(oPlayer) {
             }
         }
     } else {
-        //NibblerDied(oPlayer);
-        MessageLog(oPlayer.Name + " was traped and died.", goVerbosityEnum.Information);
+        MessageLog(oPlayer.Name + " is in trouble!", goVerbosityEnum.Information);
+        oPlayer.Target = null;
+
+        if (oPlayer.NoPathFoundCounter++ > 5) {
+            NibblerDied(oPlayer);
+        }        
     }
 }
 function Findpath_Brainspawn(oBrainspawn) {

@@ -183,7 +183,6 @@ function RemoveDeadEnds() {
 }
 function ClearPerimiterAndRemaining() {
     
-
     for (let iLoop = 0; iLoop < oaMaze.length; iLoop++) {
         bClearWalls = false;
         if (iLoop < iColumns) { // Top Row
@@ -195,7 +194,8 @@ function ClearPerimiterAndRemaining() {
         else if (iLoop > oaMaze.length - iColumns) { // Bottom Row
             oaMaze[iLoop].walls[goWalls.South] = oaMaze[iLoop].walls[goWalls.East] = oaMaze[iLoop].walls[goWalls.West] = false;
         }
-        else if (iLoop % iColumns === 0) { // First Column
+
+        if (iLoop % iColumns === 0) { // First Column
             oaMaze[iLoop].walls[goWalls.North] = oaMaze[iLoop].walls[goWalls.South] = oaMaze[iLoop].walls[goWalls.East] = oaMaze[iLoop].walls[goWalls.West] = false;
         }
         else if ((iLoop + 1) % iColumns === 0) { // Second Column
@@ -205,13 +205,26 @@ function ClearPerimiterAndRemaining() {
             oaMaze[iLoop].walls[goWalls.North] = oaMaze[iLoop].walls[goWalls.South] = oaMaze[iLoop].walls[goWalls.East] = false;
         }
                 
-        if (iLoop < oaMaze.length - 1) {
-            removeWallsIfMoreThanTwo(oaMaze[iLoop], oaMaze[iLoop + 1]);
-            removeWallsIfMoreThanTwo(oaMaze[iLoop + 1], oaMaze[iLoop]);
+        removeWallsIfMoreThanTwo(oaMaze[iLoop], oaMaze[iLoop + 1]);
+        removeWallsIfMoreThanTwo(oaMaze[iLoop], oaMaze[iLoop + iColumns]);
+        removeWallsIfMoreThanTwo(oaMaze[iLoop], oaMaze[iLoop - 1]);        
+        
+        // TODO - Figure out why I need these
+        if (oaMaze.length - iLoop > iColumns && (!oaMaze[iLoop].walls[goWalls.South] || !oaMaze[iLoop + iColumns].walls[goWalls.North])) {
+            oaMaze[iLoop].walls[goWalls.South] = false;
+            oaMaze[iLoop + iColumns].walls[goWalls.North] = false;
         }
+
+        if (iLoop + 1 < oaMaze.length && (!oaMaze[iLoop].walls[goWalls.East] || !oaMaze[iLoop + 1].walls[goWalls.West])) {
+            oaMaze[iLoop].walls[goWalls.East] = false;
+            oaMaze[iLoop + 1].walls[goWalls.West] = false;
+        }
+        
     }
 }
 function removeWallsIfMoreThanTwo(a, b) {
+
+    if (a === null || b === null) return;
 
     let iNumberOfWalls = 0;
 
@@ -245,7 +258,7 @@ function ReverseIndex(index) {
 
 function ExpandMaze() {    
     let aMazeTopLeft = oaMaze;
-    let aMazeTopRight = TransposeMazeH(JSON.parse(JSON.stringify(oaMaze)), 1);
+    let aMazeTopRight = TransposeMazeH(JSON.parse(JSON.stringify(oaMaze)));
     let aMazeBottomLeft = TransposeMazeV(JSON.parse(JSON.stringify(oaMaze)));
     let aMazeBottomRight = TransposeMazeV(JSON.parse(JSON.stringify(aMazeTopRight)));
     let iIndex = 0;
@@ -324,7 +337,7 @@ function TransposeMazeH(Maze) {
     let iEndOfThisRow;
     let iDistanceToEndOfRow;
 
-    for (let iLoop = 0; iLoop < Maze.length - iColumns; iLoop++) {
+    for (let iLoop = 0; iLoop < Maze.length; iLoop++) {
         oTempCell.walls[goWalls.North] = Maze[iLoop].walls[goWalls.North];
         oTempCell.walls[goWalls.South] = Maze[iLoop].walls[goWalls.South];
         oTempCell.walls[goWalls.East]  = Maze[iLoop].walls[goWalls.East];
@@ -367,7 +380,8 @@ function TransposeMazeV(Maze) {
     let iRowsToSkip;
     let iCellsToSkip;
 
-    for (let iLoop = 0; iLoop < Maze.length / 2; iLoop++) {
+    console.log(`${Maze.length}, ${iColumns}, ${Maze.length / iColumns}`);
+    for (let iLoop = 0; iLoop < Math.ceil(Maze.length / iColumns / 2) * iColumns; iLoop++) {
         oTempCell.walls[goWalls.North] = Maze[iLoop].walls[goWalls.North];
         oTempCell.walls[goWalls.South] = Maze[iLoop].walls[goWalls.South];
         oTempCell.walls[goWalls.East]  = Maze[iLoop].walls[goWalls.East];
@@ -380,7 +394,7 @@ function TransposeMazeV(Maze) {
 
         iTransposeIndex = iLoop + iCellsToSkip;
 
-        //console.log(`${iCurrentRow}, ${iTransposeRow}, ${iRowsToSkip}, ${iCellsToSkip}, ${iLoop} <=> ${iTransposeIndex}`);
+        console.log(`${iCurrentRow}, ${iTransposeRow}, ${iRowsToSkip}, ${iCellsToSkip}, ${iLoop} <=> ${iTransposeIndex}`);
 
         Maze[iLoop].walls[goWalls.North] = Maze[iTransposeIndex].walls[goWalls.South];
         Maze[iLoop].walls[goWalls.South] = Maze[iTransposeIndex].walls[goWalls.North];

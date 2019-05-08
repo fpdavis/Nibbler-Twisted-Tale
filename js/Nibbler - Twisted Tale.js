@@ -172,7 +172,7 @@ function ComputerPlayerLoop(oPlayer) {
         }
     }
 
-    if (Math.round(Math.random() * 50) < 1) {
+    if (Math.round(Math.random() * 40) < 1) {
         FindPath_Simple_Nibbler(oPlayer);
     } else {
         Findpath_Nibbler(oPlayer);

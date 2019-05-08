@@ -23,6 +23,8 @@ class Nibbler {
         this.Direction = 0;
         this.Target = null;
 
+        this.NoPathFoundCounter = 0;
+
         this.Trail = [];
         this.TailLength = giMinimumTailLength;
 
@@ -280,22 +282,24 @@ function CollidedWithTail(oPlayer) {
     // We exclude the check if they are at the minimum length
     // if the tail is the minimum length already.
     if (oPlayer.Trail && oPlayer.Trail.length > giMinimumTailLength) {
-        for (let iLoop = 0; iLoop < oPlayer.Trail.length - giMinimumTailLength; iLoop++) {
+        for (let iLoop = 0; iLoop  < oPlayer.Trail.length - 1; iLoop++) {
             if (oPlayer.Trail[iLoop].x === oPlayer.PositionX &&
                 oPlayer.Trail[iLoop].y === oPlayer.PositionY) {
                 if (gbDeadlyTails) oPlayer.Suicides++;
+                MessageLog(oPlayer.Name + " hit their own tail.", goVerbosityEnum.Information);
                 return true;
             }
         }
     }
 
-    // Check for collisions with other player tails
+    // Check for collisions with other player
     for (let iLoop = gaNibblers.length; iLoop--;) {
         if (gaNibblers[iLoop].Lives > 0 && gaNibblers[iLoop].Trail && gaNibblers[iLoop].Trail !== oPlayer.Trail) {
             for (let iLoop2 = gaNibblers[iLoop].Trail.length; iLoop2--;) {
                 if (gaNibblers[iLoop].Trail[iLoop2].x === oPlayer.PositionX &&
                     gaNibblers[iLoop].Trail[iLoop2].y === oPlayer.PositionY) {
                     if (gbDeadlyTails) gaNibblers[iLoop].Kills++;
+                    MessageLog(oPlayer.Name + " hit " + gaNibblers[iLoop].Name + "'s tail.", goVerbosityEnum.Information);
                     return true;
                 }
             }
