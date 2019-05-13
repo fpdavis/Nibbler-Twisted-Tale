@@ -1,6 +1,5 @@
 LoadAnimation = function (Frames, SourcePrefix, SourceSuffix) {
     let aImage = [];
-    let iIndex;
     let sImageURL;
 
     for (let iLoop = 1; iLoop <= Frames; iLoop++) {

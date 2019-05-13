@@ -75,7 +75,7 @@ svg {
     margin: 5px;
 }
 
-.modal-start {
+.modal-button {
     float: right;
     z-index: +2;
     color: #424242;
@@ -135,6 +135,13 @@ svg {
     grid-row: 1;
     font-size: 90%;
     height: 30px;
+    border: 1px solid #000;
+}
+
+.menuwide {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+    font-size: 90%;
     border: 1px solid #000;
 }
 

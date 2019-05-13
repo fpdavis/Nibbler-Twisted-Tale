@@ -6,6 +6,8 @@ window.onload = function () {
     document.addEventListener("keydown", KeydownEvent);
     document.addEventListener("keyup", KeyupEvent);
     document.addEventListener("click", ClickEvent, { passive: true });
+    window.addEventListener("gamepadconnected", GamepadConnectedEvent);
+    window.addEventListener("gamepaddisconnected", GamepadDisonnectedEvent);
 
     addClass(oDivGameMenu, "showGameMenu");
     addClass(oDivScoreboard, "modal-blur");
@@ -14,14 +16,14 @@ window.onload = function () {
     LoadSounds(gaSoundData);
     LoadMusic(gaMusicData);
 
-    Sounds.Effects["Crawlig"].loop = true;
+    Sounds.Effects["Crawling"].loop = true;
 };
 
 function SetupArena() {
 
     switch (selectArenaSize.value) {
         case "Small":
-            giGridSize = 80;
+            giGridSize = 62;
             break;
         case "Large":
             giGridSize = 20;
@@ -31,9 +33,6 @@ function SetupArena() {
     }
 
     giGridSizeHalf = giGridSize / 2;
-
-    giArenaSquaresX = Math.floor(window.innerWidth / giGridSize);
-    giArenaSquaresY = Math.floor(giGridHeight / giGridSize);
 
     ResizeEvent();
 
@@ -113,6 +112,8 @@ function StartTimers() {
 }
 
 function GameLoop() {
+
+    GamepadCheck();
 
     for (let iLoop = gaNibblers.length; iLoop--;) // Reverse loop for the win
     {
@@ -353,17 +354,17 @@ function CheckForSpecialKeys(oEvent) {
             }
 
             if (Sounds.NotMuted) {
-                Sounds.Effects["Crawlig"].play();
+                Sounds.Effects["Crawling"].play();
                 Music.Songs[giCurrentSong].play();
             } else {
-                Sounds.Effects["Crawlig"].pause();
+                Sounds.Effects["Crawling"].pause();
                 Music.Songs[giCurrentSong].pause();
             }
             break;
         case 189: // -
             rangeEffectsVolume.value = Sounds.Volume = (Sounds.Volume > 0) ? Math.floor((Sounds.Volume - 0.1) * 10) / 10 : 0;
             rangeMusicVolume.value = Music.Songs[giCurrentSong].volume = Music.Volume = (Music.Volume > .1) ? Math.floor((Music.Volume - 0.2) * 10) / 10 : 0;
-            Sounds.Effects["Crawlig"].volume = Sounds.Volume;
+            Sounds.Effects["Crawling"].volume = Sounds.Volume;
             Sounds.Pause.volume = Sounds.Volume;
             break;
         case 187: // =
@@ -371,7 +372,7 @@ function CheckForSpecialKeys(oEvent) {
             Sounds.NotMuted = true;
             rangeEffectsVolume.value = Sounds.Volume = Sounds.Volume < 1 ? Math.ceil((Sounds.Volume + 0.1) * 10) / 10 : 1;
             rangeMusicVolume.value = Music.Songs[giCurrentSong].volume = Music.Volume = Music.Volume < 1 ? Math.ceil((Music.Volume + 0.1) * 10) / 10 : 1;
-            Sounds.Effects["Crawlig"].volume = Sounds.Volume;
+            Sounds.Effects["Crawling"].volume = Sounds.Volume;
             Sounds.Pause.volume = Sounds.Volume;
             break;
         case 188: // ,
@@ -394,12 +395,13 @@ function CheckForSpecialKeys(oEvent) {
             Pause();
             break;
         default:
-            MessageLog(`No key match for (` + oEvent.keyCode + ')', goVerbosityEnum.Debug);
+            MessageLog(`No special key match for (` + oEvent.keyCode + ')', goVerbosityEnum.Debug);
             return false;
     }
     
     return true;
 }
+
 function CheckForKeyEvents(oPlayer) {
     
     if (oPlayer.KeyLeftPressed) {
@@ -451,6 +453,7 @@ function CheckForKeyDown(oEvent, oPlayer) {
 
     return true;
 }
+
 function KeyupEvent(oEvent) {
 
     if (!gbGamePaused && gaNibblers) {
@@ -486,8 +489,7 @@ function CheckForKeyup(oEvent, oPlayer) {
 }
 
 function ClickEvent(event) {
-
-
+    
     if (giVerbosity === goVerbosityEnum.Debug) {
 
         MessageLog(`==============================================`, goVerbosityEnum.Debug);
@@ -544,6 +546,34 @@ function ClickEvent(event) {
         gaNibblers[0].DirectionX = 0;
     }
 }
+function GamepadConnectedEvent(oEvent) {
+    MessageLog(`Gamepad connected at index ${oEvent.gamepad.index}: ${oEvent.gamepad.id}. ${oEvent.gamepad.buttons.length} buttons, ${oEvent.gamepad.axes.length} axes.`, goVerbosityEnum.Information);
+
+    gaGamepads[oEvent.gamepad.index] = new Gamepad(oEvent.gamepad);    
+}
+function GamepadDisonnectedEvent(oEvent) {
+    MessageLog(`Gamepad disconnected at index ${oEvent.gamepad.index}: ${oEvent.gamepad.id}.`, goVerbosityEnum.Information);
+
+    delete gaGamepads[oEvent.gamepad.index];
+}
+function GamepadCheck() {
+    
+    for (let i = gaGamepads.length; i--;) {
+        // Refresh the gamepad data
+        gaGamepads[i].Gamepad = navigator.getGamepads()[i];
+
+        for (let j = gaGamepads[i].Gamepad.axes.length; j--;) {
+            if (gaGamepads[i].Gamepad.axes[j] !== gaGamepads[i].CenterAxis[j]) {
+                MessageLog(`${gaGamepads[i].Gamepad.index}: ` + gaGamepads[i].Gamepad.axes[j], goVerbosityEnum.Debug);
+            }
+        }
+        for (let j = gaGamepads[i].Gamepad.buttons.length; j--;) {
+            if (gaGamepads[i].Gamepad.buttons[j] === 1.0 || (typeof (gaGamepads[i].Gamepad.buttons[j]) === "object" && gaGamepads[i].Gamepad.buttons[j].pressed)) {
+                MessageLog(`${gaGamepads[i].Gamepad.index}: Button ${j} pressed`, goVerbosityEnum.Debug);
+            }
+        }
+    }
+}
 
 function TogglePause() {
 
@@ -576,7 +606,7 @@ function Pause() {
 
     if (gaBrainspawns) gaBrainspawns.forEach(function (oBrainspawn) { clearInterval(oBrainspawn.Timer) });
 
-    Sounds.Effects["Crawlig"].pause();
+    Sounds.Effects["Crawling"].pause();
     if (Sounds.NotMuted) Sounds.Effects["Pause"].play();
     
     oBtnStart.disabled = false;
@@ -586,7 +616,7 @@ function UnPause() {
 
     HideGameMenu();
 
-    if (Sounds.NotMuted) Sounds.Effects["Crawlig"].play();
+    if (Sounds.NotMuted) Sounds.Effects["Crawling"].play();
 
     goGameLoop = setInterval(GameLoop, giGameLoopSpeed);
 
@@ -603,6 +633,45 @@ function HideGameMenu() {
     removeClass(canvArena, "modal-blur");
     removeClass(oDivTime, "blink_me");
 }
+function ShowControllerMenu(iPlayer) {
+
+    removeClass(oDivGameMenu, "showGameMenu");
+    addClass(oDivControllerMenu, "showGameMenu");
+
+    giControllerMenuPlayer = iPlayer;
+    oControllerMenuPlayerName.innerText = oTxtPlayerName[giControllerMenuPlayer].value.length > 0 ? oTxtPlayerName[giControllerMenuPlayer].value : "Player " + (giControllerMenuPlayer + 1);
+
+    PopulateControllerMenu();    
+}
+function PopulateControllerMenu() {
+
+    oSelectControllerType.options.length = 2;
+
+    for (let i = gaGamepads.length; i--;) {
+        let oOption = document.createElement('option');
+        oOption.value = i;
+        oOption.innerHTML = gaGamepads[i].Gamepad.id;
+        oOption.selected = gaGamepads[i].Player === giControllerMenuPlayer;
+        oSelectControllerType.appendChild(oOption);
+    }
+}
+function HideControllerMenu(bSaveChanges) {
+
+    removeClass(oDivControllerMenu, "showGameMenu");
+    addClass(oDivGameMenu, "showGameMenu");
+
+    if (bSaveChanges) {
+        if (!isNaN(oSelectControllerType.value)) {
+            gaPlayerControls[giControllerMenuPlayer] = oSelectControllerType.value;
+            gaGamepads[oSelectControllerType.value].Player = giControllerMenuPlayer;
+        }
+        else {
+            gaGamepads[gaPlayerControls[giControllerMenuPlayer]].Player = -1;
+            gaPlayerControls[giControllerMenuPlayer] = oSelectControllerType.value;
+        }
+    }
+}
+
 function ResizeEvent() {
     // Runs each time the DOM window resize event fires.
     // Resets the canvas dimensions to match window,

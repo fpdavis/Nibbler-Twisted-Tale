@@ -4,37 +4,39 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 ### Todo (in order of importance):
 
-* Changing Arena Size after first game doesn't work properly.
-* Improved graphics for pellets
-* Add character names for computer depending on dificulty settings
-* Read animations from a json file
-* Read wave/level information in from json file
-* Fix edge bug where edges are too close in from the border
+* Joystick support
+* Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler.
+		Make it set a point for the Pathfinder algorythm.
 * Add Game Over screen with results
-* Add graph weighting incentives for pellets in A*
+* Maybe add a new type of Brainspawn to camp out around pellets
+* Read wave/level information in from json file
 * Need to calculate closest target and best path with Wall Wrap
 * Grid creation for A* is inefficient, should be updated with tail update
 * Maze creates a copy of the Grid, want to create one grid and pass it in
+* Add graph weighting incentives for pellets in A*
 * Game Options
 	* Waves/Levels
 	* Dificulty level
 	* Add power ups from pellets
-    * Must be bitten multiple times to be eaten
-    * Random direction change
-	* Ability to pause movement
-	* Increase speed
-	* Slow speed
-	* Tail eating ability
-	* Infinite tail
-	* no-wrap
-	* Loose tail
-	* Erase ability - Need to better define this
-	* Jump ability
-	* Teleportation (Random/Directional?)
-	* Incorporate Benchmark into Messagelog
+		* Must be bitten multiple times to be eaten
+		* Random direction change
+		* Ability to pause movement
+		* Increase speed
+		* Slow speed
+		* Tail eating ability
+		* Infinite tail
+		* no-wrap
+		* Erase ability - Need to better define this
+		* Jump ability
+		* Teleportation (Random/Directional?)
 * Enhance description
-* Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler
-* Joystick support
+* Help Menu
+* Improved graphics for pellets
+* Add character names for computer depending on dificulty settings
+* Make the Nibbler more inteligent about pellet selection, weight distance to pellet along with type of pellet
+* Changing Arena Size after first game doesn't always work properly. Specifically when resiszing browser or
+      going from small arena to medium/large.
+* Fix edge bug where edges are too close in from the border
 * Center the playfield - it is pretty good but could be better
 * Correct player and pellet size on resize
 * Implement sounds using Howler.js with sprites? https://goldfirestudios.com/blog/104/howler.js-Modern-Web-Audio-Javascript-Library?
@@ -151,6 +153,16 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 	 Assign null target when path to current target can't be calculated (this can be improved)
 	 Kill Nibbler after it can't calculate a path after X number of tries
 	 Increased chance of using dumb pathfinding algorythm that foces movement
+
+* Added Loose Tail power up pellet
+* Moved animation/image definitions into their own js file. Didn't make it json as the json file I originally
+     created was actually harder to edit and read than the js file is. I feel the Music and Sound json files
+	 are about as hard as an equivilant js file would be to edit so not much advantage to them. My opinion on
+	 this may change if/when we start to load entire levels in from a json file.
+
+* Incorporated basic timing into Messagelog. It now shows the miliseconds since the MessageLog was lat called.
+     Optional ResetMessageLogTimer() method to reset the timer. Utilities has a method for Benchmarking.
+* Joystick support has been started. Reading from controllers is working, just requires the plumbing! 
 
 ### Creative Commons License Attribution 3.0 
 

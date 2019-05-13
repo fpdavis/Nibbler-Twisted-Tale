@@ -61,6 +61,10 @@ const chkInfiniteTails = document.getElementById('chkInfiniteTails');
 
 const oBtnStart = document.getElementById('btnStart');
 
+const oDivControllerMenu = document.getElementById('divControllerMenu');
+const oControllerMenuPlayerName = document.getElementById('hControllerMenuPlayerName');
+const oSelectControllerType = document.getElementById('selectControllerType');
+
 const iPointsLostForTailCollision = 5;
 const iPointsLostForWallCollision = 5;
 const iSpawnTimeOut = 2000; // Miliseconds
@@ -98,6 +102,10 @@ var gbInfiniteTails;
 
 var giCurrentSong = 0;
 var gaAnimations = new Object();
+
+var gaGamepads = [];
+var gaPlayerControls = [];
+var giControllerMenuPlayer;
 
 const goWalls = {
     Lookup: ["North", "South", "East", "West"],

@@ -65,7 +65,7 @@ function Cell(i, j) {
 
 function GenerateMaze(ColsIn, RowsIn) {
 
-    MessageLog(`Generating Maze ${ColsIn} x ${RowsIn}`, goVerbosityEnum.Debug);
+    MessageLog(`Generating Maze ${ColsIn}(${giArenaSquaresX}) x ${RowsIn}`, goVerbosityEnum.Debug);
     iColumns = Math.floor(ColsIn / 2);
     iRows = Math.floor(RowsIn / 2);
 
@@ -380,7 +380,8 @@ function TransposeMazeV(Maze) {
     let iRowsToSkip;
     let iCellsToSkip;
 
-    console.log(`${Maze.length}, ${iColumns}, ${Maze.length / iColumns}`);
+    //console.log(`${Maze.length}, ${iColumns}, ${Maze.length / iColumns}`);
+
     for (let iLoop = 0; iLoop < Math.ceil(Maze.length / iColumns / 2) * iColumns; iLoop++) {
         oTempCell.walls[goWalls.North] = Maze[iLoop].walls[goWalls.North];
         oTempCell.walls[goWalls.South] = Maze[iLoop].walls[goWalls.South];
@@ -394,7 +395,7 @@ function TransposeMazeV(Maze) {
 
         iTransposeIndex = iLoop + iCellsToSkip;
 
-        console.log(`${iCurrentRow}, ${iTransposeRow}, ${iRowsToSkip}, ${iCellsToSkip}, ${iLoop} <=> ${iTransposeIndex}`);
+        //console.log(`${iCurrentRow}, ${iTransposeRow}, ${iRowsToSkip}, ${iCellsToSkip}, ${iLoop} <=> ${iTransposeIndex}`);
 
         Maze[iLoop].walls[goWalls.North] = Maze[iTransposeIndex].walls[goWalls.South];
         Maze[iLoop].walls[goWalls.South] = Maze[iTransposeIndex].walls[goWalls.North];

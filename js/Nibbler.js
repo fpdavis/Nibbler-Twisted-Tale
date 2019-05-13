@@ -1,8 +1,3 @@
-gaAnimations["BlueExplosion"] = LoadAnimation(24, "Images/Explosions_particles/blue_explosion/bluspark_", ".png");
-gaAnimations["RedExplosion"] = LoadAnimation(24, "Images/Explosions_particles/red_explosion/red_snakeplosion_", ".png");
-gaAnimations["GreenExplosion"] = LoadAnimation(24, "Images/Explosions_particles/green_explosion/green_explosion_", ".png");
-gaAnimations["YellowExplosion"] = LoadAnimation(24, "Images/Explosions_particles/yellow_explosion/yellow_explosion_", ".png");
-
 class Nibbler {
     constructor() {
         this.Index = 0;
@@ -41,6 +36,18 @@ class Nibbler {
         this.KeyDownPressed = false;
 
         this.fillStyle = "lime";
+    }
+}
+class Gamepad {
+    constructor(oGamepad) {
+        this.Gamepad = oGamepad;
+        this.CenterAxis = [];
+        this.Player = -1;
+
+        for (let j = this.Gamepad.axes.length; j--;) {
+            this.CenterAxis[j] = this.Gamepad.axes[j];
+            MessageLog(`Axes ${j} Center: ` + this.CenterAxis[j], goVerbosityEnum.Debug);
+        }
     }
 }
 Nibbler.prototype.UpdateTail = function () {
@@ -91,7 +98,7 @@ Nibbler.prototype.SetSpawnPoint = function () {
         }
     }
 };
-Nibbler.UpdateTail = function (oNibbler) { oNibbler.UpdateTail(); }
+Nibbler.UpdateTail = function (oNibbler) { oNibbler.UpdateTail(); };
 
 function InitializePlayers() {
 

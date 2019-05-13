@@ -19,6 +19,7 @@ const goVerbosityEnum = {
     Debug: 5
 };
 var giVerbosity = goVerbosityEnum.Debug;
+let iStartTime = new Date().getTime();
 
 function ChangeVerbosity(iIncrement) {
         
@@ -32,12 +33,22 @@ function ChangeVerbosity(iIncrement) {
     }
 
     MessageLog(`Changing Verbosity to ` + goVerbosityEnum.Lookup[giVerbosity], goVerbosityEnum.Critical);
+    
+}
 
+function ResetMessageLogTimer() {
+    iStartTime = new Date().getTime();
 }
 
 function MessageLog(Message, Verbosity = goVerbosityEnum.Warning) {
     
     if (Verbosity <= giVerbosity) {
+
+        let iCurrentTime = new Date().getTime();
+        let iElapsedTime = iCurrentTime - iStartTime;
+
+        Message = "(" + iElapsedTime + "ms) " + Message;
+
         switch(Verbosity) {
             case goVerbosityEnum.Critical:
                 console.error(Message);
@@ -61,5 +72,7 @@ function MessageLog(Message, Verbosity = goVerbosityEnum.Warning) {
                 console.log(Message);
                 break;
         }
+
+        ResetMessageLogTimer();
     }
 }

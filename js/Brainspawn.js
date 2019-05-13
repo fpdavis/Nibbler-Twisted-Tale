@@ -1,8 +1,3 @@
-gaAnimations["Brainspawn_North"] = LoadAnimation(3, "Images/Slime/Slime_North_", ".png");
-gaAnimations["Brainspawn_South"] = LoadAnimation(3, "Images/Slime/Slime_South_", ".png");
-gaAnimations["Brainspawn_East"] = LoadAnimation(17, "Images/Slime/Slime_East_", ".png");
-gaAnimations["Brainspawn_West"] = LoadAnimation(17, "Images/Slime/Slime_West_", ".png");
-
 class Brainspawn {
     constructor() {
         this.Index = 0;
@@ -24,7 +19,7 @@ class Brainspawn {
 
         this.SetSpawnPoint();
         
-        this.Sprite = new Sprite(gaAnimations["Brainspawn_South"], this.PositionX, this.PositionY, 10, giGridSize - giGridSize * .1, giGridSize - giGridSize * .1);
+        this.Sprite = new Sprite(gaAnimations["Brainspawn"], this.PositionX, this.PositionY, 10, giGridSize - giGridSize * .1, giGridSize - giGridSize * .1);
         this.Sprite.Image_West = gaAnimations["Brainspawn_West"];
         this.Sprite.Image_East = gaAnimations["Brainspawn_East"];
         this.Sprite.Image_North = gaAnimations["Brainspawn_North"];
@@ -84,7 +79,7 @@ Brainspawn.prototype.Move = function () {
     this.PositionY = this.Sprite.PositionY = oVector.PositionY;
     this.DirectionX = this.Sprite.DirectionX = oVector.DirectionX;
     this.DirectionY = this.Sprite.DirectionY = oVector.DirectionY;
-}
+};
 Brainspawn.prototype.DrawTarget = function () {
     ctxArena.lineWidth = 2;
     ctxArena.strokeStyle = "white";

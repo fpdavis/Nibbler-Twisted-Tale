@@ -1,12 +1,10 @@
-gaAnimations["BlueBean"] = LoadImage("Images/yaycandies/size1/bean_blue.png");
-
 class Pellet {
     constructor() {
         this.Index = 0;
         this.Name = "Pellet";
         this.Points = 10;
         this.TailAdjustment = 1;
-        this.Type = Math.round(Math.random());
+        this.Type = Math.floor(Math.random() * 3);
         this.PositionX = 0;
         this.PositionY = 0;
 
@@ -14,7 +12,7 @@ class Pellet {
 
         this.SetSpawnPoint();
 
-        this.Image = gaAnimations["BlueBean"];
+        this.Image = gaAnimations["Pellet_" + this.Type];
         this.Sprite = new Sprite(this.Image, this.PositionX, this.PositionY, 30, giGridSize - giGridSize * .3, giGridSize - giGridSize * .3);
         this.Sprite.Loop = true;
         gaSprites.push(this.Sprite);
@@ -73,20 +71,25 @@ Pellet.prototype.Eatten = function (oPlayer) {
 }
 Pellet.prototype.Power = function (oPlayer) {
 
+    // Pellets should be sorted from best (0) to worst (n)
     switch (this.Type) {
-        case 0:
+        case 0: // Score a Point            
+            oPlayer.Score += this.Points;
+            break;
+        case 1: // Lengthen Tail/Score a Point
             oPlayer.TailLength += this.TailAdjustment;
             oPlayer.Score += this.Points;
             break;
-        case 1:
-            oPlayer.Score += this.Points;
+        case 2: // Loose Tail/Loose a Point
+            oPlayer.TailLength = giMinimumTailLength;
+            oPlayer.Score -= this.Points;
             break;
     }
-}
+};
 Pellet.prototype.Draw = function () {
 
 }
-Pellet.Draw = function (oPellet) { oPellet.Draw(); }
+Pellet.Draw = function (oPellet) { oPellet.Draw(); };
 
 function InitializePellets() {
 
