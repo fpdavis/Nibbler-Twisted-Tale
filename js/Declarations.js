@@ -62,8 +62,11 @@ const chkInfiniteTails = document.getElementById('chkInfiniteTails');
 const oBtnStart = document.getElementById('btnStart');
 
 const oDivControllerMenu = document.getElementById('divControllerMenu');
-const oControllerMenuPlayerName = document.getElementById('hControllerMenuPlayerName');
+const oControllerMenuPlayerName = document.getElementById('spanControllerMenuPlayerName');
 const oSelectControllerType = document.getElementById('selectControllerType');
+const oSpanControllerMenuStatusBar = document.getElementById('spanControllerMenuStatusBar');
+const oDivControllerMenuStatusBar = document.getElementById('divControllerMenuStatusBar');
+
 
 const iPointsLostForTailCollision = 5;
 const iPointsLostForWallCollision = 5;

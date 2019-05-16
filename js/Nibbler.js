@@ -38,18 +38,7 @@ class Nibbler {
         this.fillStyle = "lime";
     }
 }
-class Gamepad {
-    constructor(oGamepad) {
-        this.Gamepad = oGamepad;
-        this.CenterAxis = [];
-        this.Player = -1;
 
-        for (let j = this.Gamepad.axes.length; j--;) {
-            this.CenterAxis[j] = this.Gamepad.axes[j];
-            MessageLog(`Axes ${j} Center: ` + this.CenterAxis[j], goVerbosityEnum.Debug);
-        }
-    }
-}
 Nibbler.prototype.UpdateTail = function () {
 
     if (this.Trail.length > 0 && this.PositionX == this.Trail[this.Trail.length - 1].x && this.PositionY == this.Trail[this.Trail.length - 1].y) return;

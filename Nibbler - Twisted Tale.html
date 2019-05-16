@@ -15,6 +15,7 @@
     <script type="text/javascript" src="js/Nibbler.js" defer="defer"></script>
     <script type="text/javascript" src="js/Pathfinder.js" defer="defer"></script>
     <script type="text/javascript" src="js/Pellet.js" defer="defer"></script>
+    <script type="text/javascript" src="js/Gamepads.js" defer="defer"></script>
 
     <script type="text/javascript" src="Data/Music.json" defer="defer"></script>
     <script type="text/javascript" src="Data/Sound.json" defer="defer"></script>
@@ -57,13 +58,13 @@
                 </div>
                 <div class="menucolumn1">
                     <input id="colorMenuPlayer1" type="color" value="#00FF00" onchange="oColorPlayer[0].value = gaNibblers[0].fillStyle = this.value;" style="vertical-align: middle;">
-                    <img  onclick="ShowControllerMenu(0);" src="https://d2.alternativeto.net/dist/icons/joypad_6268.png?width=64&height=64&mode=crop&upscale=false" style="height: 20px; vertical-align: middle; cursor: pointer;" />
+                    <img  onclick="ShowControllerMenu(0);" src="images/joypad.png" style="height: 20px; vertical-align: middle; cursor: pointer;" />
                     <select id="selectPlayer1"><option selected>Human</option><option>Computer</option></select>
                     <input id="txtPlayer1Name" type="text" placeholder="Player 1" maxlength="10" size="10" />
 
                     <br />
                     <input id="colorMenuPlayer2" type="color" value="#FF0000" onchange="oColorPlayer[1].value = gaNibblers[1].fillStyle = this.value;" style="vertical-align: middle;">
-                    <img onclick="ShowControllerMenu(1);" src="https://d2.alternativeto.net/dist/icons/joypad_6268.png?width=64&height=64&mode=crop&upscale=false" style="height: 20px; vertical-align: middle; cursor: pointer;" />
+                    <img onclick="ShowControllerMenu(1);" src="images/joypad.png" style="height: 20px; vertical-align: middle; cursor: pointer;" />
                     <select id="selectPlayer2"><option>Human</option><option>Computer</option><option selected>None</optionselected></select>
                     <input id="txtPlayer2Name" type="text" placeholder="Player 2" maxlength="10" size="10" />
                     <br />
@@ -88,13 +89,13 @@
 
                 <div class="menucolumn2">
                     <input id="colorMenuPlayer3" type="color" value="#0000FF" onchange="oColorPlayer[2].value = gaNibblers[2].fillStyle = this.value;" style="vertical-align: middle;">
-                    <img onclick="ShowControllerMenu(2);" src="https://d2.alternativeto.net/dist/icons/joypad_6268.png?width=64&height=64&mode=crop&upscale=false" style="height: 20px; vertical-align: middle; cursor: pointer;" />
+                    <img onclick="ShowControllerMenu(2);" src="images/joypad.png" style="height: 20px; vertical-align: middle; cursor: pointer;" />
                     <select id="selectPlayer3"><option>Human</option><option>Computer</option><option selected>None</option></select>
                     <input id="txtPlayer3Name" type="text" placeholder="Player 3" maxlength="10" size="10" />
 
                     <br />
                     <input id="colorMenuPlayer4" type="color" value="#FFFF00" onchange="oColorPlayer[3].value = gaNibblers[3].fillStyle = this.value;" style="vertical-align: middle;">
-                    <img onclick="ShowControllerMenu(3);" src="https://d2.alternativeto.net/dist/icons/joypad_6268.png?width=64&height=64&mode=crop&upscale=false" style="height: 20px; vertical-align: middle; cursor: pointer;" />
+                    <img onclick="ShowControllerMenu(3);" src="images/joypad.png" style="height: 20px; vertical-align: middle; cursor: pointer;" />
                     <select id="selectPlayer4"><option>Human</option><option>Computer</option><option selected>None</option></select>
                     <input id="txtPlayer4Name" type="text" placeholder="Player 4" maxlength="10" size="10" />
                     <br /><br />
@@ -135,7 +136,7 @@
 
                     <input type="button" id="btnStart" Value="Start" class="modal-button" onclick="SetupArena();" />
                     <br /><br />
-                    <div style="background: coral; opacity: .5; text-align: center; width: 542px;"> Hit [Esc] or [p] to Pause Game</div>
+                    <div class="divStatusBar"> Hit [Esc] or [p] to Pause Game</div>
                 </div>
             </div>
         </div>
@@ -152,26 +153,34 @@
             <div class="modal-inner menuwrapper">
                 <div class="menuheader">
                     <h3>
-                        Game Controler Options
+                        Game Controler Settings
                         <br />
-                        <span id="hControllerMenuPlayerName">Player 1</span>
+                        <span id="spanControllerMenuPlayerName">Player 1</span>
                     </h3>
-                </div>
-                <div class="menuwide">
-                    Input Type: <select id="selectControllerType">
-                        <option selected value="keyboard">Keyboard</option>
-                        <option selected value="mouse">Mouse</option>
-                    </select>
+
+                    <div class="menuwide controllerSettings">
+                        <label>Input Type</label> <span>
+                            <select id="selectControllerType">
+                                <option selected value="keyboard">Keyboard</option>
+                                <option value="mouse">Mouse</option>
+                            </select>
+                        </span>
+                        <label>Up</label> <input id="txtUp" type="text" maxlength="1" size="1" />
+                        <label>Down</label> <input id="txtDown" type="text" maxlength="1" size="1" />
+                        <label>Left</label> <input id="txtLeft" type="text" maxlength="1" size="1" />
+                        <label>Right:</label> <input id="txtRight" type="text" maxlength="1" size="1" />
+                    </div>
                 </div>
 
                 <div class="menufooter">
-
-                    <br /><br />
+                    <br /><br /><br /><br /><br /><br /><br /><br /><br />
                     <input type="button" id="btnSave" Value="Save" class="modal-button" onclick="HideControllerMenu(true);" />
                     <input type="button" id="btnCancel" Value="Cancel" class="modal-button" onclick="HideControllerMenu(false);" />
+                    <br /><br /><br />
+                    <div id="divControllerMenuStatusBar" class="marquee divStatusBar"><span id="spanControllerMenuStatusBar">No controllers detected. Press a button on any controller!</span></div>
                 </div>
             </div>
-        </div>
+            </div>
     </div>
 </BODY>
 </HTML>

@@ -546,34 +546,6 @@ function ClickEvent(event) {
         gaNibblers[0].DirectionX = 0;
     }
 }
-function GamepadConnectedEvent(oEvent) {
-    MessageLog(`Gamepad connected at index ${oEvent.gamepad.index}: ${oEvent.gamepad.id}. ${oEvent.gamepad.buttons.length} buttons, ${oEvent.gamepad.axes.length} axes.`, goVerbosityEnum.Information);
-
-    gaGamepads[oEvent.gamepad.index] = new Gamepad(oEvent.gamepad);    
-}
-function GamepadDisonnectedEvent(oEvent) {
-    MessageLog(`Gamepad disconnected at index ${oEvent.gamepad.index}: ${oEvent.gamepad.id}.`, goVerbosityEnum.Information);
-
-    delete gaGamepads[oEvent.gamepad.index];
-}
-function GamepadCheck() {
-    
-    for (let i = gaGamepads.length; i--;) {
-        // Refresh the gamepad data
-        gaGamepads[i].Gamepad = navigator.getGamepads()[i];
-
-        for (let j = gaGamepads[i].Gamepad.axes.length; j--;) {
-            if (gaGamepads[i].Gamepad.axes[j] !== gaGamepads[i].CenterAxis[j]) {
-                MessageLog(`${gaGamepads[i].Gamepad.index}: ` + gaGamepads[i].Gamepad.axes[j], goVerbosityEnum.Debug);
-            }
-        }
-        for (let j = gaGamepads[i].Gamepad.buttons.length; j--;) {
-            if (gaGamepads[i].Gamepad.buttons[j] === 1.0 || (typeof (gaGamepads[i].Gamepad.buttons[j]) === "object" && gaGamepads[i].Gamepad.buttons[j].pressed)) {
-                MessageLog(`${gaGamepads[i].Gamepad.index}: Button ${j} pressed`, goVerbosityEnum.Debug);
-            }
-        }
-    }
-}
 
 function TogglePause() {
 
@@ -632,44 +604,6 @@ function HideGameMenu() {
     removeClass(oDivScoreboard, "modal-blur");
     removeClass(canvArena, "modal-blur");
     removeClass(oDivTime, "blink_me");
-}
-function ShowControllerMenu(iPlayer) {
-
-    removeClass(oDivGameMenu, "showGameMenu");
-    addClass(oDivControllerMenu, "showGameMenu");
-
-    giControllerMenuPlayer = iPlayer;
-    oControllerMenuPlayerName.innerText = oTxtPlayerName[giControllerMenuPlayer].value.length > 0 ? oTxtPlayerName[giControllerMenuPlayer].value : "Player " + (giControllerMenuPlayer + 1);
-
-    PopulateControllerMenu();    
-}
-function PopulateControllerMenu() {
-
-    oSelectControllerType.options.length = 2;
-
-    for (let i = gaGamepads.length; i--;) {
-        let oOption = document.createElement('option');
-        oOption.value = i;
-        oOption.innerHTML = gaGamepads[i].Gamepad.id;
-        oOption.selected = gaGamepads[i].Player === giControllerMenuPlayer;
-        oSelectControllerType.appendChild(oOption);
-    }
-}
-function HideControllerMenu(bSaveChanges) {
-
-    removeClass(oDivControllerMenu, "showGameMenu");
-    addClass(oDivGameMenu, "showGameMenu");
-
-    if (bSaveChanges) {
-        if (!isNaN(oSelectControllerType.value)) {
-            gaPlayerControls[giControllerMenuPlayer] = oSelectControllerType.value;
-            gaGamepads[oSelectControllerType.value].Player = giControllerMenuPlayer;
-        }
-        else {
-            gaGamepads[gaPlayerControls[giControllerMenuPlayer]].Player = -1;
-            gaPlayerControls[giControllerMenuPlayer] = oSelectControllerType.value;
-        }
-    }
 }
 
 function ResizeEvent() {
