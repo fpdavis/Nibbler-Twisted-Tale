@@ -147,6 +147,14 @@ function InitializePlayers() {
         gaNibblers[3].Explosion = gaAnimations["YellowExplosion"];
     }
 }
+function InitializePlayerControls() {
+
+    gaPlayerControls[0] = new PlayerControl("Keyboard", 38, 40, 37, 39);
+    gaPlayerControls[1] = new PlayerControl("Keyboard", 87, 83, 65, 68);
+    gaPlayerControls[2] = new PlayerControl("Keyboard", 73, 75, 74, 76);
+    gaPlayerControls[3] = new PlayerControl("Keyboard", 104, 101, 100, 102);
+}
+
 function NibblerDied(oPlayer) {
 
     gaSprites.push(new Sprite(oPlayer.Explosion, oPlayer.PositionX, oPlayer.PositionY, 15));

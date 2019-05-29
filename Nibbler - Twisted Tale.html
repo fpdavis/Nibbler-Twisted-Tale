@@ -65,7 +65,7 @@
                     <br />
                     <input id="colorMenuPlayer2" type="color" value="#FF0000" onchange="oColorPlayer[1].value = gaNibblers[1].fillStyle = this.value;" style="vertical-align: middle;">
                     <img onclick="ShowControllerMenu(1);" src="images/joypad.png" style="height: 20px; vertical-align: middle; cursor: pointer;" />
-                    <select id="selectPlayer2"><option>Human</option><option>Computer</option><option selected>None</optionselected></select>
+                    <select id="selectPlayer2"><option>Human</option><option>Computer</option><option selected>None</option></select>
                     <input id="txtPlayer2Name" type="text" placeholder="Player 2" maxlength="10" size="10" />
                     <br />
                     <br />Lives:
@@ -161,14 +161,14 @@
                     <div class="menuwide controllerSettings">
                         <label>Input Type</label> <span>
                             <select id="selectControllerType">
-                                <option selected value="keyboard">Keyboard</option>
+                                <option value="keyboard">Keyboard</option>
                                 <option value="mouse">Mouse</option>
                             </select>
                         </span>
-                        <label>Up</label> <input id="txtUp" type="text" maxlength="1" size="1" />
-                        <label>Down</label> <input id="txtDown" type="text" maxlength="1" size="1" />
-                        <label>Left</label> <input id="txtLeft" type="text" maxlength="1" size="1" />
-                        <label>Right:</label> <input id="txtRight" type="text" maxlength="1" size="1" />
+                        <label>Up</label> <input id="txtControllerMenuUp" type="text" maxlength="1" size="1" onclick="this.value='';" />
+                        <label>Down</label> <input id="txtControllerMenuDown" type="text" maxlength="1" size="1" onclick="this.value='';"/>
+                        <label>Left</label> <input id="txtControllerMenuLeft" type="text" maxlength="1" size="1" onclick="this.value='';" />
+                        <label>Right:</label> <input id="txtControllerMenuRight" type="text" maxlength="1" size="1" onclick="this.value='';" />
                     </div>
                 </div>
 

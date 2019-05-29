@@ -237,7 +237,7 @@ input {
 div.controllerSettings {
     margin-left: 10px;
     display: grid;
-    grid-template-columns: max-content 50px;
+    grid-template-columns: max-content 81px;
     grid-gap: 5px;
 }
 

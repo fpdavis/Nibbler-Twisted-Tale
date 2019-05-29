@@ -5,7 +5,7 @@ window.onload = function () {
     window.addEventListener('resize', ResizeEvent, false);
     document.addEventListener("keydown", KeydownEvent);
     document.addEventListener("keyup", KeyupEvent);
-    document.addEventListener("click", ClickEvent, { passive: true });
+    //document.addEventListener("click", ClickEvent, { passive: true });
     window.addEventListener("gamepadconnected", GamepadConnectedEvent);
     window.addEventListener("gamepaddisconnected", GamepadDisonnectedEvent);
 
@@ -17,6 +17,8 @@ window.onload = function () {
     LoadMusic(gaMusicData);
 
     Sounds.Effects["Crawling"].loop = true;
+
+    InitializePlayerControls();
 };
 
 function SetupArena() {
@@ -395,7 +397,13 @@ function CheckForSpecialKeys(oEvent) {
             Pause();
             break;
         default:
-            MessageLog(`No special key match for (` + oEvent.keyCode + ')', goVerbosityEnum.Debug);
+            MessageLog(`No special key match for (` + oEvent.keyCode + ' / ' + keyCodes[oEvent.keyCode] + ')', goVerbosityEnum.Debug);
+
+            if (oTxtControllerMenuUp === document.activeElement) oTxtControllerMenuUp.value = keyCodes[oEvent.keyCode];
+            else if (oTxtControllerMenuDown === document.activeElement) oTxtControllerMenuDown.value = keyCodes[oEvent.keyCode];
+            else if (oTxtControllerMenuLeft === document.activeElement) oTxtControllerMenuLeft.value = keyCodes[oEvent.keyCode];
+            else if (oTxtControllerMenuRight === document.activeElement) oTxtControllerMenuRight.value = keyCodes[oEvent.keyCode];
+            
             return false;
     }
     
@@ -574,9 +582,9 @@ function Pause() {
         clearInterval(ogCountdownTimer);
     }
 
-    gaNibblers.forEach(function (oPlayer) { clearInterval(oPlayer.Timer) });
+    if (gaNibblers) gaNibblers.forEach(function (oPlayer) { clearInterval(oPlayer.Timer); });
 
-    if (gaBrainspawns) gaBrainspawns.forEach(function (oBrainspawn) { clearInterval(oBrainspawn.Timer) });
+    if (gaBrainspawns) gaBrainspawns.forEach(function (oBrainspawn) { clearInterval(oBrainspawn.Timer); });
 
     Sounds.Effects["Crawling"].pause();
     if (Sounds.NotMuted) Sounds.Effects["Pause"].play();
