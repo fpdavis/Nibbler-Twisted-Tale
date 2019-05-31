@@ -10,6 +10,7 @@ The object of the game is to maneuver a square across the screen, leaving a trai
    * Remove player directions from Nibbler class
    * Remove direction initialization from InitializePlayers()
    * Move Keypressed into PlayerControl class
+* Need to add a real Pause screen
 * Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler.
 		Make it set a point for the Pathfinder algorythm.
 * Add Game Over screen with results
@@ -168,6 +169,11 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 * Incorporated basic timing into Messagelog. It now shows the miliseconds since the MessageLog was lat called.
      Optional ResetMessageLogTimer() method to reset the timer. Utilities has a method for Benchmarking.
 * Joystick support has been started. Reading from controllers is working, just requires the plumbing! 
+
+* Added Custom Speed in Speed Select drop down when using Page Up/Page Down
+* Inform user when they try to bind to a custom key that the key is reserved
+* Unbound the "P" key in favor of the "Pause/Break" key
+* Added help text to marque scroller
 
 ### Creative Commons License Attribution 3.0 
 

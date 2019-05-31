@@ -71,10 +71,14 @@ function StartGame() {
             giGameLoopSpeed = 140;
             break;
         case "Fast":
-            giGameLoopSpeed = 66;
+            giGameLoopSpeed = 60;
+            break;
+        case "Normal":
+            giGameLoopSpeed = 100;
             break;
         default:
-            giGameLoopSpeed = 100;
+            giGameLoopSpeed = Number(selectSpeed.value);
+            break;
     }
 
     gbWallWrap = chkWallWrap.checked;
@@ -335,10 +339,7 @@ function KeydownEvent(oEvent) {
 function CheckForSpecialKeys(oEvent) {
  
     switch (oEvent.keyCode) {
-        case 32: // Space
-            gbSpaceBarHit = true;
-            break;
-        case 80: // "P"
+        case 19: // "Pause/Break"
         case 27: // Escape
             TogglePause();
             break;
@@ -386,15 +387,13 @@ function CheckForSpecialKeys(oEvent) {
         case 192: // `
             ChangeVerbosity(1);
             break;
-        case 33: // Page Up            
-            giGameLoopSpeed = giGameLoopSpeed <= 99 ? 66 : giGameLoopSpeed - 40;
-            MessageLog(`Game Loop Speed = ` + giGameLoopSpeed, goVerbosityEnum.Information);
-            Pause();
+        case 33: // Page Up  
+                giGameLoopSpeed = giGameLoopSpeed <= 99 ? 60 : giGameLoopSpeed - 40;
+                UpdateGameLoopSpeed();
             break;
         case 34: // Page Down
-            giGameLoopSpeed += 40;
-            MessageLog(`Game Loop Speed = ` + giGameLoopSpeed, goVerbosityEnum.Information);
-            Pause();
+                giGameLoopSpeed += 40;
+                UpdateGameLoopSpeed();
             break;
         default:
             MessageLog(`No special key match for (` + oEvent.keyCode + ' / ' + keyCodes[oEvent.keyCode] + ')', goVerbosityEnum.Debug);
@@ -406,10 +405,50 @@ function CheckForSpecialKeys(oEvent) {
             
             return false;
     }
-    
+
+    if (oTxtControllerMenuUp === document.activeElement
+        || oTxtControllerMenuDown === document.activeElement
+        || oTxtControllerMenuLeft === document.activeElement
+        || oTxtControllerMenuRight === document.activeElement) {
+        oSpanControllerMenuStatusBar.innerHTML = "The " + keyCodes[oEvent.keyCode] + " key is reserved";
+    }
+
     return true;
 }
+function UpdateGameLoopSpeed() {
+    
+    MessageLog(`Game Loop Speed = ` + giGameLoopSpeed, goVerbosityEnum.Information);
 
+    if (gaNibblers) {
+        clearInterval(goGameLoop);
+        goGameLoop = setInterval(GameLoop, giGameLoopSpeed);
+    }
+
+    switch (giGameLoopSpeed) {
+        case 140:
+            selectSpeed.value = "Slow";
+            return;
+        case 60:
+            selectSpeed.value = "Fast";
+            return;
+        case 100:
+            selectSpeed.value = "Normal";
+            return;
+    }
+
+    let oCustomOption = document.getElementById("CustomOption");
+    if (!oCustomOption) {
+        oCustomOption = document.createElement('option');
+        oCustomOption.id = "CustomOption";
+                
+        selectSpeed.appendChild(oCustomOption);        
+    }
+
+    oCustomOption.innerHTML = "Custom (" + giGameLoopSpeed + ")";
+    oCustomOption.value = giGameLoopSpeed;
+    selectSpeed.value = giGameLoopSpeed;
+
+}
 function CheckForKeyEvents(oPlayer) {
     
     if (oPlayer.KeyLeftPressed) {

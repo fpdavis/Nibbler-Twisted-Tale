@@ -136,7 +136,13 @@
 
                     <input type="button" id="btnStart" Value="Start" class="modal-button" onclick="SetupArena();" />
                     <br /><br />
-                    <div class="divStatusBar"> Hit [Esc] or [p] to Pause Game</div>
+                    <div class="marquee divStatusBar"><span id="spanMenuStatusBar">
+    Press [Esc] or [Pause/Break] to Pause a Game in progress...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Press < or > to change songs...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Press M to mute music and sound effects...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Press - or + to decrease and increase volume...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Press Page Up or Page Down to change game speed...
+</span></div>
                 </div>
             </div>
         </div>
@@ -165,10 +171,10 @@
                                 <option value="mouse">Mouse</option>
                             </select>
                         </span>
-                        <label>Up</label> <input id="txtControllerMenuUp" type="text" maxlength="1" size="1" onclick="this.value='';" />
-                        <label>Down</label> <input id="txtControllerMenuDown" type="text" maxlength="1" size="1" onclick="this.value='';"/>
-                        <label>Left</label> <input id="txtControllerMenuLeft" type="text" maxlength="1" size="1" onclick="this.value='';" />
-                        <label>Right:</label> <input id="txtControllerMenuRight" type="text" maxlength="1" size="1" onclick="this.value='';" />
+                        <label>Up</label> <input id="txtControllerMenuUp" type="text" maxlength="1" size="1" />
+                        <label>Down</label> <input id="txtControllerMenuDown" type="text" maxlength="1" size="1" />
+                        <label>Left</label> <input id="txtControllerMenuLeft" type="text" maxlength="1" size="1" />
+                        <label>Right:</label> <input id="txtControllerMenuRight" type="text" maxlength="1" size="1" />
                     </div>
                 </div>
 

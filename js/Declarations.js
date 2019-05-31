@@ -77,7 +77,7 @@ const iSpawnTimeOut = 2000; // Miliseconds
 // #endregion
 
 // #region Globals
-var giGameLoopSpeed;
+var giGameLoopSpeed = 100;
 var gaGrid = [];
 var gaMaze = [];
 var giGridSize;
