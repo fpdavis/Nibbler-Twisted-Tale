@@ -24,12 +24,7 @@ class Nibbler {
         this.TailLength = giMinimumTailLength;
 
         this.Explosion = gaAnimations["GreenExplosion"];
-
-        this.KeyLeft = 37; // Left Arrow
-        this.KeyUp = 38; // Up Arrow
-        this.KeyRight = 39; // Right Arrow
-        this.KeyDown = 40; // Down Arrow
-
+        
         this.KeyLeftPressed = false;
         this.KeyUpPressed = false;
         this.KeyRightPressed = false;
@@ -121,29 +116,14 @@ function InitializePlayers() {
     }
 
     if (gaNibblers.length > 1) {
-        // Override Player Two Input Keys
-        gaNibblers[1].KeyLeft = 65; // "A"
-        gaNibblers[1].KeyUp = 87; // "W"
-        gaNibblers[1].KeyRight = 68; // "D"
-        gaNibblers[1].KeyDown = 83; // "S"
         gaNibblers[1].Explosion = gaAnimations["RedExplosion"];
     }
 
     if (gaNibblers.length > 2) {
-        // Override Player Two Input Keys
-        gaNibblers[2].KeyLeft = 74; // "A"
-        gaNibblers[2].KeyUp = 73; // "W"
-        gaNibblers[2].KeyRight = 76; // "D"
-        gaNibblers[2].KeyDown = 75; // "S"
         gaNibblers[2].Explosion = gaAnimations["BlueExplosion"];
     }
 
     if (gaNibblers.length > 3) {
-        // Override Player Two Input Keys
-        gaNibblers[3].KeyLeft = 100; // "A"
-        gaNibblers[3].KeyUp = 104; // "W"
-        gaNibblers[3].KeyRight = 102; // "D"
-        gaNibblers[3].KeyDown = 101; // "S"
         gaNibblers[3].Explosion = gaAnimations["YellowExplosion"];
     }
 }

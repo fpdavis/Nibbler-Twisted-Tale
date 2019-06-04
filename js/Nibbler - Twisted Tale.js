@@ -481,24 +481,29 @@ function CheckForKeyEvents(oPlayer) {
 }
 function CheckForKeyDown(oEvent, oPlayer) {
 
+    if (aPlayerControls[oPlayer.Index].SelectedControllerType === "keyboard") {
     switch (oEvent.keyCode) {
-        case oPlayer.KeyLeft:
+        case gaPlayerControls[oPlayer.Index].Left:
             oPlayer.KeyLeftPressed = true;
             break;
-        case oPlayer.KeyUp:
+        case gaPlayerControls[oPlayer.Index].Up:
             oPlayer.KeyUpPressed = true;
             break;
-        case oPlayer.KeyRight:
+        case gaPlayerControls[oPlayer.Index].Right:
             oPlayer.KeyRightPressed = true;
             break;
-        case oPlayer.KeyDown:
+        case gaPlayerControls[oPlayer.Index].Down:
             oPlayer.KeyDownPressed = true;
             break;
         default:
             return false;
     }
 
-    return true;
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 function KeyupEvent(oEvent) {
@@ -515,24 +520,29 @@ function KeyupEvent(oEvent) {
 }
 function CheckForKeyup(oEvent, oPlayer) {
 
-    switch (oEvent.keyCode) {
-        case oPlayer.KeyLeft:
-            oPlayer.KeyLeftPressed = false;
-            break;
-        case oPlayer.KeyUp:
-            oPlayer.KeyUpPressed = false;
-            break;
-        case oPlayer.KeyRight:
-            oPlayer.KeyRightPressed = false;
-            break;
-        case oPlayer.KeyDown:
-            oPlayer.KeyDownPressed = false;
-            break;
-        default:
-            return false;
-    }
+    if (aPlayerControls[oPlayer.Index].SelectedControllerType === "keyboard") {
+        switch (oEvent.keyCode) {
+            case gaPlayerControls[oPlayer.Index].Left:
+                oPlayer.KeyLeftPressed = false;
+                break;
+            case gaPlayerControls[oPlayer.Index].Up:
+                oPlayer.KeyUpPressed = false;
+                break;
+            case gaPlayerControls[oPlayer.Index].Right:
+                oPlayer.KeyRightPressed = false;
+                break;
+            case gaPlayerControls[oPlayer.Index].Down:
+                oPlayer.KeyDownPressed = false;
+                break;
+            default:
+                return false;
+        }
 
-    return true;
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 function ClickEvent(event) {

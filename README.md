@@ -6,14 +6,11 @@ The object of the game is to maneuver a square across the screen, leaving a trai
 
 * Joystick support
    * Can't give focus to txtControllerMenu* direction text boxes if they are empty
-   * Record custom joystick txtControllerMenu* directions
-   * Remove player directions from Nibbler class
-   * Remove direction initialization from InitializePlayers()
-   * Move Keypressed into PlayerControl class
 * Need to add a real Pause screen
 * Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler.
 		Make it set a point for the Pathfinder algorythm.
 * Add Game Over screen with results
+* Show name of song that is playing
 * Maybe add a new type of Brainspawn to camp out around pellets
 * Read wave/level information in from json file
 * Need to calculate closest target and best path with Wall Wrap
