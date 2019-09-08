@@ -1,15 +1,15 @@
 var gaMusicData =
 [
-  { "src": "Hold The Line (Boss Theme).ogg" },
+  { "src": "Music/Hold The Line (Boss Theme).ogg" },
   { "src": "Music/Boss Battle 2 V1.wav" },
   { "src": "Music/Boss Theme.mp3" },
   { "src": "Music/Boss Battle 3 V1.wav" },
   { "src": "Music/Fast Song.mp3" },
   { "src": "Music/Boss Battle 5 V1.wav" },
-  { "src": "Music/Hold The Line (Orchestral Remix).flac" },
+  { "src": "Music/Hold The Line  (Orchestral Remix).flac" },
   { "src": "Music/Boss Battle 2 V2.wav" },
   { "src": "Music/Boss Battle 3 V2.wav" },
-  { "src": "Music/Most Stereotypical Boss Theme Ever.mp3" },
+  { "src": "Music/Most Stereotypical Boss Theme Ever.ogg" },
   { "src": "Music/Boss Battle 5 V2.wav" }
 
 

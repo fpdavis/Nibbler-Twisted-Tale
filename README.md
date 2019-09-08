@@ -200,7 +200,7 @@ About: Sound of termites and ants crawling around and chewing on things. could b
 Uploaded: 03.18.16
 Recorded by: Mike Koenig 
 
-File: Most stereotypical boss theme ever.ogg 
+File: Most Stereotypical Boss Theme Ever.ogg 
 Title: Most Stereotypical Boss Theme Ever
 About: Yeah, pwetty much what the title says.
 Uploaded: Saturday, August 12, 2017 - 10:11
