@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <HTML>
 <HEAD>
     <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
@@ -42,15 +43,15 @@
         </div>
     </div>
 
-    <canvas id="canArena"></canvas>
+    <canvas id="canArena" tabindex="1"></canvas>
 
     <div class="overlay" id="divGameMenu">
         <div class="modal">
             <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 560 380" preserveAspectRatio="none">
-                <line id="svg_3" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="558" y2="2.0" />
-                <line id="svg_4" fill="none" stroke="#000000" stroke-width="2" x1="558" y1="378" x2="558" y2="2.0" />
-                <line id="svg_2" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="378" x2="558" y2="378" />
-                <line id="svg_5" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="2.0" y2="378" />
+                <line id="svg_3" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="558" y2="2.0"></line>
+                <line id="svg_4" fill="none" stroke="#000000" stroke-width="2" x1="558" y1="378" x2="558" y2="2.0"></line>
+                <line id="svg_2" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="378" x2="558" y2="378"></line>
+                <line id="svg_5" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="2.0" y2="378"></line>
             </svg>
             <div class="modal-inner menuwrapper">
                 <div class="menuheader">
@@ -65,7 +66,7 @@
                     <br />
                     <input id="colorMenuPlayer2" type="color" value="#FF0000" onchange="oColorPlayer[1].value = gaNibblers[1].fillStyle = this.value;" style="vertical-align: middle;">
                     <img onclick="ShowControllerMenu(1);" src="Images/joypad.png" style="height: 20px; vertical-align: middle; cursor: pointer;" />
-                    <select id="selectPlayer2"><option>Human</option><option>Computer</option><option selected>None</option></select>
+                    <select id="selectPlayer2"><option>Human</option><option selected>Computer</option><option>None</option></select>
                     <input id="txtPlayer2Name" type="text" placeholder="Player 2" maxlength="10" size="10" />
                     <br />
                     <br />Lives:
@@ -78,13 +79,13 @@
                     <input type="checkbox" id="chkDiagonalMovement" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">
                         Diagonal Movement
                     </span>
-                    <br /><input type="checkbox" id="chkWallWrap" checked="checked" oninput="if (this.checked) {chkDeadlyWalls.checked = false }" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; if (previousSibling.checked) {chkDeadlyWalls.checked = false }">
+                    <br /><input type="checkbox" id="chkWallWrap" oninput="if (this.checked) {chkDeadlyWalls.checked = false }" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; if (previousSibling.checked) {chkDeadlyWalls.checked = false }">
                         Wall Wrap
                     </span>
-                    <br /><input type="checkbox" id="chkMaze" checked="checked" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">
+                    <br /><input type="checkbox" id="chkMaze" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">
                         Maze
                     </span>
-                    <br /><input type="checkbox" id="chkNonStop"><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Non-stop</span>
+                    <br /><input type="checkbox" id="chkNonStop" checked="checked" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Non-stop</span>
                 </div>
 
                 <div class="menucolumn2">
@@ -113,23 +114,23 @@
                         Deadly Walls
                     </span>
                     <br /><input type="checkbox" id="chkInfiniteTails" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Infinite Tails</span>
-                    <br /><input type="checkbox" id="chkEnemies" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Enemies</span>
+                    <br /><input type="checkbox" id="chkEnemies" checked="checked" /><span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked;">Enemies</span>
                 </div>
                 <div class="menufooter">
                     <span style="margin-left: 5px;">
                         Music Volume: [-]
                         <input type="range" id="rangeMusicVolume" min="0" max="1" step=".1" value=".5"
                                oninput="Music.Songs[giCurrentSong].volume=Music.Volume=this.value" style="vertical-align: middle;" /> [+]
-                        (<input type="checkbox" id="chkMuteMusic" checked="checked"
+                        (<input type="checkbox" id="chkMuteMusic" 
                                 oninput="Music.NotMuted=!this.checked; if (this.checked) { Music.Songs[giCurrentSong].pause() } else { Music.Songs[giCurrentSong].play();}" style="vertical-align: middle;" />
-                        <span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; Music.NotMuted=!this.checked; if (this.checked) { Music.Songs[giCurrentSong].pause() } else { Music.Songs.[giCurrentSong].play();}">
+                        <span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; Music.NotMuted=!this.checked; if (this.checked) { Music.Songs[giCurrentSong].pause() } else { Music.Songs[giCurrentSong].play();}">
                             [M]ute)
                         </span>
                     </span>
                     <br />Effects Volume: [-]
                     <input type="range" id="rangeEffectsVolume" min="0" max="1" step=".1" value=".8"
                            oninput="Sounds.Volume=this.value" style="vertical-align: middle;" /> [+]
-                    (<input type="checkbox" id="chkMuteEffects" checked="checked" oninput="Sounds.NotMuted=!this.checked" style="vertical-align: middle;" />
+                    (<input type="checkbox" id="chkMuteEffects" oninput="Sounds.NotMuted=!this.checked" style="vertical-align: middle;" />
                     <span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; Sounds.NotMuted=!this.checke">
                         [M]ute)
                     </span>
@@ -138,7 +139,7 @@
                     <br /><br />
                     <div class="marquee divStatusBar"><span id="spanMenuStatusBar">
     Press [Esc] or [Pause/Break] to Pause a Game in progress...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    Press < or > to change songs...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Press &lt; or &gt; to change songs...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     Press M to mute music and sound effects...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     Press - or + to decrease and increase volume...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     Press Page Up or Page Down to change game speed...
@@ -151,10 +152,10 @@
     <div class="overlay" id="divControllerMenu">
         <div class="modal">
             <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 560 380" preserveAspectRatio="none">
-                <line id="svg_3" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="558" y2="2.0" />
-                <line id="svg_4" fill="none" stroke="#000000" stroke-width="2" x1="558" y1="378" x2="558" y2="2.0" />
-                <line id="svg_2" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="378" x2="558" y2="378" />
-                <line id="svg_5" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="2.0" y2="378" />
+                <line id="svg_3" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="558" y2="2.0"></line>
+                <line id="svg_4" fill="none" stroke="#000000" stroke-width="2" x1="558" y1="378" x2="558" y2="2.0"></line>
+                <line id="svg_2" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="378" x2="558" y2="378"></line>
+                <line id="svg_5" fill="none" stroke="#000000" stroke-width="2" x1="2.0" y1="2.0" x2="2.0" y2="378"></line>
             </svg>
             <div class="modal-inner menuwrapper">
                 <div class="menuheader">
@@ -167,8 +168,8 @@
                     <div class="menuwide controllerSettings">
                         <label>Input Type</label> <span>
                             <select id="selectControllerType">
-                                <option value="keyboard">Keyboard</option>
-                                <option value="mouse">Mouse</option>
+                                <option value="Keyboard">Keyboard</option>
+                                <option value="Mouse">Mouse</option>
                             </select>
                         </span>
                         <label>Up</label> <input id="txtControllerMenuUp" type="text" maxlength="1" size="1" />

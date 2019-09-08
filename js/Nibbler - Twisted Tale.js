@@ -1,6 +1,6 @@
 window.onload = function () {
 
-    console.info("Message logging set to " + goVerbosityEnum.Lookup[giVerbosity]);
+    console.info("Message logging set to " + goVerbosityEnum.Lookup[giVerbosity] + ", hit \"`\" to cycle through debugging levels.");
 
     window.addEventListener('resize', ResizeEvent, false);
     document.addEventListener("keydown", KeydownEvent);
@@ -481,7 +481,7 @@ function CheckForKeyEvents(oPlayer) {
 }
 function CheckForKeyDown(oEvent, oPlayer) {
 
-    if (aPlayerControls[oPlayer.Index].SelectedControllerType === "keyboard") {
+    if (gaPlayerControls[oPlayer.Index].SelectedControllerType === "Keyboard") {
     switch (oEvent.keyCode) {
         case gaPlayerControls[oPlayer.Index].Left:
             oPlayer.KeyLeftPressed = true;
@@ -520,7 +520,7 @@ function KeyupEvent(oEvent) {
 }
 function CheckForKeyup(oEvent, oPlayer) {
 
-    if (aPlayerControls[oPlayer.Index].SelectedControllerType === "keyboard") {
+    if (gaPlayerControls[oPlayer.Index].SelectedControllerType === "Keyboard") {
         switch (oEvent.keyCode) {
             case gaPlayerControls[oPlayer.Index].Left:
                 oPlayer.KeyLeftPressed = false;
@@ -585,7 +585,7 @@ function ClickEvent(event) {
             oaOpenNeighbors.forEach(function (oNeighbor) { oNeighbor.highlight = true; });
         }
     }
-
+    
     let iXOffset = Math.abs(gaNibblers[0].PositionX * giGridSize - event.pageX);
     let iYOffset = Math.abs(gaNibblers[0].PositionY * giGridSize - event.pageY);
 
@@ -661,6 +661,8 @@ function HideGameMenu() {
     removeClass(oDivScoreboard, "modal-blur");
     removeClass(canvArena, "modal-blur");
     removeClass(oDivTime, "blink_me");
+
+    canvArena.focus();
 }
 
 function ResizeEvent() {

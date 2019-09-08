@@ -111,7 +111,8 @@ function Findpath_Nibbler(oPlayer) {
             for (let iLoop2 = gaNibblers[iLoop].Trail.length; iLoop2--;) {
                 try {
                     gaGrid[gaNibblers[iLoop].Trail[iLoop2].x][gaNibblers[iLoop].Trail[iLoop2].y].weight = 0;
-                } catch {
+                } catch (oException) {
+                    MessageLog("Pathfinder out of bounds - " + oException, goVerbosityEnum.Warning);                    
                 }
             }
         }
