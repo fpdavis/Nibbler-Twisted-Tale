@@ -39,16 +39,16 @@ function SetupArena() {
     ResizeEvent();
 
     gaMaze.length = 0;
-    if (chkMaze.checked) {
-        HideGameMenu();
+    if (chkMaze.checked) {        
         gaMaze = GenerateMaze(giArenaSquaresX, giArenaSquaresY);
     }
     else {
         gaMaze = GenerateEmptyMaze(giArenaSquaresX, giArenaSquaresY);        
     }
 
-    StartGame();
+    HideDivs(oDivGameMenu);
 
+    StartGame();
 }
 
 function StartGame() {
@@ -63,7 +63,7 @@ function StartGame() {
         giTimeRemaining = 1000 * oNumberTime.value; // 1,000 ms per second
     }
     else {
-        oDivTime.innerText = "";
+        oSpanTime.innerText = "";
     }
     
     switch (selectSpeed.value) {
@@ -93,10 +93,7 @@ function StartGame() {
     Sounds.NotMuted = !chkMuteEffects.checked;
     Music.NotMuted = !chkMuteMusic.checked;
 
-    if (Music.NotMuted) {
-        Music.Songs[giCurrentSong].volume = Music.Volume;
-        Music.Songs[giCurrentSong].play();
-    }
+    ChangeCurrentSong(0);
     
     UnPause();
 
@@ -340,8 +337,10 @@ function CheckForSpecialKeys(oEvent) {
  
     switch (oEvent.keyCode) {
         case 19: // "Pause/Break"
+            TogglePause(oDivPaused);
+            break;
         case 27: // Escape
-            TogglePause();
+            TogglePause(oDivGameMenu);
             break;
         case 77: // Mute
             if (chkMuteEffects.checked === Sounds.NotMuted
@@ -604,26 +603,30 @@ function ClickEvent(event) {
     }
 }
 
-function TogglePause() {
+function TogglePause(oDiv) {
 
     if (gbGamePaused && !gaNibblers) return;
 
-    gbGamePaused = !gbGamePaused;
+    // This if allows us to change from the pause screen to the menu directly
+    if (!gbGamePaused || oDiv !== oDivGameMenu || !hasClass(oDivPaused, "showGameMenu")) {
+        gbGamePaused = !gbGamePaused;    
+    }    
 
     if (gbGamePaused) {
-        Pause();
+        Pause(oDiv);
     } else {
         UnPause();
     }
 }
-function Pause() {
+function Pause(oDiv) {
 
     gbGamePaused = true;
 
-    addClass(oDivGameMenu, "showGameMenu");
+    HideDivs();
+    addClass(oDiv, "showGameMenu");
     addClass(oDivScoreboard, "modal-blur");
     addClass(canvArena, "modal-blur");
-    addClass(oDivTime, "blink_me");
+    addClass(oSpanTime.parentElement, "blink_me");
 
     clearInterval(goGameLoop);
 
@@ -643,7 +646,7 @@ function Pause() {
 function UnPause() {
     gbGamePaused = false;
 
-    HideGameMenu();
+    HideDivs();
 
     if (Sounds.NotMuted) Sounds.Effects["Crawling"].play();
 
@@ -656,11 +659,14 @@ function UnPause() {
 
     StartTimers();
 }
-function HideGameMenu() {
+function HideDivs() {
+
     removeClass(oDivGameMenu, "showGameMenu");
+    removeClass(oDivPaused, "showGameMenu");
+
     removeClass(oDivScoreboard, "modal-blur");
     removeClass(canvArena, "modal-blur");
-    removeClass(oDivTime, "blink_me");
+    removeClass(oSpanTime.parentElement, "blink_me");
 
     canvArena.focus();
 }
@@ -756,6 +762,37 @@ function DrawBegin() {
     ctxArena.fillText("Click to Begin", window.innerWidth / 2, giGridSizeHalf);
 }
 
+function ShowNotification(sText, sId) {
+
+    // Restart CSS Animation - https://css-tricks.com/restart-css-animation/
+    let oSpanOldNotification = document.getElementById("spanNotification_" + sId);
+    if (oSpanOldNotification !== null) {
+        let oSpanNotification = document.createElement('span');
+        oSpanNotification.id = oSpanOldNotification.id + "_ExplodingNow";
+        oSpanNotification.innerHTML = oSpanOldNotification.innerHTML;
+        addClass(oSpanNotification, "explodeNow"); 
+        oSpanOldNotification.parentNode.appendChild(oSpanNotification); 
+        oSpanOldNotification.parentNode.removeChild(oSpanOldNotification);
+    }
+
+    let oDivNotification = document.createElement('div');
+    oDivNotification.id = "divNotification_" + sId;
+
+    let oSpanNotification = document.createElement('span');
+    oSpanNotification.id = "spanNotification_" + sId;
+    oSpanNotification.innerHTML = sText;
+
+    addClass(oDivNotification, "notifcation");
+    addClass(oDivNotification, "neonScoreboard");
+        
+    addClass(oSpanNotification, "explode");    
+
+    oDivNotification.appendChild(oSpanNotification); 
+    document.body.appendChild(oDivNotification);     
+
+    setInterval(function () { if (oDivNotification.parentNode) { oDivNotification.parentNode.removeChild(oDivNotification); }}, 3700);
+}
+
 function UpdateScoreboard() {
 
     let iPlayerWithHighScore = 0;
@@ -767,7 +804,7 @@ function UpdateScoreboard() {
         }
     }
 
-    oDivHighScore.innerText = `HIGHSCORE (${gaNibblers[iPlayerWithHighScore].Name}) ${gaNibblers[iPlayerWithHighScore].Score}`;
+    oSpanHighScore.innerText = `HIGHSCORE (${gaNibblers[iPlayerWithHighScore].Name}) ${gaNibblers[iPlayerWithHighScore].Score}`;
 }
 
 function CountdownTimer() {
@@ -776,15 +813,15 @@ function CountdownTimer() {
     giTimeRemaining = goCountDownTime - new Date().getTime();
     let iSeconds = Math.floor(giTimeRemaining / 1000);
 
-    oDivTime.innerHTML = `TIME ${iSeconds}`;
-
+    oSpanTime.innerHTML = `TIME ${iSeconds}`;
+    
     if (iSeconds === 10) {
-        addClass(oDivTime, "blink_me");
+        addClass(oSpanTime.parentElement, "blink_me");
     }
 
     // If the count down is finished, write some text
     if (giTimeRemaining < 0) {
-        oDivTime.innerHTML = "TIME EXPIRED";
+        oSpanTime.innerHTML = "TIME EXPIRED";
         Pause();
     }
 }

@@ -1,0 +1,36 @@
+.notifcation {
+    position: fixed;
+    bottom: 2%;
+    text-align: center;
+    width: 100%;
+    font-size: 150%
+}
+
+/** Creating Exploding Text With CSS - https://beamtic.com/exploding-text-css **/
+.explode {
+    width: 200vw;
+    color: #ffd9e2;
+    text-shadow: 0 0 0 transparent, 0 0 10px #ff003c, 0 0 20px rgba(255, 0, 60, 0.5), 0 0 40px #ff003c, 0 0 100px #ff003c, 0 0 200px #ff003c, 0 0 300px #ff003c, 0 0 500px #ff003c, 0 0 1000px #ff003c;
+    -webkit-animation: blink 4s infinite alternate;
+    animation: letter_explode 1s 3s forwards;
+}
+
+.explodeNow {
+    width: 200vw;
+    color: #ffd9e2;
+    text-shadow: 0 0 0 transparent, 0 0 10px #ff003c, 0 0 20px rgba(255, 0, 60, 0.5), 0 0 40px #ff003c, 0 0 100px #ff003c, 0 0 200px #ff003c, 0 0 300px #ff003c, 0 0 500px #ff003c, 0 0 1000px #ff003c;
+    -webkit-animation: blink 4s infinite alternate;
+    animation: letter_explode 1s 0s forwards;
+}
+
+@keyframes letter_explode {
+    0% {
+        letter-spacing: 0.1em;
+        opacity: 1;
+    }
+
+    100% {
+        letter-spacing: 1em;
+        opacity: 0;
+    }
+}

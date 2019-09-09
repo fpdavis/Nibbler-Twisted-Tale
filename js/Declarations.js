@@ -3,6 +3,7 @@ const canvArena = document.getElementById("canArena");
 const ctxArena = canvArena.getContext("2d");
 
 const oDivScoreboard = document.getElementById('divScoreboard');
+const oDivPaused = document.getElementById('divPaused');
 
 const oColorPlayer = new Array(4);
 oColorPlayer[0] = document.getElementById('colorPlayer1');
@@ -16,8 +17,8 @@ oSpanPlayer[1] = document.getElementById('spanPlayer2');
 oSpanPlayer[2] = document.getElementById('spanPlayer3');
 oSpanPlayer[3] = document.getElementById('spanPlayer4');
 
-const oDivTime = document.getElementById('divTime');
-const oDivHighScore = document.getElementById('divHighScore');
+const oSpanTime = document.getElementById('spanTime');
+const oSpanHighScore = document.getElementById('spanHighScore');
 
 const oDivGameMenu = document.getElementById('divGameMenu');
 

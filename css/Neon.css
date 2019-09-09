@@ -1,0 +1,140 @@
+/** code by webdevtrick ( https://webdevtrick.com ) **/
+@font-face {
+    font-family: 'neontubes';
+    src: url("../Fonts/neontubes-webfont.eot");
+    src: url("../Fonts/neontubes-webfont_iefix.eot") format("embedded-opentype"),
+         url("../Fonts/neontubes-webfont.woff2") format("woff2"),
+         url("../Fonts/neontubes-webfont.woff") format("woff"), 
+         url("../Fonts/neontubes-webfont.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+.neon {
+    top: 30%;
+    width: 98%;
+    height: auto;
+    left: 1%;
+    font-family: "neontubes";
+    text-align: center;
+    white-space: nowrap;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.neon span {
+    display: block;
+    position: relative;
+    -webkit-transform: translateZ(0) translate3D(0, 0, 0);
+    transform: translateZ(0) translate3D(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: opacity;
+}
+
+.neon .neonLineOne {
+    width: 100%;
+    color: #ffd9e2;
+    font-size: 11vw;
+    text-shadow: 0 0 0 transparent, 0 0 10px #ff003c, 0 0 20px rgba(255, 0, 60, 0.5), 0 0 40px #ff003c, 0 0 100px #ff003c, 0 0 200px #ff003c, 0 0 300px #ff003c, 0 0 500px #ff003c, 0 0 1000px #ff003c;
+    -webkit-animation: blink 4s infinite alternate;
+    animation: blink 4s infinite alternate;
+}
+
+.neon .neonLineTwo {
+    width: 100%;
+    color: #d4eaff;
+    font-size: 4vw;
+    text-shadow: 0 0 0 transparent, 0 0 10px #2695ff, 0 0 20px rgba(38, 149, 255, 0.5), 0 0 40px #2695ff, 0 0 100px #2695ff, 0 0 200px #2695ff, 0 0 300px #2695ff, 0 0 500px #2695ff;
+    -webkit-animation: buzz 0.01s infinite alternate;
+    animation: buzz 0.01s infinite alternate;
+}
+
+
+
+.neonScoreboard {
+    font-family: "neontubes";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.neonScoreboard span {
+    -webkit-transform: translateZ(0) translate3D(0, 0, 0);
+    transform: translateZ(0) translate3D(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: opacity;
+}
+
+.neonScoreboard .neonScoreboardPlayer {
+    color: #d4eaff;
+    text-shadow: 0 0 0 transparent, 0 0 10px #2695ff, 0 0 20px rgba(38, 149, 255, 0.5), 0 0 40px #2695ff, 0 0 100px #2695ff, 0 0 200px #2695ff, 0 0 300px #2695ff, 0 0 500px #2695ff;
+    -webkit-animation: buzz 0.01s infinite alternate;
+    animation: buzz 0.01s infinite alternate;
+}
+
+.neonScoreboard .neonScoreboardRed {
+    color: #ffd9e2;
+    text-shadow: 0 0 0 transparent, 0 0 10px #ff003c, 0 0 20px rgba(255, 0, 60, 0.5), 0 0 40px #ff003c, 0 0 100px #ff003c, 0 0 200px #ff003c, 0 0 300px #ff003c, 0 0 500px #ff003c, 0 0 1000px #ff003c;
+    -webkit-animation: blink 4s infinite alternate;
+    animation: blink 4s infinite alternate;
+}
+
+@-webkit-keyframes buzz {
+    70% {
+        opacity: 0.80;
+    }
+}
+
+@keyframes buzz {
+    70% {
+        opacity: 0.80;
+    }
+}
+
+@-webkit-keyframes blink {
+    40% {
+        opacity: 1;
+    }
+
+    42% {
+        opacity: 0.8;
+    }
+
+    43% {
+        opacity: 1;
+    }
+
+    45% {
+        opacity: 0.2;
+    }
+
+    46% {
+        opacity: 1;
+    }
+}
+
+@keyframes blink {
+    40% {
+        opacity: 1;
+    }
+
+    42% {
+        opacity: 0.8;
+    }
+
+    43% {
+        opacity: 1;
+    }
+
+    45% {
+        opacity: 0.2;
+    }
+
+    46% {
+        opacity: 1;
+    }
+}
+
+@media screen and (min-width: 500px) {}

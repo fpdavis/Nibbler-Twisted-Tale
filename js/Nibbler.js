@@ -89,8 +89,9 @@ function InitializePlayers() {
     for (let iLoop = 0; iLoop < 4; iLoop++) {
         oColorPlayer[iLoop].style.display = 'none';
         oSpanPlayer[iLoop].innerText = ``;
-        removeClass(oSpanPlayer[iLoop], "blink_me");
+        removeClass(oSpanPlayer[iLoop].parentElement, "blink_me");
         removeClass(oSpanPlayer[iLoop], "dead");
+        addClass(oSpanPlayer[iLoop], "neonScoreboardPlayer");
     }
 
     let iNumberOfPlayers = 1;
@@ -146,12 +147,15 @@ function NibblerDied(oPlayer) {
     oPlayer.TailLength = giMinimumTailLength; // Need to remove the tail
 
     if (oPlayer.Lives > 0) {
-        if (--oPlayer.Lives === 0) addClass(oSpanPlayer[oPlayer.Index], "blink_me");
+        if (--oPlayer.Lives === 0) {
+            removeClass(oSpanPlayer[oPlayer.Index], "neonScoreboardPlayer");
+            addClass(oSpanPlayer[oPlayer.Index].parentElement, "blink_me");
+        }
 
         oPlayer.SetSpawnPoint();
         setTimeout(function () { oPlayer.Dead = false; }, iSpawnTimeOut, oPlayer);
     } else {
-        removeClass(oSpanPlayer[oPlayer.Index], "blink_me");
+        removeClass(oSpanPlayer[oPlayer.Index].parentElement, "blink_me");
         addClass(oSpanPlayer[oPlayer.Index], "dead");
 
         let iLivesRemaining = 0;

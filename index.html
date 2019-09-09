@@ -25,6 +25,8 @@
     <script type="text/javascript" src="js/Nibbler - Twisted Tale.js" defer="defer"></script>
 
     <link rel="stylesheet" type="text/css" href="css/GameMenu.css">
+    <link rel="stylesheet" type="text/css" href="css/Neon.css">
+    <link rel="stylesheet" type="text/css" href="css/Notifications.css">
     <link rel="stylesheet" type="text/css" href="css/Scoreboard.css">
 </HEAD>
 
@@ -32,14 +34,14 @@
 
     <div id="divScoreboard">
         <div class="wrapper">
-            <div class="box"><input id="colorPlayer1" type="color" value="#00FF00" onchange="oColorMenuPlayer[0].value = gaNibblers[0].fillStyle = this.value;"> <span id="spanPlayer1">Player 1 (-) 000</span></div>
-            <div class="box"><input id="colorPlayer3" type="color" value="#0000FF" onchange="oColorMenuPlayer[2].value = gaNibblers[2].fillStyle = this.value;">&nbsp;<span id="spanPlayer3">Player 3 (-) 000</span></div>
-            <div id="divTime" class="box blink_me">TIME ---</div>
+            <div class="box neonScoreboard"><input id="colorPlayer1" type="color" value="#00FF00" onchange="oColorMenuPlayer[0].value = gaNibblers[0].fillStyle = this.value;"> <span id="spanPlayer1" class="neonScoreboardPlayer">Player 1 (-) 000</span></div>
+            <div class="box neonScoreboard"><input id="colorPlayer3" type="color" value="#0000FF" onchange="oColorMenuPlayer[2].value = gaNibblers[2].fillStyle = this.value;">&nbsp;<span id="spanPlayer3" class="neonScoreboardPlayer">Player 3 (-) 000</span></div>
+            <div class="box neonScoreboard"><span id="spanTime" class="neonScoreboardRed blink_me">TIME ---</span></div>
         </div>
         <div class="wrapper">
-            <div class="box"><input id="colorPlayer2" type="color" value="#FF0000" onchange="oColorMenuPlayer[1].value = gaNibblers[1].fillStyle = this.value;">&nbsp;<span id="spanPlayer2">Player 2 (-) 000</span></div>
-            <div class="box"><input id="colorPlayer4" type="color" value="#FFFF00" onchange="oColorMenuPlayer[3].value = gaNibblers[3].fillStyle = this.value;">&nbsp;<span id="spanPlayer4">Player 4 (-) 000</span></div>
-            <div id="divHighScore" class="box">HIGHSCORE (Player -) 000</div>
+            <div class="box neonScoreboard"><input id="colorPlayer2" type="color" value="#FF0000" onchange="oColorMenuPlayer[1].value = gaNibblers[1].fillStyle = this.value;">&nbsp;<span id="spanPlayer2" class="neonScoreboardPlayer">Player 2 (-) 000</span></div>
+            <div class="box neonScoreboard"><input id="colorPlayer4" type="color" value="#FFFF00" onchange="oColorMenuPlayer[3].value = gaNibblers[3].fillStyle = this.value;">&nbsp;<span id="spanPlayer4" class="neonScoreboardPlayer">Player 4 (-) 000</span></div>
+            <div class="box neonScoreboard"><span id="spanHighScore" class="neonScoreboardRed">HIGHSCORE (Player -) 000</span></div>
         </div>
     </div>
 
@@ -102,7 +104,7 @@
                     <br /><br />
                     Arena Size: <select id="selectArenaSize"><option>Small</option><option selected>Medium</option><option>Large</option></select>
                     <br /><span style="margin-left: 8px;">
-                        <input type="checkbox" id="chkTime" oninput="numberTime.disabled = !this.checked " />Timer:
+                        <input type="checkbox" id="chkTime" checked="checked" oninput="numberTime.disabled = !this.checked " />Timer:
                         <input type="number" id="numberTime" min="30" max="480" value="120" step="10" style="width: 72px" />
                     </span>
                 </div>
@@ -188,6 +190,11 @@
                 </div>
             </div>
             </div>
+    </div>
+
+    <div id="divPaused" class="neon overlay">
+        <span class="neonLineOne">Game Paused!</span>
+        <span class="neonLineTwo">(hit Pause/Break to continue)</span>        
     </div>
 </BODY>
 </HTML>
