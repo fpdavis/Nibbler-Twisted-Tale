@@ -61,7 +61,7 @@
                 </div>
                 <div class="menucolumn1">
                     <input id="colorMenuPlayer1" type="color" value="#00FF00" onchange="oColorPlayer[0].value = gaNibblers[0].fillStyle = this.value;" style="vertical-align: middle;">
-                    <img  onclick="ShowControllerMenu(0);" src="Images/joypad.png" style="height: 20px; vertical-align: middle; cursor: pointer;" />
+                    <img onclick="ShowControllerMenu(0);" src="Images/joypad.png" style="height: 20px; vertical-align: middle; cursor: pointer;" />
                     <select id="selectPlayer1"><option selected>Human</option><option>Computer</option></select>
                     <input id="txtPlayer1Name" type="text" placeholder="Player 1" maxlength="10" size="10" />
 
@@ -123,7 +123,7 @@
                         Music Volume: [-]
                         <input type="range" id="rangeMusicVolume" min="0" max="1" step=".1" value=".5"
                                oninput="Music.Songs[giCurrentSong].volume=Music.Volume=this.value" style="vertical-align: middle;" /> [+]
-                        (<input type="checkbox" id="chkMuteMusic" 
+                        (<input type="checkbox" id="chkMuteMusic"
                                 oninput="Music.NotMuted=!this.checked; if (this.checked) { Music.Songs[giCurrentSong].pause() } else { Music.Songs[giCurrentSong].play();}" style="vertical-align: middle;" />
                         <span class="spanCheckPrevious" onclick="previousSibling.checked = !previousSibling.checked; Music.NotMuted=!this.checked; if (this.checked) { Music.Songs[giCurrentSong].pause() } else { Music.Songs[giCurrentSong].play();}">
                             [M]ute)
@@ -139,13 +139,15 @@
 
                     <input type="button" id="btnStart" Value="Start" class="modal-button" onclick="SetupArena();" />
                     <br /><br />
-                    <div class="marquee divStatusBar"><span id="spanMenuStatusBar">
-    Press [Esc] or [Pause/Break] to Pause a Game in progress...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    Press &lt; or &gt; to change songs...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    Press M to mute music and sound effects...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    Press - or + to decrease and increase volume...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    Press Page Up or Page Down to change game speed...
-</span></div>
+                    <div class="marquee divStatusBar">
+                        <span id="spanMenuStatusBar">
+                            Press [Esc] or [Pause/Break] to Pause a Game in progress...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            Press &lt; or &gt; to change songs...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            Press M to mute music and sound effects...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            Press - or + to decrease and increase volume...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            Press Page Up or Page Down to change game speed...
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -189,12 +191,18 @@
                     <div id="divControllerMenuStatusBar" class="marquee divStatusBar"><span id="spanControllerMenuStatusBar">No controllers detected. Press a button on any controller!</span></div>
                 </div>
             </div>
-            </div>
+        </div>
     </div>
 
     <div id="divPaused" class="neon overlay">
         <span class="neonLineOne">Game Paused!</span>
-        <span class="neonLineTwo">(hit Pause/Break to continue)</span>        
+        <span class="neonLineTwo">(hit Pause/Break to continue)</span>
+    </div>
+
+    <div id="divGameOver" class="neon overlay">
+        <span class="neonLineOne">Game Over!</span>
+        <span class="neonLineTwo">The winner is you!</span>
+        <span class="dead blink_me">(hit Esc to continue)</span>
     </div>
 </BODY>
 </HTML>

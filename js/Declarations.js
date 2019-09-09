@@ -4,6 +4,8 @@ const ctxArena = canvArena.getContext("2d");
 
 const oDivScoreboard = document.getElementById('divScoreboard');
 const oDivPaused = document.getElementById('divPaused');
+const oDivGameOver = document.getElementById('divGameOver');
+
 
 const oColorPlayer = new Array(4);
 oColorPlayer[0] = document.getElementById('colorPlayer1');
@@ -87,7 +89,6 @@ var giGridHeight = window.innerHeight - oDivScoreboard.offsetHeight;
 var giMaxDistanceToPellet;
 var gbSpaceBarHit;
 
-var gbGamePaused = true;
 var gaNibblers;
 var gaPellets;
 var gaBrainspawns;
@@ -95,6 +96,7 @@ var gaSprites = [];
 var goCountDownTime;
 var giTimeRemaining;
 var goGameLoop;
+var goRestartAllComputersTimer;
 
 var giArenaSquaresX;
 var giArenaSquaresY;
@@ -113,6 +115,14 @@ var gaAnimations = new Object();
 var gaGamepads = [];
 var gaPlayerControls = [];
 var giControllerMenuPlayer;
+
+const goGameStateEnum = {
+    Running: 0,
+    Paused: 1,    
+    Over: 2
+};
+
+var giGameState = goGameStateEnum.Over;
 
 const goWalls = {
     Lookup: ["North", "South", "East", "West"],

@@ -3,10 +3,15 @@
 
 ## Sep 8, 2019  
 * Added a real Pause screen
+* Added a Game Over Screen
 * Added neon font to scoreboard
 * Added Notification method
+* Added Notifications to Mute, Volume, Speed, and Music selections
+* Fixed issue with volume not working due to invalid javascript call
 * Now showing name of song that is playing
 * Created Changelog.md
+* Added a GameState variable in place of GamePaused variable
+* If all players are bots then it will play another game after a short pause on the Game Over screen
 
 ## Sep 7, 2019
 * Added " hit "`" to cycle through debugging levels." to console ment

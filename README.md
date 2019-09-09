@@ -40,6 +40,8 @@ Force opponent to collide with your tail or theirs. Pick up food and powerups to
 * Enhance description
 * Add additional fields (such as title and author) in json files for credits and notifications
 * Help Menu
+* Have it remember and report the overall winner from multiple games
+* If there is a tie between more than two people or if a player has a really long name it will not fit on the Game Over screen
 * Improved graphics for pellets
 * Improved graphics for Nibbler
 	* https://jsfiddle.net/m1erickson/2d7ZN/

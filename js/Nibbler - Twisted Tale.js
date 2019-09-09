@@ -322,7 +322,7 @@ function KeydownEvent(oEvent) {
     if (CheckForSpecialKeys(oEvent)) {
         return;
     } else {
-        if (!gbGamePaused && gaNibblers) {
+        if (giGameState === goGameStateEnum.Running && gaNibblers) {
             for (let iLoop = gaNibblers.length; iLoop--;) // Reverse loop for the win
             {
                 if (gaNibblers[iLoop].Type == "Human" && CheckForKeyDown(oEvent, gaNibblers[iLoop])) {
@@ -345,7 +345,7 @@ function CheckForSpecialKeys(oEvent) {
         case 77: // Mute
             if (chkMuteEffects.checked === Sounds.NotMuted
                 || chkMuteMusic.checked === Music.NotMuted
-                || Sounds.NotMuted != Music.NotMuted) {
+                || Sounds.NotMuted !== Music.NotMuted) {
                 chkMuteEffects.checked = chkMuteMusic.checked = true;
                 Sounds.NotMuted = Music.NotMuted = false;
             } else {
@@ -358,24 +358,32 @@ function CheckForSpecialKeys(oEvent) {
             if (Sounds.NotMuted) {
                 Sounds.Effects["Crawling"].play();
                 Music.Songs[giCurrentSong].play();
+                ShowNotification(`UnMuted`, "Notification");
             } else {
                 Sounds.Effects["Crawling"].pause();
                 Music.Songs[giCurrentSong].pause();
+                ShowNotification(`Muted`, "Notification");
             }
             break;
+        case 109: // Numpad -
+        case 173: // Minus (Firefox), mute/unmute
+        case 182: // Decrease Volume Level (Firefox)
         case 189: // -
             rangeEffectsVolume.value = Sounds.Volume = (Sounds.Volume > 0) ? Math.floor((Sounds.Volume - 0.1) * 10) / 10 : 0;
             rangeMusicVolume.value = Music.Songs[giCurrentSong].volume = Music.Volume = (Music.Volume > .1) ? Math.floor((Music.Volume - 0.2) * 10) / 10 : 0;
             Sounds.Effects["Crawling"].volume = Sounds.Volume;
-            Sounds.Pause.volume = Sounds.Volume;
+            ShowNotification("Volume: " + "|".repeat((Sounds.Volume + Music.Volume) * 10), "Notification");                
             break;
-        case 187: // =
+        case 61: // =
+        case 107: // Numpad +
+        case 183: // Increase Volume Level (Firefox)
+        case 187: // =        
             chkMuteEffects.checked = false;
             Sounds.NotMuted = true;
             rangeEffectsVolume.value = Sounds.Volume = Sounds.Volume < 1 ? Math.ceil((Sounds.Volume + 0.1) * 10) / 10 : 1;
             rangeMusicVolume.value = Music.Songs[giCurrentSong].volume = Music.Volume = Music.Volume < 1 ? Math.ceil((Music.Volume + 0.1) * 10) / 10 : 1;
             Sounds.Effects["Crawling"].volume = Sounds.Volume;
-            Sounds.Pause.volume = Sounds.Volume;
+            ShowNotification("Volume: " + "|".repeat((Sounds.Volume + Music.Volume) * 10), "Notification");                
             break;
         case 188: // ,
             ChangeCurrentSong(-1);
@@ -387,12 +395,12 @@ function CheckForSpecialKeys(oEvent) {
             ChangeVerbosity(1);
             break;
         case 33: // Page Up  
-                giGameLoopSpeed = giGameLoopSpeed <= 99 ? 60 : giGameLoopSpeed - 40;
-                UpdateGameLoopSpeed();
+            giGameLoopSpeed = giGameLoopSpeed <= 99 ? 60 : giGameLoopSpeed - 40;
+            ShowNotification("Speed: " + UpdateGameLoopSpeed(), "Notification");                
             break;
         case 34: // Page Down
-                giGameLoopSpeed += 40;
-                UpdateGameLoopSpeed();
+            giGameLoopSpeed += 40;
+            ShowNotification("Speed: " + UpdateGameLoopSpeed(), "Notification");
             break;
         default:
             MessageLog(`No special key match for (` + oEvent.keyCode + ' / ' + keyCodes[oEvent.keyCode] + ')', goVerbosityEnum.Debug);
@@ -426,13 +434,13 @@ function UpdateGameLoopSpeed() {
     switch (giGameLoopSpeed) {
         case 140:
             selectSpeed.value = "Slow";
-            return;
+            return selectSpeed.value;
         case 60:
             selectSpeed.value = "Fast";
-            return;
+            return selectSpeed.value;
         case 100:
             selectSpeed.value = "Normal";
-            return;
+            return selectSpeed.value;
     }
 
     let oCustomOption = document.getElementById("CustomOption");
@@ -447,6 +455,7 @@ function UpdateGameLoopSpeed() {
     oCustomOption.value = giGameLoopSpeed;
     selectSpeed.value = giGameLoopSpeed;
 
+    return oCustomOption.innerHTML;
 }
 function CheckForKeyEvents(oPlayer) {
     
@@ -507,7 +516,7 @@ function CheckForKeyDown(oEvent, oPlayer) {
 
 function KeyupEvent(oEvent) {
 
-    if (!gbGamePaused && gaNibblers) {
+    if (giGameState === goGameStateEnum.Running && gaNibblers) {
         for (let iLoop = gaNibblers.length; iLoop--;) // Reverse loop for the win
         {
             if (gaNibblers[iLoop].Type == "Human" && CheckForKeyup(oEvent, gaNibblers[iLoop])) {
@@ -551,7 +560,7 @@ function ClickEvent(event) {
         MessageLog(`==============================================`, goVerbosityEnum.Debug);
         MessageLog(`  Mouse Coordinates: (${event.pageX}, ${event.pageY})`, goVerbosityEnum.Debug);
         
-        if (gbGamePaused) {
+        if (giGameState !== goGameStateEnum.Running) {
             return;
         }
 
@@ -605,23 +614,32 @@ function ClickEvent(event) {
 
 function TogglePause(oDiv) {
 
-    if (gbGamePaused && !gaNibblers) return;
+    if (!gaNibblers) return;
 
-    // This if allows us to change from the pause screen to the menu directly
-    if (!gbGamePaused || oDiv !== oDivGameMenu || !hasClass(oDivPaused, "showGameMenu")) {
-        gbGamePaused = !gbGamePaused;    
-    }    
+    if (giGameState === goGameStateEnum.Running) {
+        giGameState = goGameStateEnum.Paused;
+    }
+    else if (giGameState === goGameStateEnum.Paused) {
 
-    if (gbGamePaused) {
+        // This if allows us to change from the pause screen to the menu directly
+        if (oDiv !== oDivGameMenu || !hasClass(oDivPaused, "showGameMenu")) {
+            giGameState = goGameStateEnum.Running;
+        }
+    }
+    else if (giGameState === goGameStateEnum.Over)
+    {
+        oDiv = oDivGameMenu;
+        clearTimeout(goRestartAllComputersTimer);
+    }
+
+    if (giGameState !== goGameStateEnum.Running) {
         Pause(oDiv);
     } else {
         UnPause();
     }
 }
 function Pause(oDiv) {
-
-    gbGamePaused = true;
-
+    
     HideDivs();
     addClass(oDiv, "showGameMenu");
     addClass(oDivScoreboard, "modal-blur");
@@ -644,7 +662,7 @@ function Pause(oDiv) {
     oBtnStart.disabled = false;
 }
 function UnPause() {
-    gbGamePaused = false;
+    giGameState = goGameStateEnum.Running;
 
     HideDivs();
 
@@ -663,7 +681,8 @@ function HideDivs() {
 
     removeClass(oDivGameMenu, "showGameMenu");
     removeClass(oDivPaused, "showGameMenu");
-
+    removeClass(oDivGameOver, "showGameMenu");
+    
     removeClass(oDivScoreboard, "modal-blur");
     removeClass(canvArena, "modal-blur");
     removeClass(oSpanTime.parentElement, "blink_me");
@@ -790,7 +809,7 @@ function ShowNotification(sText, sId) {
     oDivNotification.appendChild(oSpanNotification); 
     document.body.appendChild(oDivNotification);     
 
-    setInterval(function () { if (oDivNotification.parentNode) { oDivNotification.parentNode.removeChild(oDivNotification); }}, 3700);
+    setTimeout(function () { if (oDivNotification.parentNode) { oDivNotification.parentNode.removeChild(oDivNotification); }}, 3700);
 }
 
 function UpdateScoreboard() {
@@ -822,6 +841,46 @@ function CountdownTimer() {
     // If the count down is finished, write some text
     if (giTimeRemaining < 0) {
         oSpanTime.innerHTML = "TIME EXPIRED";
-        Pause();
+        GameOver();
+    }
+}
+
+function GameOver() {
+    giGameState = goGameStateEnum.Over;
+
+    let bAllComputers = true;
+
+    let iPlayerWithHighScore = 0;
+    let sWinnerNames = gaNibblers[0].Name;
+    let iWinners = 1;
+    for (let iLoop = 0; iLoop < gaNibblers.length; iLoop++) {
+        if (gaNibblers[iLoop].Score > gaNibblers[iPlayerWithHighScore].Score
+            || (iLoop !== iPlayerWithHighScore && gaNibblers[iLoop].Score === gaNibblers[iPlayerWithHighScore].Score && gaNibblers[iLoop].Lives > gaNibblers[iPlayerWithHighScore].Lives)
+            ) {
+            iPlayerWithHighScore = iLoop;
+            sWinnerNames = gaNibblers[iPlayerWithHighScore].Name;
+            iWinners = 1;
+        }
+        else if (iLoop !== iPlayerWithHighScore && gaNibblers[iLoop].Score === gaNibblers[iPlayerWithHighScore].Score
+            && gaNibblers[iLoop].Lives === gaNibblers[iPlayerWithHighScore].Lives) {
+            sWinnerNames += " and " + gaNibblers[iLoop].Name;
+            iWinners++;
+        }
+
+        if (gaNibblers[iLoop].Type !== "Computer") { bAllComputers = false; }
+    }
+
+    if (iWinners === 1) {
+        oDivGameOver.childNodes[3].innerHTML = `*** ${sWinnerNames} Wins ***`;
+    }
+    else {
+        oDivGameOver.childNodes[3].innerHTML = `${sWinnerNames} Tie!`;
+    }
+
+    Pause(oDivGameOver);
+
+    // If all the placers are bots restart the game
+    if (bAllComputers) {
+        goRestartAllComputersTimer = setTimeout(function () { SetupArena(); }, 20000);
     }
 }

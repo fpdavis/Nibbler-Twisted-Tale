@@ -47,7 +47,7 @@ function ChangeCurrentSong(iIncrement) {
         Music.Songs[giCurrentSong].play();
 
         let sNameOfSong = decodeURIComponent(Music.Songs[giCurrentSong].currentSrc.split("/").pop().split(".")[0]);
-        ShowNotification(`Now playing ` + sNameOfSong, "ChangeCurrentSong");
+        ShowNotification(`Now playing ` + sNameOfSong, "Notification");
 
         MessageLog(`Now playing ` + sNameOfSong, goVerbosityEnum.Information);
     }
