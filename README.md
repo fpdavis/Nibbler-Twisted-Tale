@@ -8,12 +8,12 @@ Force opponent to collide with your tail or theirs. Pick up food and powerups to
 
 ### Todo (in order of importance):
 
-* Fix end game timer lock up issue
+* Add more game states to know when the player is in the setup and controller menus?
+* Refactor to create a game object, would it be possible to run multiple games at once?
 * Joystick support
    * Can't give focus to txtControllerMenu* direction text boxes if they are empty
-* Better mouse controls - The mouse is currently just a "suggestion" as to which direction to go for Nibbler.
-		Make it set a point for the Pathfinder algorythm.
-* Add Game Over screen with results
+* Better mouse click/tap control - The old mouse click code is currently just a "suggestion" as to which direction to go for Nibbler.
+		Make it set a point for the Pathfinder algorythm. Will need to get coordinates from tap.
 * Maybe add a new type of Brainspawn to camp out around pellets
 * Read wave/level information in from json file
 * Need to calculate closest target and best path with Wall Wrap
@@ -22,10 +22,13 @@ Force opponent to collide with your tail or theirs. Pick up food and powerups to
 * Add graph weighting incentives for pellets in A*
 * Add Nibbler body shortest movement/body drag
 * Add credits
+* Add neon sounds
 * Game Options
+	* Capture the Flag
 	* Waves/Levels
 	* Dificulty level
 	* Add power ups from pellets
+		* Weapons for Nibblers and Brainspawn
 		* Must be bitten multiple times to be eaten
 		* Random direction change
 		* Ability to pause movement
@@ -76,6 +79,7 @@ Title: Termites and Ants
 About: Sound of termites and ants crawling around and chewing on things. could be used for any small bug sound really like a beetlw or spider.
 Uploaded: 03.18.16
 Recorded by: Mike Koenig 
+URL: https://soundbible.com/2113-Termites-and-Ants.html
 
 File: Most Stereotypical Boss Theme Ever.ogg 
 Title: Most Stereotypical Boss Theme Ever

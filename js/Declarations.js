@@ -88,6 +88,7 @@ var giGridSizeHalf;
 var giGridHeight = window.innerHeight - oDivScoreboard.offsetHeight;
 var giMaxDistanceToPellet;
 var gbSpaceBarHit;
+var goTimer;
 
 var gaNibblers;
 var gaPellets;
@@ -95,6 +96,7 @@ var gaBrainspawns;
 var gaSprites = [];
 var goCountDownTime;
 var giTimeRemaining;
+var giTimeElapsed;
 var goGameLoop;
 var goRestartAllComputersTimer;
 
@@ -115,6 +117,7 @@ var gaAnimations = new Object();
 var gaGamepads = [];
 var gaPlayerControls = [];
 var giControllerMenuPlayer;
+var goHammer;
 
 const goGameStateEnum = {
     Running: 0,

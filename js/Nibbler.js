@@ -107,7 +107,7 @@ function InitializePlayers() {
         gaNibblers[iLoop] = new Nibbler();
         gaNibblers[iLoop].Index = iLoop;
         gaNibblers[iLoop].SetSpawnPoint();
-        gaNibblers[iLoop].Lives = oNumberLives.value;
+        gaNibblers[iLoop].Lives = oNumberLives.value - 1; // Initial spawn takes first life
 
         oColorPlayer[iLoop].style.display = 'inline-block';
         oColorPlayer[iLoop].value = oColorMenuPlayer[iLoop].value;
@@ -146,8 +146,8 @@ function NibblerDied(oPlayer) {
     oPlayer.Trail.length = 0;
     oPlayer.TailLength = giMinimumTailLength; // Need to remove the tail
 
-    if (oPlayer.Lives > 0) {
-        if (--oPlayer.Lives === 0) {
+    if (oPlayer.Lives-- > 0) {
+        if (oPlayer.Lives === 0) {
             removeClass(oSpanPlayer[oPlayer.Index], "neonScoreboardPlayer");
             addClass(oSpanPlayer[oPlayer.Index].parentElement, "blink_me");
         }
@@ -155,16 +155,20 @@ function NibblerDied(oPlayer) {
         oPlayer.SetSpawnPoint();
         setTimeout(function () { oPlayer.Dead = false; }, iSpawnTimeOut, oPlayer);
     } else {
+        oPlayer.Lives = "&#128128;";  // Assiging a Skull, bit of a hack but false when compared to a number!
         removeClass(oSpanPlayer[oPlayer.Index].parentElement, "blink_me");
         addClass(oSpanPlayer[oPlayer.Index], "dead");
 
-        let iLivesRemaining = 0;
+        let iNibblersRemaining = 0;
         for (let iLoop = gaNibblers.length; iLoop--;) {
-            iLivesRemaining += gaNibblers[iLoop].Lives;
+            if (gaNibblers[iLoop].Lives > 0) {
+                iNibblersRemaining++;
+            }
         }
 
-        if (iLivesRemaining <= 0) {
-            Pause();
+        // End game if there were more than one player and now only one is left
+        if (iNibblersRemaining === 0 || (iNibblersRemaining < 2 && gaNibblers.length > 1)) {
+            GameOver();
         }
     }
 }

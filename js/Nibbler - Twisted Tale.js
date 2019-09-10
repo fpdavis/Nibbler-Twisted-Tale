@@ -9,6 +9,10 @@ window.onload = function () {
     window.addEventListener("gamepadconnected", GamepadConnectedEvent);
     window.addEventListener("gamepaddisconnected", GamepadDisonnectedEvent);
 
+    goHammer = new Hammer(document);
+    goHammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+    goHammer.on("swipeleft swiperight swipeup swipedown tap press", function (oEvent) { TouchEvent(oEvent); });    
+
     addClass(oDivGameMenu, "showGameMenu");
     addClass(oDivScoreboard, "modal-blur");
     addClass(canvArena, "modal-blur");
@@ -17,7 +21,7 @@ window.onload = function () {
     LoadMusic(gaMusicData);
 
     Sounds.Effects["Crawling"].loop = true;
-
+       
     InitializePlayerControls();
 };
 
@@ -63,7 +67,8 @@ function StartGame() {
         giTimeRemaining = 1000 * oNumberTime.value; // 1,000 ms per second
     }
     else {
-        oSpanTime.innerText = "";
+        giTimeElapsed = 0;
+        oSpanTime.innerHTML = "TIME 00:00";
     }
     
     switch (selectSpeed.value) {
@@ -553,12 +558,12 @@ function CheckForKeyup(oEvent, oPlayer) {
     }
 }
 
-function ClickEvent(event) {
+function ClickEvent(oEvent) {
     
     if (giVerbosity === goVerbosityEnum.Debug) {
 
         MessageLog(`==============================================`, goVerbosityEnum.Debug);
-        MessageLog(`  Mouse Coordinates: (${event.pageX}, ${event.pageY})`, goVerbosityEnum.Debug);
+        MessageLog(`  Mouse Coordinates: (${oEvent.pageX}, ${oEvent.pageY})`, goVerbosityEnum.Debug);
         
         if (giGameState !== goGameStateEnum.Running) {
             return;
@@ -566,8 +571,8 @@ function ClickEvent(event) {
 
         if (gaMaze.length > 0) {
 
-            let iPositionX = Math.floor(event.pageX / giGridSize);
-            let iPositionY = Math.floor((event.pageY - 100) / giGridSize);
+            let iPositionX = Math.floor(oEvent.pageX / giGridSize);
+            let iPositionY = Math.floor((oEvent.pageY - 100) / giGridSize);
             let iIndex = MGIndex(iPositionX, iPositionY, giArenaSquaresX, giArenaSquaresY);
 
             MessageLog(`        Coordinates: (${iPositionX}, ${iPositionY})`, goVerbosityEnum.Debug);
@@ -583,7 +588,7 @@ function ClickEvent(event) {
             else if (oNode.walls[goWalls.North]) sWalls += "¯";
             if (oNode.walls[goWalls.East]) sWalls += "]";
 
-            if (event.button === 1) {
+            if (oEvent.button === 1) {
                 gaMaze.forEach(function (oNode) { oNode.highlight = false; });
             }
 
@@ -594,21 +599,52 @@ function ClickEvent(event) {
         }
     }
     
-    let iXOffset = Math.abs(gaNibblers[0].PositionX * giGridSize - event.pageX);
-    let iYOffset = Math.abs(gaNibblers[0].PositionY * giGridSize - event.pageY);
+    let iXOffset = Math.abs(gaNibblers[0].PositionX * giGridSize - oEvent.pageX);
+    let iYOffset = Math.abs(gaNibblers[0].PositionY * giGridSize - oEvent.pageY);
 
-    if (iXOffset >= iYOffset && gaNibblers[0].PositionX * giGridSize < event.pageX) {
+    if (iXOffset >= iYOffset && gaNibblers[0].PositionX * giGridSize < oEvent.pageX) {
         gaNibblers[0].DirectionX = 1;
         gaNibblers[0].DirectionY = 0;
     } else if (iXOffset >= iYOffset) {
         gaNibblers[0].DirectionX = -1;
         gaNibblers[0].DirectionY = 0;
-    } else if (iXOffset < iYOffset && gaNibblers[0].PositionY * giGridSize < event.pageY) {
+    } else if (iXOffset < iYOffset && gaNibblers[0].PositionY * giGridSize < oEvent.pageY) {
         gaNibblers[0].DirectionY = 1;
         gaNibblers[0].DirectionX = 0;
     } else if (iXOffset < iYOffset) {
         gaNibblers[0].DirectionY = -1;
         gaNibblers[0].DirectionX = 0;
+    }
+}
+function TouchEvent(oEvent) {
+
+    switch (oEvent.type) {
+        case "swipeleft":
+            document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: gaPlayerControls[0].Left }));
+            document.dispatchEvent(new KeyboardEvent("keyup", { keyCode: gaPlayerControls[0].Left }));
+            break;
+        case "swiperight":
+            document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: gaPlayerControls[0].Right }));
+            document.dispatchEvent(new KeyboardEvent("keyup", { keyCode: gaPlayerControls[0].Right }));
+            break;
+        case "swipeup":
+            document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: gaPlayerControls[0].Up }));
+            document.dispatchEvent(new KeyboardEvent("keyup", { keyCode: gaPlayerControls[0].Up }));
+            break;
+        case "swipedown":
+            document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: gaPlayerControls[0].Down }));
+            document.dispatchEvent(new KeyboardEvent("keyup", { keyCode: gaPlayerControls[0].Down }));
+            break;
+        case "tap":
+            if (!hasClass(oDivGameMenu, "showGameMenu") && !hasClass(oDivControllerMenu, "showGameMenu")) {
+                document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 19 }));
+                document.dispatchEvent(new KeyboardEvent("keyup", { keyCode: 19 }));
+            }
+            break;
+        case "press":
+            document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 27 }));
+            document.dispatchEvent(new KeyboardEvent("keyup", { keyCode: 27 }));
+            break;
     }
 }
 
@@ -647,11 +683,8 @@ function Pause(oDiv) {
     addClass(oSpanTime.parentElement, "blink_me");
 
     clearInterval(goGameLoop);
-
-    if (chkTime.checked) {
-        clearInterval(ogCountdownTimer);
-    }
-
+    clearInterval(goTimer);
+    
     if (gaNibblers) gaNibblers.forEach(function (oPlayer) { clearInterval(oPlayer.Timer); });
 
     if (gaBrainspawns) gaBrainspawns.forEach(function (oBrainspawn) { clearInterval(oBrainspawn.Timer); });
@@ -672,7 +705,10 @@ function UnPause() {
 
     if (chkTime.checked) {
         goCountDownTime = new Date().setTime(new Date().getTime() + giTimeRemaining);
-        ogCountdownTimer = setInterval(CountdownTimer, 500);
+        goTimer = setInterval(Timer, 500);
+    }
+    else {
+        goTimer = setInterval(Timer, 500);
     }
 
     StartTimers();
@@ -816,7 +852,7 @@ function UpdateScoreboard() {
 
     let iPlayerWithHighScore = 0;
     for (let iLoop = gaNibblers.length; iLoop--;) {
-        oSpanPlayer[iLoop].innerText = `${gaNibblers[iLoop].Name} (${gaNibblers[iLoop].Lives}) ${gaNibblers[iLoop].Score}`;
+        oSpanPlayer[iLoop].innerHTML = `${gaNibblers[iLoop].Name} (${gaNibblers[iLoop].Lives}) ${gaNibblers[iLoop].Score}`;
 
         if (gaNibblers[iLoop].Score > gaNibblers[iPlayerWithHighScore].Score) {
             iPlayerWithHighScore = iLoop;
@@ -826,23 +862,50 @@ function UpdateScoreboard() {
     oSpanHighScore.innerText = `HIGHSCORE (${gaNibblers[iPlayerWithHighScore].Name}) ${gaNibblers[iPlayerWithHighScore].Score}`;
 }
 
-function CountdownTimer() {
+function Timer() {
 
-    // Find the time remaining between now and the count down date
-    giTimeRemaining = goCountDownTime - new Date().getTime();
-    let iSeconds = Math.floor(giTimeRemaining / 1000);
+    if (chkTime.checked) {
+        // Find the time remaining between now and the count down date
+        giTimeRemaining = goCountDownTime - new Date().getTime();
+        let sFormatedTime = FormatTime(Math.floor(giTimeRemaining / 1000));
 
-    oSpanTime.innerHTML = `TIME ${iSeconds}`;
+        oSpanTime.innerHTML = `TIME ${sFormatedTime}`;
+
+        if (sFormatedTime === "00:10") {
+            addClass(oSpanTime.parentElement, "blink_me");
+        }
+
+        // If the count down is finished end game
+        if (giTimeRemaining < 0) {            
+            GameOver();
+        }
+    }
+    else {
+        giTimeElapsed += .5;
+
+        oSpanTime.innerHTML = "TIME " + FormatTime(giTimeElapsed);
+    }
+}
+
+function FormatTime(iTimeInSeconds) {
+
+    if (iTimeInSeconds > 6000) {
+        return "99:99";
+    }
+    else if (iTimeInSeconds <= 0) {
+        return "EXPIRED";
+    }
+    else {
+        let iMinutes = Math.floor(iTimeInSeconds / 60);
+        let iSeconds = Math.floor(iTimeInSeconds % 60);
+
+        iMinutes = (iMinutes < 10) ? '0' + iMinutes : iMinutes;
+        iSeconds = (iSeconds < 10) ? '0' + iSeconds : iSeconds;
+
+        return `${iMinutes}:${iSeconds}`;
+    }
     
-    if (iSeconds === 10) {
-        addClass(oSpanTime.parentElement, "blink_me");
-    }
 
-    // If the count down is finished, write some text
-    if (giTimeRemaining < 0) {
-        oSpanTime.innerHTML = "TIME EXPIRED";
-        GameOver();
-    }
 }
 
 function GameOver() {
@@ -881,6 +944,17 @@ function GameOver() {
 
     // If all the placers are bots restart the game
     if (bAllComputers) {
-        goRestartAllComputersTimer = setTimeout(function () { SetupArena(); }, 20000);
+        goRestartAllComputersTimer = setTimeout(function () { NewGameTimer(5000); }, 5000);
+    }
+}
+
+function NewGameTimer(iMiliSeconds) {
+    if (iMiliSeconds < 1) {
+        ShowNotification("Zero!", "Notification");
+        SetupArena();
+    }
+    else {
+        ShowNotification("New Game In " + Math.floor(iMiliSeconds / 1000), "Notification");
+        goRestartAllComputersTimer = setTimeout(function () { NewGameTimer(iMiliSeconds - 1000); }, 1000);
     }
 }

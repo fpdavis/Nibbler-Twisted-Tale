@@ -1,6 +1,16 @@
 
 # Changes (newest to oldest):
 
+## Sep 9, 2019  
+* Updated timer to implement elapsed time when a timed game is not selected
+* Formatted time to minutes and seconds
+* Corrected calculations on number of lives/extra lives remaining
+* Added a skull for dead player's remaining lives
+* Added end game detection
+* Fixed end game lock up issue?
+* Notification countdown to next game/game beginning
+* Mobile & mouse support added for first player
+
 ## Sep 8, 2019  
 * Added a real Pause screen
 * Added a Game Over Screen
