@@ -407,6 +407,10 @@ function CheckForSpecialKeys(oEvent) {
             giGameLoopSpeed += 40;
             ShowNotification("Speed: " + UpdateGameLoopSpeed(), "Notification");
             break;
+        case 112: // F1
+            Pause();
+            Credits();
+            break;
         default:
             MessageLog(`No special key match for (` + oEvent.keyCode + ' / ' + keyCodes[oEvent.keyCode] + ')', goVerbosityEnum.Debug);
 
@@ -649,9 +653,7 @@ function TouchEvent(oEvent) {
 }
 
 function TogglePause(oDiv) {
-
-    if (!gaNibblers) return;
-
+    
     if (giGameState === goGameStateEnum.Running) {
         giGameState = goGameStateEnum.Paused;
     }
@@ -677,7 +679,11 @@ function TogglePause(oDiv) {
 function Pause(oDiv) {
     
     HideDivs();
-    addClass(oDiv, "showGameMenu");
+
+    if (oDiv !== null) {
+        addClass(oDiv, "showGameMenu");
+    }
+
     addClass(oDivScoreboard, "modal-blur");
     addClass(canvArena, "modal-blur");
     addClass(oSpanTime.parentElement, "blink_me");
@@ -718,6 +724,7 @@ function HideDivs() {
     removeClass(oDivGameMenu, "showGameMenu");
     removeClass(oDivPaused, "showGameMenu");
     removeClass(oDivGameOver, "showGameMenu");
+    removeClass(oDivCredits, "showGameMenu");
     
     removeClass(oDivScoreboard, "modal-blur");
     removeClass(canvArena, "modal-blur");
@@ -934,18 +941,20 @@ function GameOver() {
     }
 
     if (iWinners === 1) {
-        oDivGameOver.childNodes[3].innerHTML = `*** ${sWinnerNames} Wins ***`;
+        oDivGameOver.childNodes[1].childNodes[3].innerHTML = `*** ${sWinnerNames} Wins ***`;
     }
     else {
-        oDivGameOver.childNodes[3].innerHTML = `${sWinnerNames} Tie!`;
+        oDivGameOver.childNodes[1].childNodes[3].innerHTML = `${sWinnerNames} Tie!`;
     }
 
     Pause(oDivGameOver);
 
     // If all the placers are bots restart the game
     if (bAllComputers) {
-        goRestartAllComputersTimer = setTimeout(function () { NewGameTimer(5000); }, 5000);
+        goRestartAllComputersTimer = setTimeout(function () { NewGameTimer(5000); }, 15000);
     }
+
+    setTimeout(function () { Credits(); }, 3000);    
 }
 
 function NewGameTimer(iMiliSeconds) {
@@ -956,5 +965,51 @@ function NewGameTimer(iMiliSeconds) {
     else {
         ShowNotification("New Game In " + Math.floor(iMiliSeconds / 1000), "Notification");
         goRestartAllComputersTimer = setTimeout(function () { NewGameTimer(iMiliSeconds - 1000); }, 1000);
+    }
+}
+
+function CurrentDiv() {
+
+    if (hasClass(oDivGameMenu, "showGameMenu")) {
+        return oDivGameMenu;
+    }
+    else if (hasClass(oDivPaused, "showGameMenu")) {
+        return oDivPaused;
+    }
+    else if (hasClass(oDivGameOver, "showGameMenu")) {
+        return oDivGameOver;
+    }
+    else if (hasClass(oDivCredits, "showGameMenu")) {
+        return oDivCredits;
+    }
+    else if (hasClass(oDivControllerMenu, "showGameMenu")) {
+        return oDivControllerMenu;
+    }
+    else {
+        return null;
+    }
+}
+
+function Credits() {
+    let oDivCurrent = CurrentDiv();
+
+    if (oDivCurrent !== oDivCredits) {
+        if (oDivCurrent === oDivGameOver) {
+            addClass(oDivGameOver, "scroll-up");
+        }
+
+        if (!hasClass(oDivCredits, "scroll-up")) {
+            addClass(oDivCredits, "scroll-up");
+            addClass(oDivCredits, "showGameMenu");            
+        }
+        else {
+            // Need to restart the animation
+            oDivCredits.parentNode.replaceChild(oDivCredits.cloneNode(true), oDivCredits);
+            oDivCredits = document.getElementById("divCredits");
+            addClass(oDivCredits, "showGameMenu");
+        }        
+    }
+    else {
+        TogglePause(oDivGameMenu);
     }
 }

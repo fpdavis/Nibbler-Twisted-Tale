@@ -3,9 +3,10 @@ const canvArena = document.getElementById("canArena");
 const ctxArena = canvArena.getContext("2d");
 
 const oDivScoreboard = document.getElementById('divScoreboard');
+const oDivGameMenu = document.getElementById('divGameMenu');
 const oDivPaused = document.getElementById('divPaused');
 const oDivGameOver = document.getElementById('divGameOver');
-
+var   oDivCredits = document.getElementById('divCredits');
 
 const oColorPlayer = new Array(4);
 oColorPlayer[0] = document.getElementById('colorPlayer1');
@@ -21,8 +22,6 @@ oSpanPlayer[3] = document.getElementById('spanPlayer4');
 
 const oSpanTime = document.getElementById('spanTime');
 const oSpanHighScore = document.getElementById('spanHighScore');
-
-const oDivGameMenu = document.getElementById('divGameMenu');
 
 const oColorMenuPlayer = new Array(4);
 oColorMenuPlayer[0] = document.getElementById('colorMenuPlayer1');

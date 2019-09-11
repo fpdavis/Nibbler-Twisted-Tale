@@ -8,7 +8,10 @@ Force opponent to collide with your tail or theirs. Pick up food and powerups to
 
 ### Todo (in order of importance):
 
-* Add more game states to know when the player is in the setup and controller menus?
+* Make menu bigger on smaller mobile machines
+* Give High Score room for 4 digits as it currently wraps on mobile (keep it from wrapping)
+* Small screen size looks good on mobile but is slightly too big to fit.
+* Game Over div is too wide for small screen (mobile) and overlaps with border.
 * Refactor to create a game object, would it be possible to run multiple games at once?
 * Joystick support
    * Can't give focus to txtControllerMenu* direction text boxes if they are empty
@@ -56,7 +59,6 @@ Force opponent to collide with your tail or theirs. Pick up food and powerups to
 * Fix edge bug where edges are too close in from the border
 * Center the playfield - it is pretty good but could be better
 * Correct player and pellet size on resize
-* Implement sounds using Howler.js with sprites? https://goldfirestudios.com/blog/104/howler.js-Modern-Web-Audio-Javascript-Library?
 
 
 

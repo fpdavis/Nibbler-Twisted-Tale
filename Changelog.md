@@ -1,6 +1,10 @@
 
 # Changes (newest to oldest):
 
+## Sep 10, 2019  
+* Added method to identify the Current UI state (CurrentDiv())
+* Adding Credits
+
 ## Sep 9, 2019  
 * Updated timer to implement elapsed time when a timed game is not selected
 * Formatted time to minutes and seconds
