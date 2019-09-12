@@ -1,6 +1,9 @@
 
 # Changes (newest to oldest):
 
+## Sep 12, 2019  
+* Completed Credits
+
 ## Sep 10, 2019  
 * Added method to identify the Current UI state (CurrentDiv())
 * Adding Credits

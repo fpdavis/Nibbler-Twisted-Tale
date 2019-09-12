@@ -1,7 +1,27 @@
 var gaSoundData =
 [
-  { "name": "Bite", "src": "Sounds/Bite-SoundBible.com-2056759375.mp3" },
-  { "name": "Pause", "src": "Sounds/Splat And Squirt-SoundBible.com-2136633229.mp3" },
-  { "name": "Crawling", "src": "Sounds/termites_and_ants-mike-koenig.mp3" },
-  { "name": "Splat", "src": "Sounds/Lava.flac" }
+  {
+    "name": "Bite",
+    "title": "Bite",
+    "src": "Sounds/Bite-SoundBible.com-2056759375.mp3",
+    "Contributor": "Mike Koenig "
+  },
+  {
+    "name":  "Pause",
+    "title": "Splat and Squirt",
+    "src": "Sounds/Splat And Squirt-SoundBible.com-2136633229.mp3",
+    "Contributor": "Mike Koenig "
+  },
+  {
+    "name": "Crawling",
+    "title":  "Termites and Ants",
+    "src": "Sounds/termites_and_ants-mike-koenig.mp3",
+    "Contributor": "Mike Koenig"
+  },
+  {
+    "name": "Splat",
+    "title": "Lava Splash",
+    "src": "Sounds/Lava.flac",
+    "Contributor": "Michel Baradari"
+  }
 ]

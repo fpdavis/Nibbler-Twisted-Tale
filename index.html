@@ -26,6 +26,7 @@
     <script type="text/javascript" src="js/Nibbler - Twisted Tale.js" defer="defer"></script>
 
     <link rel="stylesheet" type="text/css" href="css/GameMenu.css">
+    <link rel="stylesheet" type="text/css" href="css/GameOver.css">
     <link rel="stylesheet" type="text/css" href="css/Neon.css">
     <link rel="stylesheet" type="text/css" href="css/Notifications.css">
     <link rel="stylesheet" type="text/css" href="css/Scoreboard.css">
@@ -201,7 +202,7 @@
         <span class="neonLineTwo">(hit Pause/Break to continue)</span>
     </div>
 
-    <div id="divGameOver" class="neon overlay">
+    <div id="divGameOver" class="neonGameOver overlay scroll-up">
         <p>
         <span class="neonLineOne">Game Over!</span>
         <span class="neonLineTwo">The winner is you!</span>
@@ -209,22 +210,45 @@
         </p>
     </div>
 
-    <div id="divCredits" class="neonCredits overlay">
+    <div id="divCredits" class="neonCredits overlay scroll-up">
         <p>
             <span class="neonLineOne">Nibbler</span>
             <span class="neonLineTwo">Twisted Tale</span>
-            <br /><br /><br /><br />
+            <span class="dead blink_me">(hit Esc to continue)</span>
+            <br /><br /><br /><br /><br /><br />
             <span class="neonCreditName">Game Designer</span>
             <span class="neonCreditValue">Phil Davis</span>
             <br />
             <span class="neonCreditName">Programmer</span>
             <span class="neonCreditValue">Phil Davis</span>
+            <br /><br />
+            <span class="neonCreditName">&#127925; Music &#127925;</span>
+            <br />
+            <br id="brMusicCreditsBegin" />
+            <br id="brMusicCreditsEnd" />
+            <br /><br />
+            <span class="neonCreditName">&#128126; Sound Effects &#128126;</span>
+            <br />
+            <br id="brSoundCreditsBegin" />
+            <br id="brSoundCreditsEnd" />
             <br />
             <span class="neonCreditName">Special Thanks To</span>
-            <span class="neonCreditValue">Coding Train</span>
+            <span class="neonCreditValue">Daniel Shiffman - The Coding Train</span>
+            <span class="neonCreditValue">Chris Coyier - CSS_Tricks</span>
+            <span class="neonCreditValue">OpenGameArt.org</span>
+            <span class="neonCreditValue">SoundBible.com</span>
+            <span class="neonCreditValue">WebDevTrick</span>
+            <span class="neonCreditValue">HTML.am</span>
+            <span class="neonCreditValue">Autumn &amp; Four</span>
             <br />
             <span class="neonCreditName">&#169; Copyright 2019</span>
             <span class="neonCreditValue">All Rights Reserved</span>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+
+            <span class="neonLineOne">Nibbler</span>
+            <span class="neonLineTwo">Twisted Tale</span>
+            <span class="dead blink_me">(hit Esc to continue)</span>
         </p>
     </div>
 </BODY>

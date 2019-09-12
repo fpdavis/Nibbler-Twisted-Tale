@@ -1,16 +1,48 @@
-var gaMusicData =
-[
-  { "src": "Music/Hold The Line (Boss Theme).ogg" },
-  { "src": "Music/Boss Battle 2 V1.wav" },
-  { "src": "Music/Boss Theme.mp3" },
-  { "src": "Music/Boss Battle 3 V1.wav" },
-  { "src": "Music/Fast Song.mp3" },
-  { "src": "Music/Boss Battle 5 V1.wav" },
-  { "src": "Music/Hold The Line  (Orchestral Remix).flac" },
-  { "src": "Music/Boss Battle 2 V2.wav" },
-  { "src": "Music/Boss Battle 3 V2.wav" },
-  { "src": "Music/Most Stereotypical Boss Theme Ever.ogg" },
-  { "src": "Music/Boss Battle 5 V2.wav" }
+var gaMusicData = [
+  {
+    "src": "Music/Hold The Line (Boss Theme).ogg",
+    "Contributor": "Bart Kelsey"
+  },
+  {
+    "src": "Music/Boss Battle 2 V1.wav",
+    "Contributor": "Nene"
+  },
+  {
+    "src": "Music/Boss Theme.mp3",
+    "Contributor": ""
+  },
+  {
+    "src": "Music/Boss Battle 3 V1.wav",
+    "Contributor": "Nene"
+  },
+  {
+    "src": "Music/Fast Song.mp3",
+    "Contributor": "Nene"
+  },
+  {
+    "src": "Music/Boss Battle 5 V1.wav",
+    "Contributor": "Nene"
+  },
+  {
+    "src": "Music/Hold The Line  (Orchestral Remix).flac",
+    "Contributor": "Bart Kelsey & Remaxim"
+  },
+  {
+    "src": "Music/Boss Battle 2 V2.wav",
+    "Contributor": "Nene"
+  },
+  {
+    "src": "Music/Boss Battle 3 V2.wav",
+    "Contributor": "Nene"
+  },
+  {
+    "src": "Music/Most Stereotypical Boss Theme Ever.ogg",
+    "Contributor": "Spring"
+  },
+  {
+    "src": "Music/Boss Battle 5 V2.wav",
+    "Contributor": "Nene"
+  }
 
 
 ]

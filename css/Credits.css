@@ -1,8 +1,7 @@
-
 .neonCredits {
-    top: 10%;
-    width: 98%;
-    height: auto;
+    top: 10.5%;
+    width: calc(100% - 62px);
+    height: calc(90% - 31px);
     left: 1%;
     font-family: "neontubes";
     text-align: center;
@@ -11,36 +10,17 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-    .neonCredits span {
-        display: block;
-        position: relative;
-        -webkit-transform: translateZ(0) translate3D(0, 0, 0);
-        transform: translateZ(0) translate3D(0, 0, 0);
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        will-change: opacity;
-    }
-
-.neonCreditName {
-    width: 100%;
-    color: #ffd9e2;
-    font-size: 2vw;
-    text-shadow: 0 0 0 transparent, 0 0 10px #ff003c, 0 0 20px rgba(255, 0, 60, 0.5), 0 0 40px #ff003c, 0 0 100px #ff003c, 0 0 200px #ff003c, 0 0 300px #ff003c, 0 0 500px #ff003c, 0 0 1000px #ff003c;
-    -webkit-animation: blink 4s infinite alternate;
-    animation: blink 4s infinite alternate;
-}
-
-.neonCreditValue {
-    width: 100%;
-    color: #d4eaff;
-    font-size: 2vw;
-    text-shadow: 0 0 0 transparent, 0 0 10px #2695ff, 0 0 20px rgba(38, 149, 255, 0.5), 0 0 40px #2695ff, 0 0 100px #2695ff, 0 0 200px #2695ff, 0 0 300px #2695ff, 0 0 500px #2695ff;
-    -webkit-animation: buzz 0.01s infinite alternate;
-    animation: buzz 0.01s infinite alternate;
+.neonCredits span {
+    display: block;
+    position: relative;
+    -webkit-transform: translateZ(0) translate3D(0, 0, 0);
+    transform: translateZ(0) translate3D(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: opacity;
 }
 
 .scroll-up {
-    height: 100%;
     overflow: hidden;
 }
 
@@ -51,38 +31,42 @@
     height: 100%;
     margin: 0;
     text-align: center;
-    /* Starting position */
-    -moz-transform: translateY(100%);
-    -webkit-transform: translateY(100%);
-    transform: translateY(100%);
-    /* Apply animation to this element */
-    -moz-animation: scroll-up 15s linear;
-    -webkit-animation: scroll-up 15s linear;
-    animation: scroll-up 15s linear;
 }
 
-/* Move it (define the animation) */
-@-moz-keyframes scroll-up {
+/* Move it (define credits the animation) */
+.scroll-credits-up p {
+    /* Starting/Ending position */
+    -moz-transform: translateY(-410%);
+    -webkit-transform: translateY(-410%);
+    transform: translateY(-410%);
+
+    /* Apply animation to this element */
+    -moz-animation: scroll-credits-up 40s linear;
+    -webkit-animation: scroll-credits-up 40s linear;
+    animation: scroll-credits-up 40s linear;
+}
+
+@-moz-keyframes scroll-credits-up {
     0% {
         -moz-transform: translateY(100%);
     }
 
     100% {
-        -moz-transform: translateY(-100%);
+        -moz-transform: translateY(-410%);
     }
 }
 
-@-webkit-keyframes scroll-up {
+@-webkit-keyframes scroll-credits-up {
     0% {
         -webkit-transform: translateY(100%);
     }
 
     100% {
-        -webkit-transform: translateY(-100%);
+        -webkit-transform: translateY(-410%);
     }
 }
 
-@keyframes scroll-up {
+@keyframes scroll-credits-up {
     0% {
         -moz-transform: translateY(100%); /* Browser bug fix */
         -webkit-transform: translateY(100%); /* Browser bug fix */
@@ -90,8 +74,9 @@
     }
 
     100% {
-        -moz-transform: translateY(-100%); /* Browser bug fix */
-        -webkit-transform: translateY(-100%); /* Browser bug fix */
-        transform: translateY(-100%);
+        -moz-transform: translateY(-410%); /* Browser bug fix */
+        -webkit-transform: translateY(-410%); /* Browser bug fix */
+        transform: translateY(-410%);
     }
 }
+

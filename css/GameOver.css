@@ -1,0 +1,73 @@
+.neonGameOver {
+    top: 10.5%;
+    width: calc(100% - 62px);
+    height: calc(90% - 31px);
+    left: 1%;
+    font-family: "neontubes";
+    text-align: center;
+    white-space: nowrap;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.neonGameOver p {
+    top: 20%;
+}
+
+.neonGameOver span {
+display: block;
+position: relative;
+-webkit-transform: translateZ(0) translate3D(0, 0, 0);
+transform: translateZ(0) translate3D(0, 0, 0);
+-webkit-backface-visibility: hidden;
+backface-visibility: hidden;
+will-change: opacity;
+}
+
+/* Move it (define the animation) */
+.scroll-gameover-up p {
+    /* Starting/Ending position */
+    -moz-transform: translateY(100%);
+    -webkit-transform: translateY(100%);
+    transform: translateY(100%);
+
+    /* Apply animation to this element */
+    -moz-animation: scroll-gameover-up 7s linear;
+    -webkit-animation: scroll-gameover-up 7s linear;
+    animation: scroll-gameover-up 7s linear;
+}
+
+@-moz-keyframes scroll-gameover-up {
+    0% {
+        -moz-transform: translateY(0%);
+    }
+
+    100% {
+        -moz-transform: translateY(-100%);
+    }
+}
+
+@-webkit-keyframes scroll-gameover-up {
+    0% {
+        -webkit-transform: translateY(0%);
+    }
+
+    100% {
+        -webkit-transform: translateY(-100%);
+    }
+}
+
+@keyframes scroll-gameover-up {
+    0% {
+        -moz-transform: translateY(0%); /* Browser bug fix */
+        -webkit-transform: translateY(0%); /* Browser bug fix */
+        transform: translateY(0%);
+    }
+
+    100% {
+        -moz-transform: translateY(-100%); /* Browser bug fix */
+        -webkit-transform: translateY(-100%); /* Browser bug fix */
+        transform: translateY(-100%);
+    }
+}
+

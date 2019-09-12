@@ -916,6 +916,8 @@ function FormatTime(iTimeInSeconds) {
 }
 
 function GameOver() {
+
+    Pause();
     giGameState = goGameStateEnum.Over;
 
     let bAllComputers = true;
@@ -947,14 +949,16 @@ function GameOver() {
         oDivGameOver.childNodes[1].childNodes[3].innerHTML = `${sWinnerNames} Tie!`;
     }
 
-    Pause(oDivGameOver);
+    removeClass(oDivGameOver, "scroll-gameover-up"); 
+    addClass(oDivGameOver, "showGameMenu");
 
     // If all the placers are bots restart the game
     if (bAllComputers) {
         goRestartAllComputersTimer = setTimeout(function () { NewGameTimer(5000); }, 15000);
     }
-
-    setTimeout(function () { Credits(); }, 3000);    
+    else {
+        setTimeout(function () { Credits(); }, 9000);
+    }
 }
 
 function NewGameTimer(iMiliSeconds) {
@@ -995,11 +999,59 @@ function Credits() {
 
     if (oDivCurrent !== oDivCredits) {
         if (oDivCurrent === oDivGameOver) {
-            addClass(oDivGameOver, "scroll-up");
+            
+           // if (!hasClass(oDivGameOver, "scroll-gameover-up")) {
+                //removeClass(oDivGameOver, "showGameMenu");
+                addClass(oDivGameOver, "scroll-gameover-up");                
+                //addClass(oDivGameOver, "showGameMenu");
+            //}
+            //else {
+            //    // Need to restart the animation
+            //    oDivGameOver.parentNode.replaceChild(oDivGameOver.cloneNode(true), oDivGameOver);
+            //    oDivGameOver = document.getElementById("divGameOver");
+            //}   
         }
 
-        if (!hasClass(oDivCredits, "scroll-up")) {
-            addClass(oDivCredits, "scroll-up");
+        if (!hasClass(oDivCredits, "scroll-credits-up")) {
+            let oBrCreditsEnd = document.getElementById("brMusicCreditsEnd");
+            let oElement;
+
+            for (let iLoop = 0; iLoop < gaMusicData.length; iLoop++) {
+                if (gaMusicData[iLoop]['src'] !== "" && gaMusicData[iLoop]['Contributor'] !== "") {
+                    oElement = document.createElement('span');                    
+                    oElement.innerHTML = gaMusicData[iLoop]['src'].split("/").pop().split(".")[0];
+                    addClass(oElement, "neonCreditName");
+                    oBrCreditsEnd.parentNode.insertBefore(oElement, oBrCreditsEnd);
+
+                    oElement = document.createElement('span');                    
+                    oElement.innerHTML = gaMusicData[iLoop]['Contributor'];
+                    addClass(oElement, "neonCreditValue");
+                    oBrCreditsEnd.parentNode.insertBefore(oElement, oBrCreditsEnd);
+
+                    oElement = document.createElement('br');                    
+                    oBrCreditsEnd.parentNode.insertBefore(oElement, oBrCreditsEnd);
+                }
+            }                
+
+            oBrCreditsEnd = document.getElementById("brSoundCreditsEnd");
+            for (let iLoop = 0; iLoop < gaSoundData.length; iLoop++) {
+                if (gaMusicData[iLoop]['src'] !== "" && gaSoundData[iLoop]['Contributor'] !== "") {
+                    oElement = document.createElement('span');
+                    oElement.innerHTML = gaSoundData[iLoop]['title'];
+                    addClass(oElement, "neonCreditName");
+                    oBrCreditsEnd.parentNode.insertBefore(oElement, oBrCreditsEnd);
+
+                    oElement = document.createElement('span');
+                    oElement.innerHTML = gaSoundData[iLoop]['Contributor'];
+                    addClass(oElement, "neonCreditValue");
+                    oBrCreditsEnd.parentNode.insertBefore(oElement, oBrCreditsEnd);
+
+                    oElement = document.createElement('br');
+                    oBrCreditsEnd.parentNode.insertBefore(oElement, oBrCreditsEnd);
+                }
+            }    
+
+            addClass(oDivCredits, "scroll-credits-up");
             addClass(oDivCredits, "showGameMenu");            
         }
         else {

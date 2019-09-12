@@ -5,8 +5,6 @@ const ctxArena = canvArena.getContext("2d");
 const oDivScoreboard = document.getElementById('divScoreboard');
 const oDivGameMenu = document.getElementById('divGameMenu');
 const oDivPaused = document.getElementById('divPaused');
-const oDivGameOver = document.getElementById('divGameOver');
-var   oDivCredits = document.getElementById('divCredits');
 
 const oColorPlayer = new Array(4);
 oColorPlayer[0] = document.getElementById('colorPlayer1');
@@ -79,6 +77,9 @@ const iSpawnTimeOut = 2000; // Miliseconds
 // #endregion
 
 // #region Globals
+var oDivGameOver = document.getElementById('divGameOver');
+var oDivCredits = document.getElementById('divCredits');
+
 var giGameLoopSpeed = 100;
 var gaGrid = [];
 var gaMaze = [];

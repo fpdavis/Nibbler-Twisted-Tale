@@ -8,6 +8,7 @@ Force opponent to collide with your tail or theirs. Pick up food and powerups to
 
 ### Todo (in order of importance):
 
+* Store user settings client side
 * Make menu bigger on smaller mobile machines
 * Give High Score room for 4 digits as it currently wraps on mobile (keep it from wrapping)
 * Small screen size looks good on mobile but is slightly too big to fit.
@@ -24,7 +25,6 @@ Force opponent to collide with your tail or theirs. Pick up food and powerups to
 * Maze creates a copy of the Grid, want to create one grid and pass it in
 * Add graph weighting incentives for pellets in A*
 * Add Nibbler body shortest movement/body drag
-* Add credits
 * Add neon sounds
 * Game Options
 	* Capture the Flag
@@ -44,7 +44,6 @@ Force opponent to collide with your tail or theirs. Pick up food and powerups to
 		* Jump ability
 		* Teleportation (Random/Directional?)
 * Enhance description
-* Add additional fields (such as title and author) in json files for credits and notifications
 * Help Menu
 * Have it remember and report the overall winner from multiple games
 * If there is a tie between more than two people or if a player has a really long name it will not fit on the Game Over screen
@@ -59,22 +58,26 @@ Force opponent to collide with your tail or theirs. Pick up food and powerups to
 * Fix edge bug where edges are too close in from the border
 * Center the playfield - it is pretty good but could be better
 * Correct player and pellet size on resize
-
-
+* End Game & Credits Music
+* Fix Credit Scrolling Error in Firefox - Will-change memory consumption is too high. Budget limit is the document surface area multiplied by 3 (1566214 px). Occurrences of will-change over the budget will be ignored.
 
 ### Creative Commons License Attributions
+
+Sound Effects
 
 File: Splat And Squirt-SoundBible.com-2136633229.mp3
 Title: Splat And Squirt
 About: Sound of something spatting and the squirting. great wet, water, slime, or goo sound effect.
 Uploaded: 10.09.09
 Recorded by: Mike Koenig
+URL: http://soundbible.com/1081-Splat-And-Squirt.html
 
 File: Bite-SoundBible.com-2056759375.mp3
 Title: Bite
 About: The sound of a monster bite or biting someone. great for those zombie games, or some cool sci fi monster scene. grrrr!
 Uploaded: 09.03.09
 Recorded by: Mike Koenig 
+URL: http://soundbible.com/950-Bite.html
 
 File: termites_and_ants-mike-koenig.mp3
 Title: Termites and Ants
@@ -82,6 +85,16 @@ About: Sound of termites and ants crawling around and chewing on things. could b
 Uploaded: 03.18.16
 Recorded by: Mike Koenig 
 URL: https://soundbible.com/2113-Termites-and-Ants.html
+
+File: Lava.flac
+Title: Lava Splash
+About: From a soundpack containing 66 sounds for Cube 2: Sauerbraten.
+       Published here http://www.cubeengine.com/forum.php4?action=display_thread&thread_id=2164 
+Uploaded: 07/27/2009 21:37
+Recorded by: Michel Baradari
+             Iwan Gabovitch (Qubodup) (https://opengameart.org/users/qubodup)
+
+Music
 
 File: Most Stereotypical Boss Theme Ever.ogg 
 Title: Most Stereotypical Boss Theme Ever
