@@ -23,6 +23,7 @@ window.onload = function () {
     Sounds.Effects["Crawling"].loop = true;
        
     InitializePlayerControls();
+    RestoreFormElements("frmGameMenu");
 };
 
 function SetupArena() {
@@ -50,12 +51,15 @@ function SetupArena() {
         gaMaze = GenerateEmptyMaze(giArenaSquaresX, giArenaSquaresY);        
     }
 
+    SaveFormElements("frmGameMenu");
+
     HideDivs(oDivGameMenu);
 
     StartGame();
 }
 
 function StartGame() {
+
     if (gaSprites) gaSprites.length = 0;
 
     InitializePlayers();
@@ -646,8 +650,10 @@ function TouchEvent(oEvent) {
             }
             break;
         case "press":
-            document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 27 }));
-            document.dispatchEvent(new KeyboardEvent("keyup", { keyCode: 27 }));
+            if (!hasClass(oDivGameMenu, "showGameMenu") && !hasClass(oDivControllerMenu, "showGameMenu")) {
+                document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 27 }));
+                document.dispatchEvent(new KeyboardEvent("keyup", { keyCode: 27 }));
+            }
             break;
     }
 }
@@ -999,17 +1005,8 @@ function Credits() {
 
     if (oDivCurrent !== oDivCredits) {
         if (oDivCurrent === oDivGameOver) {
-            
-           // if (!hasClass(oDivGameOver, "scroll-gameover-up")) {
-                //removeClass(oDivGameOver, "showGameMenu");
-                addClass(oDivGameOver, "scroll-gameover-up");                
-                //addClass(oDivGameOver, "showGameMenu");
-            //}
-            //else {
-            //    // Need to restart the animation
-            //    oDivGameOver.parentNode.replaceChild(oDivGameOver.cloneNode(true), oDivGameOver);
-            //    oDivGameOver = document.getElementById("divGameOver");
-            //}   
+            // No idea why I don't have to "restart" the animation here
+            addClass(oDivGameOver, "scroll-gameover-up");
         }
 
         if (!hasClass(oDivCredits, "scroll-credits-up")) {

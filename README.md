@@ -8,7 +8,7 @@ Force opponent to collide with your tail or theirs. Pick up food and powerups to
 
 ### Todo (in order of importance):
 
-* Store user settings client side
+* Store controler settings client side
 * Make menu bigger on smaller mobile machines
 * Give High Score room for 4 digits as it currently wraps on mobile (keep it from wrapping)
 * Small screen size looks good on mobile but is slightly too big to fit.

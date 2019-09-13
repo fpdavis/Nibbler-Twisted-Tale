@@ -15,6 +15,7 @@ function removeClass(ele, cls) {
         ele.className = ele.className.replace(reg, ' ');
     }
 }
+
 function tintImage(imgElement, tintColor) {
     // create hidden canvas (using image dimensions)
     let canvas = document.createElement("canvas");
@@ -60,6 +61,79 @@ function tintImage(imgElement, tintColor) {
     // replace image source with canvas data
     imgElement.src = canvas.toDataURL();
 }
+
+// https://www.taniarascia.com/how-to-use-local-storage-with-javascript/
+function RestoreFormElements(sForm) {  
+
+    let oElements = document.getElementById(sForm);
+    MessageLog(`RestoreFormElements: ${oElements.length} elements found.`, goVerbosityEnum.Debug);
+
+    for (var i = 0; i < oElements.length; i++) {
+        switch (oElements[i].type) {
+            case "color":
+            case "text":
+                if (localStorage.getItem(oElements[i].id) !== null && localStorage.getItem(oElements[i].id) !== "" ) {
+                    oElements[i].value = localStorage.getItem(oElements[i].id);
+                    MessageLog(`RestoreFormElements: ${oElements[i].id} = ` + localStorage.getItem(oElements[i].id), goVerbosityEnum.Debug);
+                }
+                break;
+            case "number":
+            case "range":
+                if (localStorage.getItem(oElements[i].id) !== null) {
+                    oElements[i].value = localStorage.getItem(oElements[i].id);
+                }                
+                break;
+            case "checkbox":
+                
+                if (localStorage.getItem(oElements[i].id) !== null) {                    
+                    oElements[i].checked = (localStorage.getItem(oElements[i].id) == "true");
+                    // https://heyjavascript.com/javascript-string-to-boolean/
+                    MessageLog(`RestoreFormElements: ${oElements[i].id} = ` + (localStorage.getItem(oElements[i].id) == "true"), goVerbosityEnum.Debug);
+                }
+                break;
+            default:
+                if (oElements[i].nodeName === "SELECT"
+                    && localStorage.getItem(oElements[i].id) !== null) {
+                    oElements[i].value = localStorage.getItem(oElements[i].id);
+                    MessageLog(`RestoreFormElements: ${oElements[i].id} = ` + localStorage.getItem(oElements[i].id), goVerbosityEnum.Debug);
+                }
+        }
+    }
+}
+function SaveFormElements(sForm) {
+
+    //oElements = document.querySelectorAll(`#frmGameMenu input[type=text]`);
+    //oElements = document.querySelectorAll(`#frmGameMenu input[type=number]`);
+    //oElements = document.querySelectorAll(`#frmGameMenu input[type=checkbox]`);
+    //oElements = document.querySelectorAll(`#frmGameMenu select`);
+    //oElements = document.querySelectorAll(`#frmGameMenu input[type=range]`);
+    //oElements = document.querySelectorAll(`#frmGameMenu input[type=color]`);
+    
+    let oElements = document.getElementById(sForm);
+    MessageLog(`SaveFormElements: ${oElements.length} elements found.`, goVerbosityEnum.Debug);
+
+    for (var i = 0; i < oElements.length; i++) {        
+        switch (oElements[i].type) {
+            case "color":
+            case "text":
+            case "number":
+            case "range":
+                localStorage.setItem(oElements[i].id, oElements[i].value);
+                MessageLog(`SaveFormElements: ${oElements[i].id} = ${oElements[i].value}`, goVerbosityEnum.Debug);
+                break;
+            case "checkbox":
+                localStorage.setItem(oElements[i].id, oElements[i].checked);
+                MessageLog(`SaveFormElements: ${oElements[i].id} = ${oElements[i].checked}`, goVerbosityEnum.Debug);
+                break;
+            default:
+                if (oElements[i].nodeName === "SELECT") {
+                    localStorage.setItem(oElements[i].id, oElements[i].value);
+                    MessageLog(`SaveFormElements: ${oElements[i].id} = ${oElements[i].value}`, goVerbosityEnum.Debug);
+                }
+        }
+    }
+}
+
 var oBenchmark;
 function Benchmark(name) {
     let oStartDate = new Date();

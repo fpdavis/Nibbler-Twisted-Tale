@@ -18,7 +18,15 @@ const goVerbosityEnum = {
     Verbose: 4,
     Debug: 5
 };
-var giVerbosity = goVerbosityEnum.Critical;
+var giVerbosity;
+
+if (localStorage.getItem("giVerbosity") !== null) {
+    giVerbosity = parseInt(localStorage.getItem("giVerbosity"));
+}
+else {
+    giVerbosity = goVerbosityEnum.Critical;
+}
+
 let iStartTime = new Date().getTime();
 
 function ChangeVerbosity(iIncrement) {
@@ -32,6 +40,7 @@ function ChangeVerbosity(iIncrement) {
         giVerbosity = 0;
     }
 
+    localStorage.setItem("giVerbosity", giVerbosity);
     MessageLog(`Changing Verbosity to ` + goVerbosityEnum.Lookup[giVerbosity], goVerbosityEnum.Critical);
     
 }

@@ -3,6 +3,8 @@
 
 ## Sep 12, 2019  
 * Completed Credits
+* Added methods to save and restore user settings to local storage
+* Converting HTML menus to better responsive design
 
 ## Sep 10, 2019  
 * Added method to identify the Current UI state (CurrentDiv())
